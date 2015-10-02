@@ -1,0 +1,7 @@
+{
+  "@context": "/v1/contexts/Ticketing",
+  "@id": "/v1/ticketings/64",
+  "@type": "Ticketing",
+  "activityUuid": "63d108be-629c-11e5-b5ce-f153631dac50",
+  "eventDateList": []
+}
