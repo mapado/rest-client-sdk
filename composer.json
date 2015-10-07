@@ -1,0 +1,26 @@
+{
+    "name": "mapado/rest-client-sdk",
+    "description": "Rest Client SDK for hydra API",
+    "autoload": {
+        "psr-4": { "Mapado\\RestClientSdk\\": "src/" }
+    },
+    "require": {
+        "ml/iri": "^1.1",
+        "guzzlehttp/guzzle": "^6.1",
+        "ocramius/proxy-manager": "^1.0"
+    },
+    "require-dev": {
+        "atoum/atoum": "@stable"
+    },
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Julien Deniau",
+            "email": "julien.deniau@gmail.com"
+        },
+        {
+            "name": "Dimitri Allegoet",
+            "email": "dallegoet@gmail.com"
+        }
+    ]
+}
