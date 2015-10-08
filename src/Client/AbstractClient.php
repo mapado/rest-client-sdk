@@ -122,6 +122,7 @@ abstract class AbstractClient
     {
         $prefix = $this->sdk->getMapping()->getIdPrefix();
         $key = $this->sdk->getMapping()->getKeyFromClientName(get_called_class());
+        $modelName = $this->sdk->getMapping()->getModelName($key);
 
         $path = $prefix . '/' . $key;
         $data = $this->restClient->post($path, $this->sdk->getSerializer()->serialize($model, $modelName));
