@@ -1,4 +1,4 @@
-# Rest Client Sdk [![Build Status](https://travis-ci.org/mapado/rest-client-sdk.svg?branch=v0.1.1)](https://travis-ci.org/mapado/rest-client-sdk)
+# Rest Client Sdk [![Build Status](https://travis-ci.org/mapado/rest-client-sdk.svg?branch=v0.1.2)](https://travis-ci.org/mapado/rest-client-sdk)
 Rest Client SDK for hydra API.
 
 This client tries to avoid the complexity of implementing a custom SDK for every API you have.
