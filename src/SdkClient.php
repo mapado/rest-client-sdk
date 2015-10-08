@@ -28,7 +28,7 @@ class SdkClient
         $this->restClient = $restClient;
         $this->mapping = $mapping;
         if (!$serializer) {
-            $serializer = new Serializer($this->maping);
+            $serializer = new Serializer($this->mapping);
         }
         $this->serializer = $serializer;
         $this->serializer->setSdk($this);
