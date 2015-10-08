@@ -1,4 +1,4 @@
-# rest-client-sdk
+# Rest Client Sdk
 Rest Client SDK for hydra API.
 
 This client tries to avoid the complexity of implementing a custom SDK for every API you have.
@@ -85,10 +85,10 @@ foreach ($cartItemList as $cartItem) {
 ```
 
 ## TODO
-[] Symfony bundle
-[] YAML declaration on entity / relations
-[] Annotation system for entity / relations declarations
-[] Auto-generate empty client classes and make them optional
+  * Symfony bundle
+  * YAML declaration on entity / relations
+  * Annotation system for entity / relations declarations
+  * Auto-generate empty client classes and make them optional
 
 
 
