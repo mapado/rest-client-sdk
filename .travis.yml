@@ -1,0 +1,20 @@
+sudo: false
+
+language: php
+php:
+    - 7.0
+    - 5.6
+    - 5.5
+    - 5.4
+matrix:
+    allow_failures:
+        - php: 7.0
+
+
+before_script:
+    - composer install
+
+script:
+    - vendor/bin/atoum -bf vendor/autoload.php -d src/Tests/Units/
+
+
