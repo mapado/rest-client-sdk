@@ -47,8 +47,19 @@ abstract class AbstractClient
      */
     public function find($id)
     {
-        $key = $this->sdk->getMapping()->getKeyFromClientName(get_called_class());
-        $modelName = $this->sdk->getMapping()->getModelName($key);
+        $mapping = $this->sdk->getMapping();
+        $key = $mapping->getKeyFromClientName(get_called_class());
+        $modelName = $mapping->getModelName($key);
+
+        // add slash if needed to have a valid hydra id
+        if (!strstr($id, '/')) {
+            $id = '/' . $key . '/' . $id;
+
+            if ($prefix = $mapping->getIdPrefix()) {
+                $id = '/'. $prefix . $id;
+            }
+        }
+
         $data = $this->restClient->get($id);
 
         return $this->sdk->getSerializer()->deserialize($data, $modelName);
@@ -62,8 +73,10 @@ abstract class AbstractClient
      */
     public function findAll()
     {
-        $key = $this->sdk->getMapping()->getKeyFromClientName(get_called_class());
-        $data = $this->restClient->get('/v1/' . $key);
+        $mapping = $this->sdk->getMapping();
+        $prefix = $mapping->getIdPrefix();
+        $key = $mapping->getKeyFromClientName(get_called_class());
+        $data = $this->restClient->get('/' . $prefix . '/' . $key);
 
         if ($data && !empty($data['hydra:member'])) {
             $serializer = $this->sdk->getSerializer();
