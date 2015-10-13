@@ -53,10 +53,10 @@ abstract class AbstractClient
 
         // add slash if needed to have a valid hydra id
         if (!strstr($id, '/')) {
-            $id = '/' . $key . '/' . $id;
+            $id = $key . '/' . $id;
 
             if ($prefix = $mapping->getIdPrefix()) {
-                $id = '/'. $prefix . $id;
+                $id = $prefix . '/' . $id;
             }
         }
 

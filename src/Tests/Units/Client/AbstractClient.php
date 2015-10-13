@@ -39,11 +39,13 @@ class AbstractClient extends atoum
         $mockedRestClient = new \mock\Mapado\RestClientSdk\RestClient();
 
         $this->calling($mockedSdk)->getRestClient = $mockedRestClient;
-        $this->calling($mockedRestClient)->get = [];
+        $this->calling($mockedRestClient)->get = function () {
+            return [];
+        };
 
         $this->mockGenerator->orphanize('__construct');
         $mockedSerializer = new \mock\Mapado\RestClientSdk\Model\Serializer();
-        $this->calling($mockedSerializer)->deserialize = null; 
+        $this->calling($mockedSerializer)->deserialize = null;
         $this->calling($mockedSdk)->getSerializer = $mockedSerializer;
 
         $abstractClient = new \mock\Mapado\RestClientSdk\Client\AbstractClient($mockedSdk);
@@ -52,7 +54,14 @@ class AbstractClient extends atoum
             ->then
                 ->mock($mockedRestClient)
                     ->call('get')
-                        ->withArguments('/v12/orders/1')->once()
+                        ->withArguments('v12/orders/1')->once()
+
+            ->given($this->resetMock($mockedRestClient))
+            ->if($abstractClient->find('v12/orders/999'))
+            ->then
+                ->mock($mockedRestClient)
+                    ->call('get')
+                        ->withArguments('v12/orders/999')->once()
         ;
     }
 }
