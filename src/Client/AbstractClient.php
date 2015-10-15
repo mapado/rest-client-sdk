@@ -62,7 +62,7 @@ abstract class AbstractClient
 
         $data = $this->restClient->get($id);
 
-        return $this->sdk->getSerializer()->deserialize($data, $modelName);
+        return $this->deserialize($data, $modelName);
     }
 
     /**
@@ -86,7 +86,7 @@ abstract class AbstractClient
             $list = [];
             if (!empty($data) && !empty($data['hydra:member'])) {
                 foreach ($data['hydra:member'] as $instanceData) {
-                    $list[] = $serializer->deserialize($instanceData, $modelName);
+                    $list[] = $this->deserialize($instanceData, $modelName);
                 }
             }
 
@@ -121,7 +121,7 @@ abstract class AbstractClient
 
         $data = $this->restClient->put($model->getId(), $this->sdk->getSerializer()->serialize($model, $modelName));
 
-        return $this->sdk->getSerializer()->deserialize($data, $modelName);
+        return $this->deserialize($data, $modelName);
     }
 
     /**
@@ -141,6 +141,23 @@ abstract class AbstractClient
         $data = $this->restClient->post($path, $this->sdk->getSerializer()->serialize($model, $modelName));
 
         $modelName = $this->sdk->getMapping()->getModelName($key);
+
+        return $this->deserialize($data, $modelName);
+    }
+
+    /**
+     * deserialize
+     *
+     * @param array $data
+     * @param string $modelName
+     * @access private
+     * @return object
+     */
+    private function deserialize($data, $modelName)
+    {
+        if (!$data) {
+            return null;
+        }
 
         return $this->sdk->getSerializer()->deserialize($data, $modelName);
     }

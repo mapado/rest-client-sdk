@@ -14,7 +14,7 @@ use atoum;
 class AbstractClient extends atoum
 {
     /**
-     * beforeTestMethod
+     * testFind
      *
      * @param mixed $method
      * @access public
@@ -39,9 +39,7 @@ class AbstractClient extends atoum
         $mockedRestClient = new \mock\Mapado\RestClientSdk\RestClient();
 
         $this->calling($mockedSdk)->getRestClient = $mockedRestClient;
-        $this->calling($mockedRestClient)->get = function () {
-            return [];
-        };
+        $this->calling($mockedRestClient)->get = [];
 
         $this->mockGenerator->orphanize('__construct');
         $mockedSerializer = new \mock\Mapado\RestClientSdk\Model\Serializer();
@@ -62,6 +60,40 @@ class AbstractClient extends atoum
                 ->mock($mockedRestClient)
                     ->call('get')
                         ->withArguments('v12/orders/999')->once()
+        ;
+    }
+    /**
+     * testFindNotFound
+     *
+     * @param mixed $method
+     * @access public
+     * @return void
+     */
+    public function testFindNotFound()
+    {
+        $mapping = new Mapping();
+        $mapping->setMapping([
+            new ClassMetadata(
+                'orders',
+                'Mapado\RestClientSdk\Tests\Model\Model',
+                'mock\Mapado\RestClientSdk\Client\AbstractClient'
+            )
+        ]);
+
+        $this->mockGenerator->orphanize('__construct');
+        $mockedSdk = new \mock\Mapado\RestClientSdk\SdkClient();
+        $this->calling($mockedSdk)->getMapping = $mapping;
+
+        $this->mockGenerator->orphanize('__construct');
+        $mockedRestClient = new \mock\Mapado\RestClientSdk\RestClient();
+
+        $this->calling($mockedSdk)->getRestClient = $mockedRestClient;
+        $this->calling($mockedRestClient)->get = null;
+
+        $abstractClient = new \mock\Mapado\RestClientSdk\Client\AbstractClient($mockedSdk);
+        $this
+            ->variable($abstractClient->find('1'))
+            ->isNull()
         ;
     }
 }
