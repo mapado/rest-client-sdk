@@ -52,7 +52,7 @@ $cartItemMetadata->setAttributeList([
     new Attribute('id', 'string', true),
     new Attribute('number', 'integer'),
 ]);
-$cartItemMetadata->setRelationList'([
+$cartItemMetadata->setRelationList([
     new Relation('cart', Relation::MANY_TO_ONE, 'Foo\Bar\Model\Cart'),
 ]);
 ```
