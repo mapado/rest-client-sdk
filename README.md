@@ -43,7 +43,7 @@ $cartMetadata->setAttributeList([
     new Attribute('status', 'string'),
     new Attribute('createdAt', 'datetime'),
 ]);
-$cartMetadata->setRelationList'([
+$cartMetadata->setRelationList([
     new Relation('cartItemList', Relation::ONE_TO_MANY, 'Foo\Bar\Model\CartItem'),
 ]);
 
