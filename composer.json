@@ -6,10 +6,12 @@
     },
     "require": {
         "guzzlehttp/guzzle": "^6.1",
-        "ocramius/proxy-manager": "^1.0"
+        "ocramius/proxy-manager": "^1.0",
+        "doctrine/annotations": "^1.2"
     },
     "require-dev": {
-        "atoum/atoum": "@stable"
+        "atoum/atoum": "@stable",
+        "raulfraile/ladybug": "^1.0"
     },
     "license": "MIT",
     "authors": [

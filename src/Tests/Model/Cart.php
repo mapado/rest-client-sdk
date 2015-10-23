@@ -3,19 +3,55 @@
 namespace Mapado\RestClientSdk\Tests\Model;
 
 use DateTime;
+use Mapado\RestClientSdk\Mapping\Annotations as Rest;
 
 /**
  * Class Cart
  * @author Julien Deniau <julien.deniau@mapado.com>
+ *
+ * @Rest\Entity(key="cart", client="Mapado\Foo\Bar\CartClient")
  */
 class Cart
 {
+    /**
+     * id
+     *
+     * @var mixed
+     * @access private
+     *
+     * @Rest\Id
+     * @Rest\Attribute(name="id", type="string")
+     */
     private $id;
 
+    /**
+     * status
+     *
+     * @var mixed
+     * @access private
+     *
+     * @Rest\Attribute(name="status", type="string")
+     */
     private $status;
 
+    /**
+     * createdAt
+     *
+     * @var mixed
+     * @access private
+     *
+     * @Rest\Attribute(name="created_at", type="datetime")
+     */
     private $createdAt;
 
+    /**
+     * cartItemList
+     *
+     * @var mixed
+     * @access private
+     *
+     * @Rest\OneToMany(name="cart_items", targetEntity="CartItem")
+     */
     private $cartItemList = [];
 
     /**

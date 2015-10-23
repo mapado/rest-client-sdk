@@ -27,46 +27,89 @@ You will need to have two entities, let's say:
 You will need to declare one `Mapping` containing your two `ClassMetadata`
 
 ## Configuration
-## Declaring a class metadata
+### Configure an entity
+Imagine the following entities:
 ```php
-use Mapado\RestClientSdk\Mapping\Attribute;
-use Mapado\RestClientSdk\Mapping\ClassMetadata;
-use Mapado\RestClientSdk\Mapping\Relation;
+namespace Acme\Foo\Bar;
 
-$cartMetadata = new ClassMetadata(
-    'carts', // the key of your api endpoint
-    'Foo\Bar\Model\Cart', // the classname of your model
-    'Foo\Bar\Client\CartClient' // an empty class extending Mapado\RestClientSdk\Client\AbstractClient
-);
-$cartMetadata->setAttributeList([
-    new Attribute('id', 'string', true), // true is for the primary identifier
-    new Attribute('status', 'string'),
-    new Attribute('createdAt', 'datetime'),
-]);
-$cartMetadata->setRelationList([
-    new Relation('cartItemList', Relation::ONE_TO_MANY, 'Foo\Bar\Model\CartItem'),
-]);
+use Mapado\RestClientSdk\Mapping\Annotation as Rest;
 
-$cartItemMetadata = new ClassMetadata('cart_items', 'Foo\Bar\Model\CartItem', 'Foo\Bar\Client\CartItemClient');
-$cartItemMetadata->setAttributeList([
-    new Attribute('id', 'string', true),
-    new Attribute('number', 'integer'),
-]);
-$cartItemMetadata->setRelationList([
-    new Relation('cart', Relation::MANY_TO_ONE, 'Foo\Bar\Model\Cart'),
-]);
+/**
+ * @Rest\Entity(key="carts", client="Acme\Foo\Bar\CartClient")
+ */
+class Cart {
+    /**
+     * @Rest\Id
+     * @Rest\Attribute(name="id", type="string")
+     */
+    private $id;
+
+    /**
+     * @Rest\Attribute(name="status", type="string")
+     */
+    private $status;
+
+    /**
+     * @Rest\Attribute(name="created_at", type="datetime")
+     */
+    private $createdAt;
+
+    /**
+     * @Rest\OneToMany(name="cart_items", targetEntity="CartItem")
+     */
+    private $cartItemList;
+
+    // getters & setters ...
+}
+
+/**
+ * @Rest\Entity(key="cart_items", client="Acme\Foo\Bar\CartItemsClient")
+ */
+class CartItem {
+    /**
+     * @Rest\Id
+     * @Rest\Attribute(name="id", type="string")
+     */
+    private $id;
+
+    /**
+     * @Rest\Attribute(name="number", type="integer")
+     */
+    private $number;
+
+    /**
+     * @Rest\ManyToOne(name="cart", targetEntity="Cart")
+     */
+    private $cart;
+}
 ```
+
+### Explanations
+`Entity` definitions:
+  * `key` must be the key of your API endpoint
+  * `client` is an empty class extending `Mapado\RestClientSdk\Client\AbstractClient`
+
+Attributes definition:
+  * `name` the name of the key in the API return format
+  * `type` type of the attribute
+
+Relations definition:
+  * `name` the name of the key in the API return format
+  * `targetEntity` class name of the target entity
 
 ## Declaring the SdkClient
 ```php
 use Mapado\RestClientSdk\Mapping;
 use Mapado\RestClientSdk\RestClient;
 use Mapado\RestClientSdk\SdkClient;
+use Mapado\RestClientSdk\Mapping\Driver\AnnotationDriver;
 
-$restClient = new RestClientSdk(new GuzzleHttp\Client, 'http://path-to-your-api.root');
+$restClient = new RestClient(new GuzzleHttp\Client, 'http://path-to-your-api.root');
 
-$mapping = new Mapado\RestClientSdk\Mapping('/v2'); // /v2 is the prefix of your routes
-$mapping->setMapping([$cartMetadata, $cartItemMetadata]);
+$annotationDriver = new AnnotationDriver($cachePath, $debug = true);
+
+$mapping = new Mapping('/v2'); // /v2 is the prefix of your routes
+$mapping->setMapping($annotationDriver->loadDirectory($pathToEntityDirectory));
 
 $sdkClient = new SdkClient($restClient, $mapping);
 ```
@@ -87,9 +130,7 @@ foreach ($cartItemList as $cartItem) {
 ## TODO
   * Symfony bundle
   * YAML declaration on entity / relations
-  * Annotation system for entity / relations declarations
   * Auto-generate empty client classes and make them optional
-
 
 
 ## Missing tests

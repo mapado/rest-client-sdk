@@ -2,16 +2,45 @@
 
 namespace Mapado\RestClientSdk\Tests\Model;
 
+use Mapado\RestClientSdk\Mapping\Annotations as Rest;
+
 /**
  * Class Product
  * @author Julien Deniau <julien.deniau@mapado.com>
+ *
+ * @Rest\Entity(key="product", client="Mapado\Foo\Bar\Client")
  */
 class Product
 {
+    /**
+     * id
+     *
+     * @var int
+     * @access private
+     *
+     * @Rest\Id
+     * @Rest\Attribute(name="id", type="integer")
+     */
     private $id;
 
+    /**
+     * value
+     *
+     * @var string
+     * @access private
+     *
+     * @Rest\Attribute(name="value", type="string")
+     */
     private $value;
 
+    /**
+     * currency
+     *
+     * @var string
+     * @access private
+     *
+     * @Rest\Attribute(name="currency", type="string")
+     */
     private $currency;
 
     /**
