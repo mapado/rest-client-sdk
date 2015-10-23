@@ -98,6 +98,10 @@ Relations definition:
   * `targetEntity` class name of the target entity
 
 ## Declaring the SdkClient
+### Using Symfony ?
+There is a bundle to easily integrate this component: [mapado/rest-client-sdk-bundle](https://github.com/mapado/rest-client-sdk-bundle)
+
+### Not using Symfony
 ```php
 use Mapado\RestClientSdk\Mapping;
 use Mapado\RestClientSdk\RestClient;
@@ -128,9 +132,8 @@ foreach ($cartItemList as $cartItem) {
 ```
 
 ## TODO
-  * Symfony bundle
-  * YAML declaration on entity / relations
   * Auto-generate empty client classes and make them optional
+  * YAML declaration on entity / relations (?)
 
 
 ## Missing tests
