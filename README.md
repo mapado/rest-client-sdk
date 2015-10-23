@@ -32,7 +32,7 @@ Imagine the following entities:
 ```php
 namespace Acme\Foo\Bar;
 
-use Mapado\RestClientSdk\Mapping\Annotation as Rest;
+use Mapado\RestClientSdk\Mapping\Annotations as Rest;
 
 /**
  * @Rest\Entity(key="carts", client="Acme\Foo\Bar\CartClient")
