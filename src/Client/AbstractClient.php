@@ -76,7 +76,7 @@ abstract class AbstractClient
         $mapping = $this->sdk->getMapping();
         $prefix = $mapping->getIdPrefix();
         $key = $mapping->getKeyFromClientName(get_called_class());
-        $data = $this->restClient->get('/' . $prefix . '/' . $key);
+        $data = $this->restClient->get($prefix . '/' . $key);
 
         if ($data && !empty($data['hydra:member'])) {
             $serializer = $this->sdk->getSerializer();
