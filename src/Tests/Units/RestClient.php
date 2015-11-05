@@ -28,11 +28,17 @@ class RestClient extends atoum
             [
                 new Response(
                     200,
-                    [],
+                    [
+                        'Content-Type' => 'application/ld+json'
+                    ],
                     file_get_contents(__DIR__ . '/../data/ticketing.list.no_result.json')
                 ),
                 new Response(404),
                 new Response(502),
+                new Response(
+                    201,
+                    []
+                ),
             ]
         );
 
@@ -60,6 +66,11 @@ class RestClient extends atoum
                     ->isInstanceOf('Mapado\RestClientSdk\Exception\RestException')
                     ->hasMessage('Error while getting resource')
                     ->hasCode(1)
+
+            // test binary get
+            ->then
+                ->object($this->testedInstance->get('/not-json'))
+                    ->isInstanceOf('\GuzzleHttp\Psr7\Response')
            ;
     }
 
@@ -114,7 +125,9 @@ class RestClient extends atoum
             [
                 new Response(
                     201,
-                    [],
+                    [
+                        'Content-Type' => 'application/ld+json'
+                    ],
                     file_get_contents(__DIR__ . '/../data/ticketing.created.json')
                 ),
                 new Response(400),
@@ -165,7 +178,9 @@ class RestClient extends atoum
             [
                 new Response(
                     200,
-                    [],
+                    [
+                        'Content-Type' => 'application/ld+json'
+                    ],
                     file_get_contents(__DIR__ . '/../data/ticketing.updated.json')
                 ),
                 new Response(404),
