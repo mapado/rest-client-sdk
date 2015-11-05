@@ -152,7 +152,7 @@ class RestClient
      * @param string $url
      * @param bool $parameters
      * @access private
-     * @return array
+     * @return Response|array
      */
     private function executeRequest($method, $url, $parameters = [])
     {
@@ -170,7 +170,12 @@ class RestClient
             throw $e;
         }
 
-        return json_decode($response->getBody(), true);
+        $headers = $response->getHeaders();
+        if (isset($headers['Content-Type']) && $headers['Content-Type'][0] === 'application/ld+json') {
+            return json_decode($response->getBody(), true);
+        } else {
+            return $response;
+        }
     }
 
     /**
