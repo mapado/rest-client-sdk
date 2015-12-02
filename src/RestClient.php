@@ -171,7 +171,9 @@ class RestClient
         }
 
         $headers = $response->getHeaders();
-        if (isset($headers['Content-Type']) && $headers['Content-Type'][0] === 'application/ld+json') {
+        $jsonContentTypeList = ['application/ld+json', 'application/json'];
+
+        if (isset($headers['Content-Type']) && in_array($headers['Content-Type'][0], $jsonContentTypeList)) {
             return json_decode($response->getBody(), true);
         } else {
             return $response;
