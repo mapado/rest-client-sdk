@@ -4,10 +4,6 @@ Rest Client SDK for hydra API.
 This client tries to avoid the complexity of implementing a custom SDK for every API you have.
 You just have to implements your model and a little configuration and it will hide the complexity for you.
 
-## Can I use it in production
-We are currently developping it and will use it in production soon. But for now it is a little dangerous to use it in production.
-If you want to use it, please report every bug you may find by [opening an issue](https://github.com/mapado/rest-client-sdk/issues/new) or even better, a [Pull Request](https://github.com/mapado/rest-client-sdk/compare).
-
 ## installation
 ```sh
 composer require mapado/rest-client-sdk
@@ -130,6 +126,9 @@ foreach ($cartItemList as $cartItem) {
     echo $cartItemList->getNumber();
 }
 ```
+
+## Want to help ? Found a bug ?
+If you want to use it, [pleeeaase](https://s-media-cache-ak0.pinimg.com/736x/4e/94/1c/4e941cc9fea61425f21ed18ebc86d0d7.jpg) report every bug you may find by [opening an issue](https://github.com/mapado/rest-client-sdk/issues/new) or even better, a [Pull Request](https://github.com/mapado/rest-client-sdk/compare).
 
 ## TODO
   * Auto-generate empty client classes and make them optional
