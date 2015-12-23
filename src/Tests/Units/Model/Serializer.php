@@ -23,9 +23,10 @@ class Serializer extends atoum
      */
     public function testJsonEncode()
     {
+        $this->createNewInstance();
+
         $this
             ->given($cart = $this->createCart())
-                ->and($this->createNewInstance())
             ->then
                 ->array($data = $this->testedInstance->serialize($cart, 'Mapado\RestClientSdk\Tests\Model\Cart'))
                     ->isIdenticalTo([
@@ -59,9 +60,10 @@ class Serializer extends atoum
      */
     public function testJsonEncodeRelationWithLink()
     {
+        $this->createNewInstance();
+
         $this
-            ->given($this->createNewInstance())
-                ->and($cart = $this->createCart())
+            ->given($cart = $this->createCart())
                 ->and($cartItem = $this->createKnownCartItem())
                 ->and($cart->addCartItemList($cartItem))
             ->then
@@ -95,9 +97,10 @@ class Serializer extends atoum
      */
     public function testJsonEncodeRelationWithoutLink()
     {
+        $this->createNewInstance();
+
         $this
-            ->given($this->createNewInstance())
-                ->and($cart = $this->createCart())
+            ->given($cart = $this->createCart())
                 ->and($cartItem = $this->createNewCartItem())
                 ->and($cart->addCartItemList($cartItem))
             ->then
@@ -130,9 +133,10 @@ class Serializer extends atoum
 
     public function testSerializeThreeLevel()
     {
+        $this->createNewInstance();
+
         $this
-            ->given($this->createNewInstance())
-                ->and($cart = $this->createNewCart())
+            ->given($cart = $this->createNewCart())
                 ->and($cartItem = $this->createNewCartItem())
                 ->and($cart->addCartItemList($cartItem))
             ->then
@@ -164,9 +168,9 @@ class Serializer extends atoum
      */
     public function testJsonEncodeRelationWithoutLinkMultipleLevel()
     {
+        $this->createNewInstance();
         $this
-            ->given($this->createNewInstance())
-                ->and($cart = $this->createCart())
+            ->given($cart = $this->createCart())
                 ->and($cartItem = $this->createNewCartItem(false))
                 ->and($cartItem->addCartItemDetailList($this->createNewCartItemDetail()))
                 ->and($cartItem->addCartItemDetailList($this->createNewCartItemDetail()))
@@ -203,9 +207,9 @@ class Serializer extends atoum
      */
     public function testJsonEncodeMixRelations()
     {
+        $this->createNewInstance();
         $this
-            ->given($this->createNewInstance())
-                ->and($cart = $this->createCart())
+            ->given($cart = $this->createCart())
                 ->and($cartItem = $this->createNewCartItem())
                 ->and($knownedCartItem = $this->createKnownCartItem())
             ->if($cart->addCartItemList($knownedCartItem))
@@ -251,11 +255,12 @@ class Serializer extends atoum
      */
     public function testNotAllowedSerialization()
     {
+        $this->createNewInstance();
         $this
-            ->given($testedInstance = $this->createNewInstance())
-                ->and($cartItem = $this->createNewCartItem())
+            ->given($cartItem = $this->createNewCartItem())
                 ->and($cartItemDetail = $this->createNewCartItemDetail())
                 ->and($cartItemDetail->setCartItem($cartItem))
+                ->and($testedInstance = $this->testedInstance)
             ->then
                 ->object($cartItemDetail->getCartItem())
                     ->isInstanceOf('Mapado\RestClientSdk\Tests\Model\CartItem')
@@ -274,9 +279,9 @@ class Serializer extends atoum
      */
     public function testMultipleLevelSerialization()
     {
+        $this->createNewInstance();
         $this
-            ->given($this->createNewInstance())
-                ->and($cart = $this->createNewCart())
+            ->given($cart = $this->createNewCart())
                 ->and($cartItem = $this->createNewCartItem())
                 ->and($cartItem->setCart($cart))
             ->then
@@ -309,26 +314,26 @@ class Serializer extends atoum
      */
     public function testLinkedUnserialize()
     {
+        $this->createNewInstance();
         $this
-            ->given($this->createNewInstance())
-                ->and($data = [
-                        '@id' => '/v1/carts/8',
-                        'status' => 'payed',
-                        'createdAt' => '2015-09-20T12:08:00+00:00',
-                        'cartItemList' => [
-                            [
-                                '@id' => '/v1/cart_items/16',
-                                'amount' => 2,
-                                'createdAt' => '2015-09-20T12:11:00+00:00',
-                                'data' => [
-                                    'when' => '2015-09-20T15:00:00+00:00',
-                                    'who' => 'John',
-                                ],
-                                'product' => '/v1/products/10',
-                                'cartItemDetailList' => [],
+            ->given($data = [
+                    '@id' => '/v1/carts/8',
+                    'status' => 'payed',
+                    'createdAt' => '2015-09-20T12:08:00+00:00',
+                    'cartItemList' => [
+                        [
+                            '@id' => '/v1/cart_items/16',
+                            'amount' => 2,
+                            'createdAt' => '2015-09-20T12:11:00+00:00',
+                            'data' => [
+                                'when' => '2015-09-20T15:00:00+00:00',
+                                'who' => 'John',
                             ],
+                            'product' => '/v1/products/10',
+                            'cartItemDetailList' => [],
                         ],
-                    ])
+                    ],
+                ])
             ->then
                 ->object($cart = $this->testedInstance->deserialize($data, 'Mapado\RestClientSdk\Tests\Model\Cart'))
                     ->isInstanceOf('Mapado\RestClientSdk\Tests\Model\Cart')
@@ -353,9 +358,11 @@ class Serializer extends atoum
                     ->isEqualTo('/v1/products/10')
                 ->array($cartItem->getCartItemDetailList())
                     ->isEmpty()
+        ;
 
-            ->given($this->createNewInstance())
-            ->and($data = [
+        $this->createNewInstance();
+        $this
+            ->given($data = [
                     '@id' => '/v1/cart_items/16',
                     'amount' => 2,
                     'cart' => [
@@ -584,7 +591,5 @@ class Serializer extends atoum
         $sdk = new \mock\Mapado\RestClientSdk\SdkClient($restClient, $this->getMapping(), $this->testedInstance);
 
         $this->testedInstance->setSdk($sdk);
-
-        return $this->testedInstance;
     }
 }
