@@ -156,6 +156,10 @@ class RestClient
      */
     private function executeRequest($method, $url, $parameters = [])
     {
+        if (empty($parameters['version'])) {
+            $parameters['version'] = '1.0';
+        }
+
         $startTime = null;
         if ($this->isHistoryLogged()) {
             $startTime = microtime(true);
