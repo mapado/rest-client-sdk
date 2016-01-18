@@ -2,6 +2,8 @@
 
 namespace Mapado\RestClientSdk\Exception;
 
+use GuzzleHttp\Exception\TransferException;
+
 /**
  * Class RestException
  * @author Julien Deniau <julien.deniau@mapado.com>
@@ -19,7 +21,7 @@ class RestException extends \RuntimeException
         parent::__construct($message, $code, $previous);
         $this->path = $path;
         $this->params = $params;
-        if ($previous) {
+        if ($previous instanceof TransferException) {
             $this->response = $previous->getResponse();
         }
     }
