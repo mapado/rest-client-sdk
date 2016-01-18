@@ -20,7 +20,7 @@ class RestException extends \RuntimeException
         $this->path = $path;
         $this->params = $params;
         if ($previous) {
-            $this->response = $previous;
+            $this->response = $previous->getResponse();
         }
     }
 
