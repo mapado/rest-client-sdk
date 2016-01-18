@@ -8,13 +8,4 @@ namespace Mapado\RestClientSdk\Exception;
  */
 class RestClientException extends RestException
 {
-    public function getInitialMessage()
-    {
-        return json_decode((string)$this->getPrevious()->getResponse()->getBody(), true)['hydra:description'];
-    }
-
-    public function getInitialStatusCode()
-    {
-        return $this->getPrevious()->getCode();
-    }
 }

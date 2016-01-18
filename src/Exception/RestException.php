@@ -12,11 +12,16 @@ class RestException extends \RuntimeException
 
     private $params;
 
+    private $response;
+
     public function __construct($message, $path, array $params = [], $code = 0, \Exception $previous = null)
     {
         parent::__construct($message, $code, $previous);
         $this->path = $path;
         $this->params = $params;
+        if ($previous) {
+            $this->response = $previous;
+        }
     }
 
     public function getPath()
@@ -27,5 +32,10 @@ class RestException extends \RuntimeException
     public function getParams()
     {
         return $this->params;
+    }
+
+    public function getResponse()
+    {
+        return $this->response;
     }
 }
