@@ -78,9 +78,7 @@ abstract class AbstractClient
         $key = $mapping->getKeyFromClientName(get_called_class());
         $data = $this->restClient->get($prefix . '/' . $key);
 
-        if ($data && !empty($data['hydra:member'])) {
-            $serializer = $this->sdk->getSerializer();
-
+        if ($data && is_array($data) && !empty($data['hydra:member'])) {
             $modelName = $this->sdk->getMapping()->getModelName($key);
 
             $list = [];
@@ -156,6 +154,10 @@ abstract class AbstractClient
     private function deserialize($data, $modelName)
     {
         if (!$data) {
+            return null;
+        }
+
+        if (!is_array($data)) {
             return null;
         }
 
