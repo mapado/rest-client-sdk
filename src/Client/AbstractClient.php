@@ -47,22 +47,11 @@ abstract class AbstractClient
      */
     public function find($id)
     {
-        $mapping = $this->sdk->getMapping();
-        $key = $mapping->getKeyFromClientName(get_called_class());
-        $modelName = $mapping->getModelName($key);
-
-        // add slash if needed to have a valid hydra id
-        if (!strstr($id, '/')) {
-            $id = $key . '/' . $id;
-
-            if ($prefix = $mapping->getIdPrefix()) {
-                $id = $prefix . '/' . $id;
-            }
-        }
+        $id = $this->convertId($id);
 
         $data = $this->restClient->get($id);
 
-        return $this->deserialize($data, $modelName);
+        return $this->convert($data);
     }
 
     /**
@@ -78,19 +67,7 @@ abstract class AbstractClient
         $key = $mapping->getKeyFromClientName(get_called_class());
         $data = $this->restClient->get($prefix . '/' . $key);
 
-        if ($data && is_array($data) && !empty($data['hydra:member'])) {
-            $modelName = $this->sdk->getMapping()->getModelName($key);
-
-            $list = [];
-            if (!empty($data) && !empty($data['hydra:member'])) {
-                foreach ($data['hydra:member'] as $instanceData) {
-                    $list[] = $this->deserialize($instanceData, $modelName);
-                }
-            }
-
-            return $list;
-        }
-        return [];
+        return $this->convertList($data);
     }
 
     /**
@@ -162,5 +139,67 @@ abstract class AbstractClient
         }
 
         return $this->sdk->getSerializer()->deserialize($data, $modelName);
+    }
+
+    /**
+     * convert
+     *
+     * @param array $data
+     * @access protected
+     * @return object
+     */
+    protected function convert($data)
+    {
+        $mapping = $this->sdk->getMapping();
+        $key = $mapping->getKeyFromClientName(get_called_class());
+        $modelName = $mapping->getModelName($key);
+
+        return $this->deserialize($data, $modelName);
+    }
+
+    /**
+     * convertList
+     *
+     * @access protected
+     * @return array
+     */
+    protected function convertList($data)
+    {
+        if ($data && is_array($data) && !empty($data['hydra:member'])) {
+            $modelName = $this->sdk->getMapping()->getModelName($key);
+
+            $list = [];
+            if (!empty($data) && !empty($data['hydra:member'])) {
+                foreach ($data['hydra:member'] as $instanceData) {
+                    $list[] = $this->deserialize($instanceData, $modelName);
+                }
+            }
+
+            return $list;
+        }
+        return [];
+    }
+
+    /**
+     * convertId
+     *
+     * @param string $id
+     * @access private
+     * @return string
+     */
+    private function convertId($id)
+    {
+        // add slash if needed to have a valid hydra id
+        if (!strstr($id, '/')) {
+            $mapping = $this->sdk->getMapping();
+            $key = $mapping->getKeyFromClientName(get_called_class());
+            $id = $key . '/' . $id;
+
+            if ($prefix = $mapping->getIdPrefix()) {
+                $id = $prefix . '/' . $id;
+            }
+        }
+
+        return $id;
     }
 }
