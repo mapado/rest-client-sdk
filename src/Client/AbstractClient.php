@@ -166,6 +166,8 @@ abstract class AbstractClient
     protected function convertList($data)
     {
         if ($data && is_array($data) && !empty($data['hydra:member'])) {
+            $mapping = $this->sdk->getMapping();
+            $key = $mapping->getKeyFromClientName(get_called_class());
             $modelName = $this->sdk->getMapping()->getModelName($key);
 
             $list = [];
