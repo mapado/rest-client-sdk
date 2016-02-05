@@ -88,12 +88,12 @@ class RestClient
      *
      * @return array
      */
-    public function get($path)
+    public function get($path, $parameters = [])
     {
         $requestUrl = $this->baseUrl . $path;
 
         try {
-            return $this->executeRequest('GET', $requestUrl);
+            return $this->executeRequest('GET', $requestUrl, $parameters);
         } catch (ClientException $e) {
             return null;
         } catch (TransferException $e) {
@@ -119,12 +119,12 @@ class RestClient
         }
     }
 
-    public function post($path, $data)
+    public function post($path, $data, $parameters = [])
     {
+        $parameters['json'] = $data;
+
         try {
-            return $this->executeRequest('POST', $this->baseUrl . $path, [
-                'json' => $data
-            ]);
+            return $this->executeRequest('POST', $this->baseUrl . $path, $parameters);
         } catch (ClientException $e) {
             throw new RestClientException('Cannot create resource', $path, [], 3, $e);
         } catch (TransferException $e) {
@@ -132,12 +132,12 @@ class RestClient
         }
     }
 
-    public function put($path, $data)
+    public function put($path, $data, $parameters = [])
     {
+        $parameters['json'] = $data;
+
         try {
-            return $this->executeRequest('PUT', $this->baseUrl . $path, [
-                'json' => $data
-            ]);
+            return $this->executeRequest('PUT', $this->baseUrl . $path, $parameters);
         } catch (ClientException $e) {
             throw new RestClientException('Cannot update resource', $path, [], 5, $e);
         } catch (TransferException $e) {
