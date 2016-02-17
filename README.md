@@ -115,6 +115,7 @@ $sdkClient = new SdkClient($restClient, $mapping);
 ```
 
 ## Usage
+### Fetching an entity / a list of entities
 ```php
 $cartClient = $sdkClient->getClient('carts');
 $cart = $cartClient->find(838); // find cart by id
@@ -124,6 +125,66 @@ $cartItemList = $cart->getCartItemList();
 
 foreach ($cartItemList as $cartItem) {
     echo $cartItemList->getNumber();
+}
+```
+
+### Creating a new instance
+```php
+$cart = new Cart();
+$cart->setStatus('awaiting_payment');
+$cart->setCreatedAt(new \DateTime());
+
+$cartClient = $sdkClient->getClient('carts');
+$cart = $cartClient->persist($cart);
+```
+
+The `persist` operation will send a `POST` request with the serialized object to the API endpoint and return the newly created object.
+
+### Updating an instance
+```php
+$cartClient = $sdkClient->getClient('carts');
+$cart = $cartClient->find(838); // find cart by id
+
+$cart->setStatus('payed');
+$cart = $cartClient->update($cart);
+```
+
+The `update` operation will send a `PUT` request with the serialized object to the API endpoint (using the object `id`) and return the updated object.
+
+### Deleting an instance
+```php
+$cartClient = $sdkClient->getClient('carts');
+$cart = $cartClient->find(838); // find cart by id
+
+$cartClient->remove($cart);
+```
+
+The `remove` operation will send a `DELETE` request to the API endpoint using the object ID.
+
+### Extending the client
+The default client provides the basic CRUD methods (as seen before). But in many case, you will need to extends it to add your own methods.
+
+If you have a `Cart` Model, you defined a `CartClient` extending `Mapado\RestClientSdk\Client\AbstractClient`. The default implementation is an empty class.
+
+You can just define the method you want in this class:
+```php
+namespace Acme\Foo\Bar;
+
+use Mapado\RestClientSdk\Client\AbstractClient;
+
+class CartClient extends AbstractClient
+{
+    public function findByCustomer($customer)
+    {
+        $cartList = $this->restClient->get(sprintf('/v1/carts?customer=%s', $customer->getId())); // this endpoint should return a hydra list
+        return $this->convertList($cartList);
+    }
+
+    public function findOneByPayment($payment)
+    {
+        $cart = $this->restClient->get(sprintf('/v1/carts?payment=%s', $payment->getId())); // this endpoint should return an item
+        return $this->convert($cart);
+    }
 }
 ```
 
