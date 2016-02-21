@@ -2,7 +2,9 @@
 
 namespace Mapado\RestClientSdk;
 
-use Mapado\RestClientSdk\Model\Serializer;
+use Mapado\RestClientSdk\Model\Serializer,
+    Mapado\RestClientSdk\EntityRepository,
+    Mapado\RestClientSdk\Client\Client;
 use ProxyManager\Factory\LazyLoadingGhostFactory;
 use ProxyManager\Proxy\LazyLoadingInterface;
 
@@ -41,7 +43,7 @@ class SdkClient
      * @access public
      * @return AbstractClient
      */
-    public function getClient($clientName)
+    public function getClient($clientName = null)
     {
         if (!isset($this->clientList[$clientName])) {
             $classname = $this->mapping->getClientName($clientName);
@@ -50,6 +52,13 @@ class SdkClient
         }
 
         return $this->clientList[$clientName];
+    }
+    
+    public function getRepository($repositoryName) {
+        $client = new \Mapado\RestClientSdk\Client\Client($this);
+        $repository = new $repositoryName();
+        $defaultRepository = new EntityRepository($client, $this->restClient, $repository);
+        return $defaultRepository;
     }
 
     /**
