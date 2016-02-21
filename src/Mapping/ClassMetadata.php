@@ -9,14 +9,6 @@ namespace Mapado\RestClientSdk\Mapping;
 class ClassMetadata
 {
     /**
-     * clientName
-     *
-     * @var string
-     * @access private
-     */
-    private $clientName;
-
-    /**
      * modelName
      *
      * @var string
@@ -53,36 +45,12 @@ class ClassMetadata
      *
      * @param string $key
      * @param string $modelName
-     * @param string $clientName
      * @access public
      */
-    public function __construct($key, $modelName, $clientName)
+    public function __construct($key, $modelName)
     {
         $this->key = $key;
         $this->modelName = $modelName;
-        $this->clientName = $clientName;
-    }
-
-    /**
-     * Getter for clientName
-     *
-     * return string
-     */
-    public function getClientName()
-    {
-        return $this->clientName;
-    }
-
-    /**
-     * Setter for clientName
-     *
-     * @param string $clientName
-     * @return ClassMetadata
-     */
-    public function setClientName($clientName)
-    {
-        $this->clientName = $clientName;
-        return $this;
     }
 
     /**
