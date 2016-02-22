@@ -91,10 +91,10 @@ class Client
      * @access protected
      * @return object
      */
-    public function convert($data)
+    public function convert($data, $entityName = null)
     {
-        $mapping = $this->sdk->getMapping();
-        $key = $mapping->getKeyFromClientName(get_called_class());
+        $mapping = $this->sdk->getMapping($entityName);
+        $key = $mapping->getKeyFromModel($entityName);
         $modelName = $mapping->getModelName($key);
 
         return $this->deserialize($data, $modelName);
@@ -106,11 +106,13 @@ class Client
      * @access protected
      * @return array
      */
-    protected function convertList($data)
+    public function convertList($data, $entityName = null)
     {
         if ($data && is_array($data) && !empty($data['hydra:member'])) {
-            $mapping = $this->sdk->getMapping();
-            $key = $mapping->getKeyFromClientName(get_called_class());
+//            $mapping = $this->sdk->getMapping();
+//            $key = $mapping->getKeyFromClientName(get_called_class());
+            $mapping = $this->sdk->getMapping($entityName);
+            $key = $mapping->getKeyFromModel($entityName);
             $modelName = $this->sdk->getMapping()->getModelName($key);
 
             $list = [];

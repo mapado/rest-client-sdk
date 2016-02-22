@@ -91,7 +91,7 @@ class RestClient
     public function get($path, $parameters = [])
     {
         $requestUrl = $this->baseUrl . $path;
-
+//die($requestUrl);
         try {
             return $this->executeRequest('GET', $requestUrl, $parameters);
         } catch (ClientException $e) {
