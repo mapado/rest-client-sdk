@@ -76,6 +76,20 @@ There is a bundle to easily integrate this component: [mapado/rest-client-sdk-bu
 ```php
 $client = $this->get('mapado.rest_client_sdk.foo'); // 
 $repository = $client->getRepository('Acme\Foo\Bar\Cart');
+
+// Find entity based on ID as defined in the entity by @Rest\Id
 $cart = $repository->find(1);
+
+// Find all entities in the database
+$cart = $repository->findAll();
+
+// Find one entity based on the fielddefined in the function name (in this case <Name>)
+$cart = $repository->findOneByName('username');
+
+// Find one entity based on the criteria defined in the array
+$cart = $repository->findOneBy(array('name'=>'username','date'=>'1-1-2016'));
+
+To find all matches for the two examples above replace findOneByName() with findByName() and findOneBy() with findBy()
+
 ```
 
