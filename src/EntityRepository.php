@@ -9,7 +9,6 @@ class EntityRepository
     protected $restClient;
     
     /**
-     *
      * @object The client for processing 
      */
     protected $client;
@@ -20,16 +19,36 @@ class EntityRepository
     protected $_class;
 
     /**
-     * Initializes a new <tt>EntityRepository</tt>.
-     *
-     * @param $restClient   The Client to use for connections to the API.
-     * @param $class        The class descriptor.
+     * @var SDK object 
      */
-    public function __construct($client, $restClient, $class)
+    protected $sdk;
+    
+    /**
+     * @var string 
+     */
+    protected $entityName;
+    
+    /**
+     * @var string 
+     */
+    protected $clientKey;
+    
+    /**
+     * 
+     * @param type $client - the client to process the data with
+     * @param object $sdkClient - the client to connect to the datasource with
+     * @param object $restClient - cleitn to process the http requests
+     * @param type $class The entiy to work with
+     */
+    public function __construct($client, $sdkClient, $restClient, $class)
     {
         $this->client      = $client;
+        $this->sdk         = $sdkClient;
         $this->restClient  = $restClient;
         $this->_class      = $class;
+        $this->entityName  = get_class($this->_class);
+//        die($this->sdk->getMapping($this->entityName)->getKeyFromModel($this->entityName));
+//        $this->clientKey   = $this->sdk->getMapping($this->entityName)->getKeyFromModel($this->entityName);
     }
 
 
@@ -42,8 +61,9 @@ class EntityRepository
      */
     public function find($id)
     {
-        $id = $this->client->convertId($id, get_class($this->_class));
-        return $this->restClient->get($id);
+        $id = $this->client->convertId($id, $this->entityName);
+        $data = $this->restClient->get($id);
+        return $this->client->convert($data, $this->entityName);
     }
 
     /**
@@ -54,12 +74,13 @@ class EntityRepository
      */
     public function findAll()
     {
-        $mapping = $this->sdk->getMapping();
+        $entityName = get_class($this->_class);
+        $mapping = $this->sdk->getMapping($entityName);
+        $key = $mapping->getKeyFromModel($entityName);        
         $prefix = $mapping->getIdPrefix();
-        $key = $mapping->getKeyFromClientName(get_called_class());
-        $data = $this->restClient->get($prefix . '/' . $key);
-
-        return $this->convertList($data);
+        $path = (null == $prefix) ? $key : $prefix . '/' . $key;
+        $data = $this->restClient->get($path);
+        return $this->client->convertList($data, $this->entityName);
     }
 
     /**
@@ -123,25 +144,20 @@ class EntityRepository
      * Adds support for magic finders.
      *
      * @param string $method
-     * @param array  $arguments
+     * @param mixed  $arguments
      *
      * @return array|object The found entity/entities.
-     *
-     * @throws ORMException
-     * @throws \BadMethodCallException If the method called is an invalid find* method
-     *                                 or no find* method at all and therefore an invalid
-     *                                 method call.
      */
     public function __call($method, $arguments)
     {
         switch (true) {
             case (0 === strpos($method, 'findBy')):
-                $by = substr($method, 6);
+                $fieldName = strtolower(substr($method, 6));
                 $method = 'findBy';
                 break;
 
             case (0 === strpos($method, 'findOneBy')):
-                $by = substr($method, 9);
+                $fieldName = strtolower(substr($method, 9));
                 $method = 'findOneBy';
                 break;
 
@@ -156,28 +172,30 @@ class EntityRepository
             throw ORMException::findByRequiresParameter($method . $by);
         }
 
-        $fieldName = lcfirst(\Doctrine\Common\Util\Inflector::classify($by));
-
-        if ($this->_class->hasField($fieldName) || $this->_class->hasAssociation($fieldName)) {
-            switch (count($arguments)) {
-                case 1:
-                    return $this->$method(array($fieldName => $arguments[0]));
-
-                case 2:
-                    return $this->$method(array($fieldName => $arguments[0]), $arguments[1]);
-
-                case 3:
-                    return $this->$method(array($fieldName => $arguments[0]), $arguments[1], $arguments[2]);
-
-                case 4:
-                    return $this->$method(array($fieldName => $arguments[0]), $arguments[1], $arguments[2], $arguments[3]);
-
-                default:
-                    // Do nothing
-            }
+        $entityName = get_class($this->_class);
+        $mapping = $this->sdk->getMapping($entityName);
+        $key = $mapping->getKeyFromModel($entityName);        
+        $prefix = $mapping->getIdPrefix();
+        $path = ((null == $prefix) ? $key : $prefix . '/' . $key) . '?';
+        
+        if ($fieldName != '') {
+            $path .= $fieldName .'='. array_shift($arguments);
+        } else {
+            foreach (array_shift($arguments) as $key=>$value) {
+                $path .= strtolower($key) . '=' . $value .'&';
+            } 
+            $path = rtrim($path, "&");
         }
 
-        throw ORMException::invalidFindByCall($this->_entityName, $fieldName, $method.$by);
+        $data =  $this->restClient->get($path);   
+        if ($method == 'findOneBy') {
+            // If more results are found but one is requested return the first hit.
+            if (count($data['hydra:member']) > 1) {
+                $data = array_shift($data['hydra:member']);
+            }
+            return $this->client->convert($data, $this->entityName);
+        }
+        return $this->client->convertList($data, $this->entityName);
     }
 
     /**

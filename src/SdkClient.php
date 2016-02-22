@@ -57,7 +57,7 @@ class SdkClient
     public function getRepository($repositoryName) {
         $client = new \Mapado\RestClientSdk\Client\Client($this);
         $repository = new $repositoryName();
-        $defaultRepository = new EntityRepository($client, $this->restClient, $repository);
+        $defaultRepository = new EntityRepository($client, $this, $this->restClient, $repository);
         return $defaultRepository;
     }
 
