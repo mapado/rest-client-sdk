@@ -6,12 +6,12 @@ class EntityRepository
     /**
      * @object REST Client
      */
-    protected $restClient;
+    protected $_restClient;
     
     /**
      * @object The client for processing 
      */
-    protected $client;
+    protected $_client;
 
     /**
      * @object The Repository to be used
@@ -21,17 +21,17 @@ class EntityRepository
     /**
      * @var SDK object 
      */
-    protected $sdk;
+    protected $_sdk;
     
     /**
      * @var string 
      */
-    protected $entityName;
+    protected $_entityName;
     
     /**
      * @var string 
      */
-    protected $clientKey;
+    protected $_clientKey;
     
     /**
      * 
@@ -42,18 +42,16 @@ class EntityRepository
      */
     public function __construct($client, $sdkClient, $restClient, $class)
     {
-        $this->client      = $client;
-        $this->sdk         = $sdkClient;
-        $this->restClient  = $restClient;
+        $this->_client      = $client;
+        $this->_sdk         = $sdkClient;
+        $this->_restClient  = $restClient;
         $this->_class      = $class;
-        $this->entityName  = get_class($this->_class);
-//        die($this->sdk->getMapping($this->entityName)->getKeyFromModel($this->entityName));
-//        $this->clientKey   = $this->sdk->getMapping($this->entityName)->getKeyFromModel($this->entityName);
+        $this->_entityName  = get_class($this->_class);
     }
 
 
     /**
-     * find
+     * find - finds one item of the entity based on the @REST\Id field in the entity
      *
      * @param string $id
      * @access public
@@ -61,9 +59,9 @@ class EntityRepository
      */
     public function find($id)
     {
-        $id = $this->client->convertId($id, $this->entityName);
-        $data = $this->restClient->get($id);
-        return $this->client->convert($data, $this->entityName);
+        $id = $this->_client->convertId($id, $this->_entityName);
+        $data = $this->_restClient->get($id);
+        return $this->_client->convert($data, $this->_entityName);
     }
 
     /**
@@ -75,12 +73,12 @@ class EntityRepository
     public function findAll()
     {
         $entityName = get_class($this->_class);
-        $mapping = $this->sdk->getMapping($entityName);
+        $mapping = $this->_sdk->getMapping($entityName);
         $key = $mapping->getKeyFromModel($entityName);        
         $prefix = $mapping->getIdPrefix();
         $path = (null == $prefix) ? $key : $prefix . '/' . $key;
-        $data = $this->restClient->get($path);
-        return $this->client->convertList($data, $this->entityName);
+        $data = $this->_restClient->get($path);
+        return $this->_client->convertList($data, $this->_entityName);
     }
 
     /**
@@ -89,10 +87,12 @@ class EntityRepository
      * @param object $model
      * @access public
      * @return void
+     * 
+     * @TODO STILL NEEDS TO BE CONVERTED TO ENTITY MODEL
      */
     public function remove($model)
     {
-        return $this->restClient->delete($model->getId());
+        return $this->_restClient->delete($model->getId());
     }
 
     /**
@@ -101,13 +101,15 @@ class EntityRepository
      * @param object $model
      * @access public
      * @return void
+     * 
+     * @TODO STILL NEEDS TO BE CONVERTED TO ENTITY MODEL
      */
     public function update($model)
     {
-        $key = $this->sdk->getMapping()->getKeyFromClientName(get_called_class());
-        $modelName = $this->sdk->getMapping()->getModelName($key);
+        $key = $this->_sdk->getMapping()->getKeyFromClientName(get_called_class());
+        $modelName = $this->_sdk->getMapping()->getModelName($key);
 
-        $data = $this->restClient->put($model->getId(), $this->sdk->getSerializer()->serialize($model, $modelName));
+        $data = $this->_restClient->put($model->getId(), $this->_sdk->getSerializer()->serialize($model, $modelName));
 
         return $this->deserialize($data, $modelName);
     }
@@ -118,28 +120,24 @@ class EntityRepository
      * @param object $model
      * @access public
      * @return void
+     * 
+     * @TODO STILL NEEDS TO BE CONVERTED TO ENTITY MODEL
      */
     public function persist($model)
     {
-        $prefix = $this->sdk->getMapping()->getIdPrefix();
-        $key = $this->sdk->getMapping()->getKeyFromClientName(get_called_class());
-        $modelName = $this->sdk->getMapping()->getModelName($key);
+        $prefix = $this->_sdk->getMapping()->getIdPrefix();
+        $key = $this->_sdk->getMapping()->getKeyFromClientName(get_called_class());
+        $modelName = $this->_sdk->getMapping()->getModelName($key);
 
         $path = $prefix . '/' . $key;
-        $data = $this->restClient->post($path, $this->sdk->getSerializer()->serialize($model, $modelName));
+        $data = $this->_restClient->post($path, $this->_sdk->getSerializer()->serialize($model, $modelName));
 
-        $modelName = $this->sdk->getMapping()->getModelName($key);
+        $modelName = $this->_sdk->getMapping()->getModelName($key);
 
         return $this->deserialize($data, $modelName);
     } 
     
     
-    
-    /**
-     * ORIGINAL BELOW HERE
-     */
-
-
     /**
      * Adds support for magic finders.
      *
@@ -173,7 +171,7 @@ class EntityRepository
         }
 
         $entityName = get_class($this->_class);
-        $mapping = $this->sdk->getMapping($entityName);
+        $mapping = $this->_sdk->getMapping($entityName);
         $key = $mapping->getKeyFromModel($entityName);        
         $prefix = $mapping->getIdPrefix();
         $path = ((null == $prefix) ? $key : $prefix . '/' . $key) . '?';
@@ -187,15 +185,15 @@ class EntityRepository
             $path = rtrim($path, "&");
         }
 
-        $data =  $this->restClient->get($path);   
+        $data =  $this->_restClient->get($path);   
         if ($method == 'findOneBy') {
             // If more results are found but one is requested return the first hit.
             if (count($data['hydra:member']) > 1) {
                 $data = array_shift($data['hydra:member']);
             }
-            return $this->client->convert($data, $this->entityName);
+            return $this->_client->convert($data, $this->_entityName);
         }
-        return $this->client->convertList($data, $this->entityName);
+        return $this->_client->convertList($data, $this->_entityName);
     }
 
     /**
@@ -215,14 +213,6 @@ class EntityRepository
     }
 
     /**
-     * @return EntityManager
-     */
-    protected function getEntityManager()
-    {
-        return $this->_em;
-    }
-
-    /**
      * @return Mapping\ClassMetadata
      */
     protected function getClassMetadata()
@@ -230,18 +220,4 @@ class EntityRepository
         return $this->_class;
     }
 
-    /**
-     * Select all elements from a selectable that match the expression and
-     * return a new collection containing these elements.
-     *
-     * @param \Doctrine\Common\Collections\Criteria $criteria
-     *
-     * @return \Doctrine\Common\Collections\Collection
-     */
-    public function matching(Criteria $criteria)
-    {
-        $persister = $this->_em->getUnitOfWork()->getEntityPersister($this->_entityName);
-
-        return new LazyCriteriaCollection($persister, $criteria);
-    }
 }
