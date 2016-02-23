@@ -101,17 +101,17 @@ class EntityRepository
      * @param object $model
      * @access public
      * @return void
-     * 
-     * @TODO STILL NEEDS TO BE CONVERTED TO ENTITY MODEL
      */
     public function update($model)
     {
-        $key = $this->_sdk->getMapping()->getKeyFromClientName(get_called_class());
+        $entityName = get_class($this->_class);
+        $mapping = $this->_sdk->getMapping($entityName);
+        $key = $mapping->getKeyFromModel($entityName); 
         $modelName = $this->_sdk->getMapping()->getModelName($key);
 
         $data = $this->_restClient->put($model->getId(), $this->_sdk->getSerializer()->serialize($model, $modelName));
 
-        return $this->deserialize($data, $modelName);
+        return $this->_client->convert($data, $this->_entityName);
     }
 
     /**
@@ -120,21 +120,19 @@ class EntityRepository
      * @param object $model
      * @access public
      * @return void
-     * 
-     * @TODO STILL NEEDS TO BE CONVERTED TO ENTITY MODEL
      */
     public function persist($model)
     {
         $prefix = $this->_sdk->getMapping()->getIdPrefix();
-        $key = $this->_sdk->getMapping()->getKeyFromClientName(get_called_class());
+        $entityName = get_class($this->_class);
+        $mapping = $this->_sdk->getMapping($entityName);
+        $key = $mapping->getKeyFromModel($entityName);        
         $modelName = $this->_sdk->getMapping()->getModelName($key);
-
-        $path = $prefix . '/' . $key;
+        
+        $path = (null == $prefix) ? $key : $prefix . '/' . $key;
         $data = $this->_restClient->post($path, $this->_sdk->getSerializer()->serialize($model, $modelName));
 
-        $modelName = $this->_sdk->getMapping()->getModelName($key);
-
-        return $this->deserialize($data, $modelName);
+        return $this->_client->convert($data, $this->_entityName);
     } 
     
     
