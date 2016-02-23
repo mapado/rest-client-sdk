@@ -1,5 +1,3 @@
-# Work in progress to test a repository solution - not finished code - do not use
-
 # Rest Client Sdk [![Build Status](https://travis-ci.org/mapado/rest-client-sdk.svg?branch=v0.7.0)](https://travis-ci.org/mapado/rest-client-sdk)
 Rest Client SDK for hydra API.
 
