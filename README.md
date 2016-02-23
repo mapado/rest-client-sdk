@@ -91,5 +91,19 @@ $cart = $repository->findOneBy(array('name'=>'username','date'=>'1-1-2016'));
 
 To find all matches for the two examples above replace findOneByName() with findByName() and findOneBy() with findBy()
 
+// Add entity
+$cart = new \Acme\Foo\Bar\Cart;
+$cart->setName('new name');       
+$repository->persist($cart);
+
+// Update entity
+$cart = $repository->find(13);
+$cart->setDescription('New description');
+$repository->update($cart);
+
+// Delete entity
+$cart = $repository->find(13);
+$repository->remove($cart);
+
 ```
 
