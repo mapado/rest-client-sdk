@@ -32,7 +32,7 @@ class Serializer extends atoum
                     ->isIdenticalTo([
                         '@id' => '/v1/carts/8',
                         'status' => 'payed',
-                        'createdAt' => '2015-09-20T12:08:00+00:00',
+                        'createdAt' => (new \DateTime('2015-09-20T12:08:00'))->format(DateTime::RFC3339),
                         'cartItemList' => [],
                     ])
 
@@ -45,7 +45,7 @@ class Serializer extends atoum
                 ->string($cart->getStatus())
                     ->isEqualTo('payed')
                 ->datetime($cart->getCreatedAt())
-                    ->isEqualTo(new \DateTime('2015-09-20T12:08:00+00:00'))
+                    ->isEqualTo(new \DateTime('2015-09-20T12:08:00'))
                 ->array($cart->getCartItemList())
                     ->isEmpty()
 
@@ -71,7 +71,7 @@ class Serializer extends atoum
                     ->isIdenticalTo([
                         '@id' => '/v1/carts/8',
                         'status' => 'payed',
-                        'createdAt' => '2015-09-20T12:08:00+00:00',
+                        'createdAt' => (new \DateTime('2015-09-20T12:08:00'))->format(DateTime::RFC3339),
                         'cartItemList' => [
                             '/v1/cart_items/16',
                         ],
@@ -108,13 +108,13 @@ class Serializer extends atoum
                     ->isIdenticalTo([
                         '@id' => '/v1/carts/8',
                         'status' => 'payed',
-                        'createdAt' => '2015-09-20T12:08:00+00:00',
+                        'createdAt' => (new \DateTime('2015-09-20T12:08:00'))->format(DateTime::RFC3339),
                         'cartItemList' => [
                             [
                                 'amount' => 2,
-                                'createdAt' => '2015-09-20T12:11:00+00:00',
+                                'createdAt' => (new \DateTime('2015-09-20T12:11:00'))->format(DateTime::RFC3339),
                                 'data' => [
-                                    'when' => '2015-09-20T15:00:00+00:00',
+                                    'when' => (new \DateTime('2015-09-20T15:00:00'))->format(DateTime::RFC3339),
                                     'who' => 'John',
                                 ],
                                 'product' => '/v1/products/10',
@@ -143,13 +143,13 @@ class Serializer extends atoum
                 ->array($data = $this->testedInstance->serialize($cart, 'Mapado\RestClientSdk\Tests\Model\Cart'))
                     ->isIdenticalTo([
                         'status' => 'payed',
-                        'createdAt' => '2015-09-20T12:08:00+00:00',
+                        'createdAt' => (new \DateTime('2015-09-20T12:08:00'))->format(DateTime::RFC3339),
                         'cartItemList' => [
                             [
                                 'amount' => 2,
-                                'createdAt' => '2015-09-20T12:11:00+00:00',
+                                'createdAt' => (new \DateTime('2015-09-20T12:11:00'))->format(DateTime::RFC3339),
                                 'data' => [
-                                    'when' => '2015-09-20T15:00:00+00:00',
+                                    'when' => (new \DateTime('2015-09-20T15:00:00'))->format(DateTime::RFC3339),
                                     'who' => 'John',
                                 ],
                                 'product' => '/v1/products/10',
@@ -180,13 +180,13 @@ class Serializer extends atoum
                     ->isIdenticalTo([
                         '@id' => '/v1/carts/8',
                         'status' => 'payed',
-                        'createdAt' => '2015-09-20T12:08:00+00:00',
+                        'createdAt' => (new \DateTime('2015-09-20T12:08:00'))->format(DateTime::RFC3339),
                         'cartItemList' => [
                             [
                                 'amount' => 2,
-                                'createdAt' => '2015-09-20T12:11:00+00:00',
+                                'createdAt' => (new \DateTime('2015-09-20T12:11:00'))->format(DateTime::RFC3339),
                                 'data' => [
-                                    'when' => '2015-09-20T15:00:00+00:00',
+                                    'when' => (new \DateTime('2015-09-20T15:00:00'))->format(DateTime::RFC3339),
                                     'who' => 'John',
                                 ],
                                 'cartItemDetailList' => [
@@ -219,14 +219,14 @@ class Serializer extends atoum
                     ->isIdenticalTo([
                         '@id' => '/v1/carts/8',
                         'status' => 'payed',
-                        'createdAt' => '2015-09-20T12:08:00+00:00',
+                        'createdAt' => (new \DateTime('2015-09-20T12:08:00'))->format(DateTime::RFC3339),
                         'cartItemList' => [
                             '/v1/cart_items/16',
                             [
                                 'amount' => 2,
-                                'createdAt' => '2015-09-20T12:11:00+00:00',
+                                'createdAt' => (new \DateTime('2015-09-20T12:11:00'))->format(DateTime::RFC3339),
                                 'data' => [
-                                    'when' => '2015-09-20T15:00:00+00:00',
+                                    'when' => (new \DateTime('2015-09-20T15:00:00'))->format(DateTime::RFC3339),
                                     'who' => 'John',
                                 ],
                                 'product' => '/v1/products/10',
@@ -288,13 +288,13 @@ class Serializer extends atoum
                 ->array($this->testedInstance->serialize($cart, 'Mapado\RestClientSdk\Tests\Model\Cart'))
                     ->isIdenticalTo([
                         'status' => 'payed',
-                        'createdAt' => '2015-09-20T12:08:00+00:00',
+                        'createdAt' => (new \DateTime('2015-09-20T12:08:00'))->format(DateTime::RFC3339),
                         'cartItemList' => [
                             [
                                 'amount' => 2,
-                                'createdAt' => '2015-09-20T12:11:00+00:00',
+                                'createdAt' => (new \DateTime('2015-09-20T12:11:00'))->format(DateTime::RFC3339),
                                 'data' => [
-                                    'when' => '2015-09-20T15:00:00+00:00',
+                                    'when' => (new \DateTime('2015-09-20T15:00:00'))->format(DateTime::RFC3339),
                                     'who' => 'John',
                                 ],
                                 'product' => '/v1/products/10',
@@ -319,14 +319,14 @@ class Serializer extends atoum
             ->given($data = [
                     '@id' => '/v1/carts/8',
                     'status' => 'payed',
-                    'createdAt' => '2015-09-20T12:08:00+00:00',
+                    'createdAt' => (new \DateTime('2015-09-20T12:08:00'))->format(DateTime::RFC3339),
                     'cartItemList' => [
                         [
                             '@id' => '/v1/cart_items/16',
                             'amount' => 2,
-                            'createdAt' => '2015-09-20T12:11:00+00:00',
+                            'createdAt' => (new \DateTime('2015-09-20T12:11:00+00:00'))->format(DateTime::RFC3339),
                             'data' => [
-                                'when' => '2015-09-20T15:00:00+00:00',
+                                'when' => (new \DateTime('2015-09-20T15:00:00+00:00'))->format(DateTime::RFC3339),
                                 'who' => 'John',
                             ],
                             'product' => '/v1/products/10',
@@ -349,7 +349,7 @@ class Serializer extends atoum
                     ->isEqualTo(new \DateTime('2015-09-20T12:11:00+00:00'))
                 ->array($cartItem->getData())
                     ->isEqualTo([
-                        'when' => '2015-09-20T15:00:00+00:00',
+                        'when' => (new \DateTime('2015-09-20T15:00:00+00:00'))->format(DateTime::RFC3339),
                         'who' => 'John',
                     ])
                 ->object($cartItem->getProduct())
