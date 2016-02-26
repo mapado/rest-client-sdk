@@ -2,9 +2,9 @@
 
 namespace Mapado\RestClientSdk;
 
-use Mapado\RestClientSdk\Model\Serializer,
-    Mapado\RestClientSdk\EntityRepository,
-    Mapado\RestClientSdk\Client\Client;
+use Mapado\RestClientSdk\Client\Client;
+use Mapado\RestClientSdk\EntityRepository;
+use Mapado\RestClientSdk\Model\Serializer;
 use ProxyManager\Factory\LazyLoadingGhostFactory;
 use ProxyManager\Proxy\LazyLoadingInterface;
 
@@ -53,8 +53,9 @@ class SdkClient
 
         return $this->clientList[$clientName];
     }
-    
-    public function getRepository($repositoryName) {
+
+    public function getRepository($repositoryName)
+    {
         $client = new \Mapado\RestClientSdk\Client\Client($this);
         $repository = new $repositoryName();
         $defaultRepository = new EntityRepository($client, $this, $this->restClient, $repository);
@@ -111,7 +112,16 @@ class SdkClient
         $sdk = $this;
 
         $factory     = new LazyLoadingGhostFactory();
-        $initializer = function (LazyLoadingInterface &$proxy, $method, array $parameters, & $initializer) use ($sdk, $classMetadata, $id) {
+        $initializer = function (
+            LazyLoadingInterface &$proxy,
+            $method,
+            array $parameters,
+            & $initializer
+        ) use (
+            $sdk,
+            $classMetadata,
+            $id
+        ) {
             if ($method !== 'getId' && $method !== 'setId' && $method !== 'jsonSerialize') {
                 $initializer   = null; // disable initialization
 

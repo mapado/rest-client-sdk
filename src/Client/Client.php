@@ -38,7 +38,6 @@ class Client
         $this->restClient = $this->sdk->getRestClient();
     }
 
-
     /**
      * deserialize
      *
@@ -81,9 +80,8 @@ class Client
         }
 
         return $id;
-    } 
-    
-    
+    }
+
     /**
      * convert
      *
@@ -126,6 +124,4 @@ class Client
         }
         return [];
     }
-
-
 }
