@@ -4,6 +4,9 @@
     "autoload": {
         "psr-4": { "Mapado\\RestClientSdk\\": "src/" }
     },
+    "autoload-dev": {
+        "psr-4": { "Mapado\\RestClientSdk\\Tests\\": "Tests/" }
+    },
     "require": {
         "guzzlehttp/guzzle": "^6.1",
         "ocramius/proxy-manager": "^1.0",
