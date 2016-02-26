@@ -1,6 +1,8 @@
 <?php
 namespace Mapado\RestClientSdk;
 
+use Mapado\RestClientSdk\Exception\SdkException;
+
 class EntityRepository
 {
     /**
@@ -14,7 +16,7 @@ class EntityRepository
     protected $client;
 
     /**
-     * @object The Repository to be used
+     *
      */
     protected $class;
 
@@ -40,13 +42,12 @@ class EntityRepository
      * @param object $restClient - cleitn to process the http requests
      * @param type $class The entiy to work with
      */
-    public function __construct($client, $sdkClient, $restClient, $class)
+    public function __construct($client, $sdkClient, $restClient, $entityName)
     {
         $this->client      = $client;
         $this->sdk         = $sdkClient;
         $this->restClient  = $restClient;
-        $this->class      = $class;
-        $this->entityName  = getclass($this->class);
+        $this->entityName  = $entityName;
     }
 
 
@@ -72,9 +73,8 @@ class EntityRepository
      */
     public function findAll()
     {
-        $entityName = getclass($this->class);
-        $mapping = $this->sdk->getMapping($entityName);
-        $key = $mapping->getKeyFromModel($entityName);
+        $mapping = $this->sdk->getMapping();
+        $key = $mapping->getKeyFromModel($this->entityName);
         $prefix = $mapping->getIdPrefix();
         $path = (null == $prefix) ? $key : $prefix . '/' . $key;
         $data = $this->restClient->get($path);
@@ -104,12 +104,10 @@ class EntityRepository
      */
     public function update($model)
     {
-        $entityName = getclass($this->class);
-        $mapping = $this->sdk->getMapping($entityName);
-        $key = $mapping->getKeyFromModel($entityName);
-        $modelName = $this->sdk->getMapping()->getModelName($key);
-
-        $data = $this->restClient->put($model->getId(), $this->sdk->getSerializer()->serialize($model, $modelName));
+        $data = $this->restClient->put(
+            $model->getId(),
+            $this->sdk->getSerializer()->serialize($model, $this->entityName)
+        );
 
         return $this->client->convert($data, $this->entityName);
     }
@@ -123,14 +121,12 @@ class EntityRepository
      */
     public function persist($model)
     {
-        $prefix = $this->sdk->getMapping()->getIdPrefix();
-        $entityName = getclass($this->class);
-        $mapping = $this->sdk->getMapping($entityName);
-        $key = $mapping->getKeyFromModel($entityName);
-        $modelName = $this->sdk->getMapping()->getModelName($key);
+        $mapping = $this->sdk->getMapping();
+        $prefix = $mapping->getIdPrefix();
+        $key = $mapping->getKeyFromModel($this->entityName);
 
         $path = (null == $prefix) ? $key : $prefix . '/' . $key;
-        $data = $this->restClient->post($path, $this->sdk->getSerializer()->serialize($model, $modelName));
+        $data = $this->restClient->post($path, $this->sdk->getSerializer()->serialize($model, $this->entityName));
 
         return $this->client->convert($data, $this->entityName);
     }
@@ -149,47 +145,46 @@ class EntityRepository
         switch (true) {
             case (0 === strpos($method, 'findBy')):
                 $fieldName = strtolower(substr($method, 6));
-                $method = 'findBy';
+                $methodName = 'findBy';
                 break;
 
             case (0 === strpos($method, 'findOneBy')):
                 $fieldName = strtolower(substr($method, 9));
-                $method = 'findOneBy';
+                $methodName = 'findOneBy';
                 break;
 
             default:
                 throw new \BadMethodCallException(
-                    "Undefined method '$method'. The method name must start with ".
-                    "either findBy or findOneBy!"
+                    'Undefined method \'' . $method . '\'. The method name must start with
+                    either findBy or findOneBy!'
                 );
         }
 
         if (empty($arguments)) {
-            throw ORMException::findByRequiresParameter($method . $by);
+            throw new SdkException('You need to pass a parameter to ' . $method);
         }
 
-        $entityName = getclass($this->class);
-        $mapping = $this->sdk->getMapping($entityName);
-        $key = $mapping->getKeyFromModel($entityName);
+        $mapping = $this->sdk->getMapping();
+        $key = $mapping->getKeyFromModel($this->entityName);
         $prefix = $mapping->getIdPrefix();
-        $path = ((null == $prefix) ? $key : $prefix . '/' . $key) . '?';
+        $path = ((null == $prefix) ? $key : $prefix . '/' . $key);
 
-        if ($fieldName != '') {
-            $path .= $fieldName .'='. array_shift($arguments);
+        if (!empty($fieldName)) {
+            $queryParams = [$fieldName => current($arguments)];
         } else {
-            foreach (array_shift($arguments) as $key => $value) {
-                $path .= strtolower($key) . '=' . $value .'&';
-            }
-            $path = rtrim($path, "&");
+            $queryParams = current($arguments);
         }
+        $path .= '?' . http_build_query($queryParams);
 
         $data =  $this->restClient->get($path);
-        if ($method == 'findOneBy') {
+        if ($methodName == 'findOneBy') {
             // If more results are found but one is requested return the first hit.
-            if (count($data['hydra:member']) > 1) {
-                $data = array_shift($data['hydra:member']);
+            if (!empty($data['hydra:member'])) {
+                $data = current($data['hydra:member']);
+                return $this->client->convert($data, $this->entityName);
+            } else {
+                return null;
             }
-            return $this->client->convert($data, $this->entityName);
         }
         return $this->client->convertList($data, $this->entityName);
     }
@@ -197,24 +192,24 @@ class EntityRepository
     /**
      * @return string
      */
-    protected function getEntityName()
-    {
-        return $this->entityName;
-    }
+    //protected function getEntityName()
+    //{
+    //    return $this->entityName;
+    //}
 
     /**
      * @return string
      */
-    public function getClassName()
-    {
-        return $this->getEntityName();
-    }
+    //public function getClassName()
+    //{
+    //    return $this->getEntityName();
+    //}
 
-    /**
-     * @return Mapping\ClassMetadata
-     */
-    protected function getClassMetadata()
-    {
-        return $this->class;
-    }
+    ///**
+    // * @return Mapping\ClassMetadata
+    // */
+    //protected function getClassMetadata()
+    //{
+    //    return $this->class;
+    //}
 }

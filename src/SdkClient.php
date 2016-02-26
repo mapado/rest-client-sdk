@@ -21,6 +21,8 @@ class SdkClient
 
     private $clientList = [];
 
+    private $repositoryList = [];
+
     /**
      * Constructor
      * @param ClientInterface $restClient
@@ -43,23 +45,35 @@ class SdkClient
      * @access public
      * @return AbstractClient
      */
-    public function getClient($clientName = null)
+    public function getClient($clientName)
     {
         if (!isset($this->clientList[$clientName])) {
-            $classname = $this->mapping->getClientName($clientName);
-            $client = new $classname($this);
+            //$classname = $this->mapping->getClientName($clientName);
+            $client = new Client($this);
             $this->clientList[$clientName] = $client;
         }
 
         return $this->clientList[$clientName];
     }
 
-    public function getRepository($repositoryName)
+    /**
+     * getRepository
+     *
+     * @param string $modelName
+     * @access public
+     * @return EntityRepository
+     */
+    public function getRepository($modelName)
     {
-        $client = new \Mapado\RestClientSdk\Client\Client($this);
-        $repository = new $repositoryName();
-        $defaultRepository = new EntityRepository($client, $this, $this->restClient, $repository);
-        return $defaultRepository;
+        if (!isset($this->repositoryList[$modelName])) {
+            $metadata = $this->mapping->getClassMetadata($modelName);
+            $key = $metadata->getKey();
+            $client = $this->getClient($key);
+            $repositoryName = $metadata->getRepositoryName() ?: 'EntityRepository';
+            $this->repositoryList[$modelName] = new $repositoryName($client, $this, $this->restClient, $modelName);
+        }
+
+        return $this->repositoryList[$modelName];
     }
 
     /**

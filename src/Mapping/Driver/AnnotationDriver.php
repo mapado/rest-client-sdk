@@ -179,7 +179,8 @@ class AnnotationDriver
 
         $classMetadata = new ClassMetadata(
             $classAnnotation->key,
-            $classname
+            $classname,
+            $classAnnotation->repository
         );
         $classMetadata->setAttributeList($attributeList);
         $classMetadata->setRelationList($relationList);

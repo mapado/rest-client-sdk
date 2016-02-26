@@ -53,7 +53,7 @@ class RestClient
     public function __construct(ClientInterface $httpClient, $baseUrl = null)
     {
         $this->httpClient = $httpClient;
-        $this->baseUrl      = $baseUrl;
+        $this->baseUrl      = substr($baseUrl, -1) === '/' ? substr($baseUrl, 0, -1) : $baseUrl;
 
         $this->logHistory = false;
         $this->requestHistory = [];
@@ -91,7 +91,6 @@ class RestClient
     public function get($path, $parameters = [])
     {
         $requestUrl = $this->baseUrl . $path;
-//die($requestUrl);
         try {
             return $this->executeRequest('GET', $requestUrl, $parameters);
         } catch (ClientException $e) {
@@ -110,11 +109,6 @@ class RestClient
      */
     public function delete($path)
     {
-        // Prevent double // in URL
-        if ((substr($this->baseUrl, -1) == '/') && (substr($path, 0, 1) == '/')) {
-            $path = substr($path, 1);
-        }
-
         try {
             $this->executeRequest('DELETE', $this->baseUrl . $path);
         } catch (ClientException $e) {
@@ -127,11 +121,6 @@ class RestClient
     public function post($path, $data, $parameters = [])
     {
         $parameters['json'] = $data;
-        // Prevent double // in URL
-        if ((substr($this->baseUrl, -1) == '/') && (substr($path, 0, 1) == '/')) {
-            $path = substr($path, 1);
-        }
-        
         try {
             return $this->executeRequest('POST', $this->baseUrl . $path, $parameters);
         } catch (ClientException $e) {
@@ -144,11 +133,6 @@ class RestClient
     public function put($path, $data, $parameters = [])
     {
         $parameters['json'] = $data;
-        // Prevent double // in URL
-        if ((substr($this->baseUrl, -1) == '/') && (substr($path, 0, 1) == '/')) {
-            $path = substr($path, 1);
-        }
-
         try {
             return $this->executeRequest('PUT', $this->baseUrl . $path, $parameters);
         } catch (ClientException $e) {

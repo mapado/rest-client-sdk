@@ -13,14 +13,6 @@ class Client
     /**
      * sdk
      *
-     * @var RestClient
-     * @access protected
-     */
-    protected $restClient;
-
-    /**
-     * sdk
-     *
      * @var SdkClient
      * @access private
      */
@@ -35,7 +27,6 @@ class Client
     public function __construct(SdkClient $sdk)
     {
         $this->sdk = $sdk;
-        $this->restClient = $this->sdk->getRestClient();
     }
 
     /**
@@ -63,14 +54,15 @@ class Client
      * convertId
      *
      * @param string $id
-     * @access private
+     * @param string $entityName
+     * @access public
      * @return string
      */
-    public function convertId($id, $entityName = null)
+    public function convertId($id, $entityName)
     {
         // add slash if needed to have a valid hydra id
         if (!strstr($id, '/')) {
-            $mapping = $this->sdk->getMapping($entityName);
+            $mapping = $this->sdk->getMapping();
             $key = $mapping->getKeyFromModel($entityName);
             $id = $key . '/' . $id;
 
@@ -86,12 +78,13 @@ class Client
      * convert
      *
      * @param array $data
-     * @access protected
+     * @param string $entityName
+     * @access public
      * @return object
      */
-    public function convert($data, $entityName = null)
+    public function convert($data, $entityName)
     {
-        $mapping = $this->sdk->getMapping($entityName);
+        $mapping = $this->sdk->getMapping();
         $key = $mapping->getKeyFromModel($entityName);
         $modelName = $mapping->getModelName($key);
 
@@ -101,18 +94,14 @@ class Client
     /**
      * convertList
      *
-     * @access protected
+     * @param array $data
+     * @param string $entityName
+     * @access public
      * @return array
      */
-    public function convertList($data, $entityName = null)
+    public function convertList($data, $modelName)
     {
         if ($data && is_array($data) && !empty($data['hydra:member'])) {
-//            $mapping = $this->sdk->getMapping();
-//            $key = $mapping->getKeyFromClientName(get_called_class());
-            $mapping = $this->sdk->getMapping($entityName);
-            $key = $mapping->getKeyFromModel($entityName);
-            $modelName = $this->sdk->getMapping()->getModelName($key);
-
             $list = [];
             if (!empty($data) && !empty($data['hydra:member'])) {
                 foreach ($data['hydra:member'] as $instanceData) {
@@ -122,6 +111,7 @@ class Client
 
             return $list;
         }
+
         return [];
     }
 }

@@ -120,16 +120,16 @@ class Mapping
      * @access public
      * @return string
      */
-    public function getKeyFromClientName($clientName)
-    {
-        foreach ($this->mapping as $mapping) {
-            if ($clientName === $mapping->getClientName()) {
-                return $mapping->getKey();
-            }
-        }
+    //public function getKeyFromClientName($clientName)
+    //{
+    //    foreach ($this->mapping as $mapping) {
+    //        if ($clientName === $mapping->getClientName()) {
+    //            return $mapping->getKey();
+    //        }
+    //    }
 
-        throw new MappingException('Client name ' . $clientName . ' not found in mapping');
-    }
+    //    throw new MappingException('Client name ' . $clientName . ' not found in mapping');
+    //}
 
     /**
      * getKeyFromModel

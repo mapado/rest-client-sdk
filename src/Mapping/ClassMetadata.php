@@ -25,6 +25,14 @@ class ClassMetadata
     private $key;
 
     /**
+     * repositoryName
+     *
+     * @var string
+     * @access private
+     */
+    private $repositoryName;
+
+    /**
      * attributeList
      *
      * @var string
@@ -47,10 +55,11 @@ class ClassMetadata
      * @param string $modelName
      * @access public
      */
-    public function __construct($key, $modelName)
+    public function __construct($key, $modelName, $repositoryName)
     {
         $this->key = $key;
         $this->modelName = $modelName;
+        $this->repositoryName = $repositoryName;
     }
 
     /**
@@ -173,5 +182,27 @@ class ClassMetadata
                 }
             }
         }
+    }
+
+    /**
+     * Getter for repositoryName
+     *
+     * return string
+     */
+    public function getRepositoryName()
+    {
+        return $this->repositoryName;
+    }
+
+    /**
+     * Setter for repositoryName
+     *
+     * @param string $repositoryName
+     * @return ClassMetadata
+     */
+    public function setRepositoryName($repositoryName)
+    {
+        $this->repositoryName = $repositoryName;
+        return $this;
     }
 }
