@@ -12,54 +12,6 @@ use Mapado\RestClientSdk\Mapping\ClassMetadata;
 class Mapping extends atoum
 {
     /**
-     * testGetClientName
-     *
-     * @access public
-     * @return void
-     */
-    public function testGetClientName()
-    {
-        $this
-            // no key given
-            ->given($this->newTestedInstance)
-                ->and($this->testedInstance->setMapping([new ClassMetadata('foo', null, null)]))
-            ->then($testedInstance = $this->testedInstance)
-            ->exception(function () use ($testedInstance) {
-                @$testedInstance->getClientName();
-            })
-                ->isInstanceOf('Mapado\RestClientSdk\Exception\MappingException')
-                ->hasMessage('key is not set')
-
-            // good value
-            ->given($this->newTestedInstance)
-                ->and($this->testedInstance->setMapping($this->getMappingArray()))
-            ->then
-                ->string($this->testedInstance->getClientName('orders'))
-                    ->isEqualTo('Foo\Bar\Client\OrderClient')
-
-            // wrong client name
-            ->given($this->newTestedInstance)
-                ->and($this->testedInstance->setMapping([new ClassMetadata('foo', null, null)]))
-            ->then($testedInstance = $this->testedInstance)
-            ->exception(function () use ($testedInstance) {
-                $testedInstance->getClientName('orders');
-            })
-                ->isInstanceOf('Mapado\RestClientSdk\Exception\MappingException')
-                ->hasMessage('orders key is not mapped')
-
-            // wrong mapping array
-            ->given($this->newTestedInstance)
-                ->and($this->testedInstance->setMapping([new ClassMetadata('orders', null, null)]))
-            ->then($testedInstance = $this->testedInstance)
-            ->exception(function () use ($testedInstance) {
-                $testedInstance->getClientName('orders');
-            })
-                ->isInstanceOf('Mapado\RestClientSdk\Exception\MappingException')
-                ->hasMessage('orders key is mapped but no clientName found')
-        ;
-    }
-
-    /**
      * testGetModelName
      *
      * @access public
@@ -170,30 +122,6 @@ class Mapping extends atoum
             ->then
                 ->string($this->testedInstance->getKeyFromId('/v1/orders/8'))
                     ->isEqualTo('orders')
-        ;
-    }
-
-    /**
-     * testGetKeyFromClientName
-     *
-     * @access public
-     * @return void
-     */
-    public function testGetKeyFromClientName()
-    {
-        $this
-            ->given($this->newTestedInstance)
-                ->and($this->testedInstance->setMapping($this->getMappingArray()))
-            ->then
-                ->string($this->testedInstance->getKeyFromClientName('Foo\Bar\Client\OrderItemClient'))
-                    ->isEqualTo('order_items')
-
-            ->then($testedInstance = $this->testedInstance)
-            ->exception(function () use ($testedInstance) {
-                $testedInstance->getKeyFromClientName('\Not\Viable\Classname');
-            })
-                ->isInstanceOf('Mapado\RestClientSdk\Exception\MappingException')
-                ->hasMessage('Client name \Not\Viable\Classname not found in mapping')
         ;
     }
 

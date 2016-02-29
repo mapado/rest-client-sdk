@@ -8,7 +8,7 @@ use Mapado\RestClientSdk\Mapping\Annotations as Rest;
  * Class Product
  * @author Julien Deniau <julien.deniau@mapado.com>
  *
- * @Rest\Entity(key="product", client="Mapado\Foo\Bar\Client")
+ * @Rest\Entity(key="product", repository="Mapado\RestClientSdk\Test\Model\ModelRepository")
  */
 class Product
 {

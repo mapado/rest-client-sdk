@@ -54,20 +54,6 @@ class Mapping
     }
 
     /**
-     * return the client class name for a given key
-     *
-     * @param string $key
-     * @access public
-     * @return string
-     */
-    public function getClientName($key)
-    {
-        $this->checkMappingExistence($key, 'clientName');
-
-        return $this->getClassMetadataByKey($key)->getClientName();
-    }
-
-    /**
      * return a model class name for a given key
      *
      * @param string $key

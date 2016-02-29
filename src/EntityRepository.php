@@ -42,12 +42,11 @@ class EntityRepository
      * @param object $restClient - cleitn to process the http requests
      * @param type $class The entiy to work with
      */
-    public function __construct($client, $sdkClient, $restClient, $entityName)
+    public function __construct($sdkClient, $restClient, $entityName)
     {
-        $this->client      = $client;
-        $this->sdk         = $sdkClient;
-        $this->restClient  = $restClient;
-        $this->entityName  = $entityName;
+        $this->sdk           = $sdkClient;
+        $this->restClient    = $restClient;
+        $this->entityName    = $entityName;
     }
 
 
@@ -60,9 +59,10 @@ class EntityRepository
      */
     public function find($id)
     {
-        $id = $this->client->convertId($id, $this->entityName);
+        $hydrator = $this->sdk->getModelHydrator();
+        $id = $hydrator->convertId($id, $this->entityName);
         $data = $this->restClient->get($id);
-        return $this->client->convert($data, $this->entityName);
+        return $hydrator->hydrate($data, $this->entityName);
     }
 
     /**
@@ -78,7 +78,9 @@ class EntityRepository
         $prefix = $mapping->getIdPrefix();
         $path = (null == $prefix) ? $key : $prefix . '/' . $key;
         $data = $this->restClient->get($path);
-        return $this->client->convertList($data, $this->entityName);
+
+        $hydrator = $this->sdk->getModelHydrator();
+        return $hydrator->hydrateList($data, $this->entityName);
     }
 
     /**
@@ -109,7 +111,8 @@ class EntityRepository
             $this->sdk->getSerializer()->serialize($model, $this->entityName)
         );
 
-        return $this->client->convert($data, $this->entityName);
+        $hydrator = $this->sdk->getModelHydrator();
+        return $hydrator->hydrate($data, $this->entityName);
     }
 
     /**
@@ -128,7 +131,8 @@ class EntityRepository
         $path = (null == $prefix) ? $key : $prefix . '/' . $key;
         $data = $this->restClient->post($path, $this->sdk->getSerializer()->serialize($model, $this->entityName));
 
-        return $this->client->convert($data, $this->entityName);
+        $hydrator = $this->sdk->getModelHydrator();
+        return $hydrator->hydrate($data, $this->entityName);
     }
 
 
@@ -177,16 +181,21 @@ class EntityRepository
         $path .= '?' . http_build_query($queryParams);
 
         $data =  $this->restClient->get($path);
+
+
+        $hydrator = $this->sdk->getModelHydrator();
+
         if ($methodName == 'findOneBy') {
             // If more results are found but one is requested return the first hit.
             if (!empty($data['hydra:member'])) {
                 $data = current($data['hydra:member']);
-                return $this->client->convert($data, $this->entityName);
+                return $hydrator->hydrate($data, $this->entityName);
             } else {
                 return null;
             }
         }
-        return $this->client->convertList($data, $this->entityName);
+
+        return $hydrator->hydrateList($data, $this->entityName);
     }
 
     /**

@@ -2,7 +2,7 @@
 
 namespace Mapado\RestClientSdk;
 
-use Mapado\RestClientSdk\Client\Client;
+use Mapado\RestClientSdk\Model\ModelHydrator;
 use Mapado\RestClientSdk\Model\Serializer;
 use ProxyManager\Factory\LazyLoadingGhostFactory;
 use ProxyManager\Proxy\LazyLoadingInterface;
@@ -18,7 +18,7 @@ class SdkClient
 
     private $serializer;
 
-    private $clientList = [];
+    private $modelHydrator;
 
     private $repositoryList = [];
 
@@ -35,24 +35,8 @@ class SdkClient
         }
         $this->serializer = $serializer;
         $this->serializer->setSdk($this);
-    }
 
-    /**
-     * getClient
-     *
-     * @param string $clientName
-     * @access public
-     * @return AbstractClient
-     */
-    public function getClient($clientName)
-    {
-        if (!isset($this->clientList[$clientName])) {
-            //$classname = $this->mapping->getClientName($clientName);
-            $client = new Client($this);
-            $this->clientList[$clientName] = $client;
-        }
-
-        return $this->clientList[$clientName];
+        $this->modelHydrator = new ModelHydrator($this);
     }
 
     /**
@@ -67,9 +51,8 @@ class SdkClient
         if (!isset($this->repositoryList[$modelName])) {
             $metadata = $this->mapping->getClassMetadata($modelName);
             $key = $metadata->getKey();
-            $client = $this->getClient($key);
             $repositoryName = $metadata->getRepositoryName() ?: '\Mapado\RestClientSdk\EntityRepository';
-            $this->repositoryList[$modelName] = new $repositoryName($client, $this, $this->restClient, $modelName);
+            $this->repositoryList[$modelName] = new $repositoryName($this, $this->restClient, $modelName);
         }
 
         return $this->repositoryList[$modelName];
@@ -109,6 +92,17 @@ class SdkClient
     }
 
     /**
+     * getModelHydrator
+     *
+     * @access public
+     * @return ModelHydrator
+     */
+    public function getModelHydrator()
+    {
+        return $this->modelHydrator;
+    }
+
+    /**
      * createProxy
      *
      * @param string $id
@@ -140,9 +134,8 @@ class SdkClient
 
                 // load data and modify the object here
                 if ($id) {
-                    $key = $classMetadata->getKey();
-                    $client = $sdk->getClient($key);
-                    $model = $client->find($id);
+                    $repository = $sdk->getRepository($classMetadata->getModelName());
+                    $model = $repository->find($id);
 
                     $attributeList = $classMetadata->getAttributeList();
 
