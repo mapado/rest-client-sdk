@@ -197,28 +197,4 @@ class EntityRepository
 
         return $hydrator->hydrateList($data, $this->entityName);
     }
-
-    /**
-     * @return string
-     */
-    //protected function getEntityName()
-    //{
-    //    return $this->entityName;
-    //}
-
-    /**
-     * @return string
-     */
-    //public function getClassName()
-    //{
-    //    return $this->getEntityName();
-    //}
-
-    ///**
-    // * @return Mapping\ClassMetadata
-    // */
-    //protected function getClassMetadata()
-    //{
-    //    return $this->class;
-    //}
 }
