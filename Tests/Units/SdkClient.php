@@ -56,6 +56,10 @@ class SdkClient extends atoum
             ->then
                 ->object($testedInstance->getRepository('Mapado\RestClientSdk\Tests\Model\Model'))
                     ->isInstanceOf('Mapado\RestClientSdk\Tests\Model\ModelRepository')
+
+                ->object($testedInstance->getRepository('orders'))
+                    ->isInstanceOf('Mapado\RestClientSdk\Tests\Model\ModelRepository')
+
                 ->exception(function () use ($testedInstance) {
                     $testedInstance->getRepository('foo');
                 })
