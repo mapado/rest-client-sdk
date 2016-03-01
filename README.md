@@ -124,6 +124,9 @@ $sdkClient = new SdkClient($restClient, $mapping);
 ```php
 $repository = $sdkClient->getRepository('Acme\Foo\Bar\Cart');
 
+// you can also access the repository by model key:
+// $repository = $sdkClient->getRepository('cart');
+
 // Find entity based on ID as defined in the entity by @Rest\Id
 $cart = $repository->find(1);
 

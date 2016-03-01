@@ -87,6 +87,7 @@ class EntityRepository extends atoum
                         ->twice()
         ;
     }
+
     /**
      * testFindNotFound
      *
@@ -127,6 +128,63 @@ class EntityRepository extends atoum
         $this
             ->variable($repository->find('1'))
             ->isNull()
+        ;
+    }
+
+    public function testFindOneByObject()
+    {
+        $mapping = new Mapping('v12');
+        $mapping->setMapping([
+            new ClassMetadata(
+                'carts',
+                'Mapado\RestClientSdk\Tests\Model\Cart',
+                'mock\Mapado\RestClientSdk\EntityRepository'
+            ),
+            new ClassMetadata(
+                'cart_items',
+                'Mapado\RestClientSdk\Tests\Model\CartItem',
+                'mock\Mapado\RestClientSdk\EntityRepository'
+            ),
+        ]);
+
+        $this->mockGenerator->orphanize('__construct');
+        $mockedSdk = new \mock\Mapado\RestClientSdk\SdkClient();
+        $this->calling($mockedSdk)->getMapping = $mapping;
+        $mockedHydrator = new \mock\Mapado\RestClientSdk\Model\ModelHydrator($mockedSdk);
+        $this->calling($mockedSdk)->getModelHydrator = $mockedHydrator;
+
+        $this->mockGenerator->orphanize('__construct');
+        $mockedRestClient = new \mock\Mapado\RestClientSdk\RestClient();
+
+        $this->calling($mockedSdk)->getRestClient = $mockedRestClient;
+        $this->calling($mockedRestClient)->get = [];
+
+        $cartItemRepository = new \mock\Mapado\RestClientSdk\EntityRepository(
+            $mockedSdk,
+            $mockedRestClient,
+            'Mapado\RestClientSdk\Tests\Model\CartItem'
+        );
+
+
+        $cart = new \Mapado\RestClientSdk\Tests\Model\Cart;
+        $cart->setId(1);
+
+        $this
+            ->given($cart = new \Mapado\RestClientSdk\Tests\Model\Cart)
+                ->and($cart->setId(1))
+            ->if($cartItemRepository->findOneByCart($cart))
+            ->then
+                ->mock($mockedRestClient)
+                    ->call('get')
+                        ->withArguments('v12/cart_items?cart=1')->once()
+
+            // test with unmapped class
+            ->given($cart = new \mock\stdClass)
+            ->if($cartItemRepository->findOneByCart($cart))
+            ->then
+                ->mock($mockedRestClient)
+                    ->call('get')
+                        ->withArguments('v12/cart_items?')->once()
         ;
     }
 }

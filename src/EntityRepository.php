@@ -49,7 +49,6 @@ class EntityRepository
         $this->entityName    = $entityName;
     }
 
-
     /**
      * find - finds one item of the entity based on the @REST\Id field in the entity
      *
@@ -135,7 +134,6 @@ class EntityRepository
         return $hydrator->hydrate($data, $this->entityName);
     }
 
-
     /**
      * Adds support for magic finders.
      *
@@ -178,7 +176,7 @@ class EntityRepository
         } else {
             $queryParams = current($arguments);
         }
-        $path .= '?' . http_build_query($queryParams);
+        $path .= '?' . http_build_query($this->convertQueryParameters($queryParams));
 
         $data =  $this->restClient->get($path);
 
@@ -196,5 +194,31 @@ class EntityRepository
         }
 
         return $hydrator->hydrateList($data, $this->entityName);
+    }
+
+    /**
+     * convertQueryParameters
+     *
+     * @param array $queryParameters
+     * @access private
+     * @return array
+     */
+    private function convertQueryParameters($queryParameters)
+    {
+        $sdk = $this->sdk;
+
+        return array_map(
+            function ($item) use ($sdk) {
+                if (is_object($item)) {
+                    $mapping = $sdk->getMapping();
+                    if ($mapping->hasClassMetadata(get_class($item))) {
+                        return $item->getId();
+                    }
+                }
+
+                return $item;
+            },
+            $queryParameters
+        );
     }
 }

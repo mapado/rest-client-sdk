@@ -55,9 +55,8 @@ class SdkClient
                 // get by classname
                 $metadata = $this->mapping->getClassMetadata($modelName);
             }
-            $key = $metadata->getKey();
             $repositoryName = $metadata->getRepositoryName() ?: '\Mapado\RestClientSdk\EntityRepository';
-            $this->repositoryList[$modelName] = new $repositoryName($this, $this->restClient, $modelName);
+            $this->repositoryList[$modelName] = new $repositoryName($this, $this->restClient, $metadata->getModelName());
         }
 
         return $this->repositoryList[$modelName];
