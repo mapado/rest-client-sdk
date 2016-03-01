@@ -2,6 +2,7 @@
 
 namespace Mapado\RestClientSdk;
 
+use Mapado\RestClientSdk\Model\ModelHydrator;
 use Mapado\RestClientSdk\Model\Serializer;
 use ProxyManager\Factory\LazyLoadingGhostFactory;
 use ProxyManager\Proxy\LazyLoadingInterface;
@@ -17,7 +18,9 @@ class SdkClient
 
     private $serializer;
 
-    private $clientList = [];
+    private $modelHydrator;
+
+    private $repositoryList = [];
 
     /**
      * Constructor
@@ -32,24 +35,31 @@ class SdkClient
         }
         $this->serializer = $serializer;
         $this->serializer->setSdk($this);
+
+        $this->modelHydrator = new ModelHydrator($this);
     }
 
     /**
-     * getClient
+     * getRepository
      *
-     * @param string $clientName
+     * @param string $modelName
      * @access public
-     * @return AbstractClient
+     * @return EntityRepository
      */
-    public function getClient($clientName)
+    public function getRepository($modelName)
     {
-        if (!isset($this->clientList[$clientName])) {
-            $classname = $this->mapping->getClientName($clientName);
-            $client = new $classname($this);
-            $this->clientList[$clientName] = $client;
+        if (!isset($this->repositoryList[$modelName])) {
+            // get repository by key
+            $metadata = $this->mapping->getClassMetadataByKey($modelName);
+            if (!$metadata) {
+                // get by classname
+                $metadata = $this->mapping->getClassMetadata($modelName);
+            }
+            $repositoryName = $metadata->getRepositoryName() ?: '\Mapado\RestClientSdk\EntityRepository';
+            $this->repositoryList[$modelName] = new $repositoryName($this, $this->restClient, $metadata->getModelName());
         }
 
-        return $this->clientList[$clientName];
+        return $this->repositoryList[$modelName];
     }
 
     /**
@@ -86,6 +96,17 @@ class SdkClient
     }
 
     /**
+     * getModelHydrator
+     *
+     * @access public
+     * @return ModelHydrator
+     */
+    public function getModelHydrator()
+    {
+        return $this->modelHydrator;
+    }
+
+    /**
      * createProxy
      *
      * @param string $id
@@ -102,15 +123,23 @@ class SdkClient
         $sdk = $this;
 
         $factory     = new LazyLoadingGhostFactory();
-        $initializer = function (LazyLoadingInterface &$proxy, $method, array $parameters, & $initializer) use ($sdk, $classMetadata, $id) {
+        $initializer = function (
+            LazyLoadingInterface &$proxy,
+            $method,
+            array $parameters,
+            & $initializer
+        ) use (
+            $sdk,
+            $classMetadata,
+            $id
+        ) {
             if ($method !== 'getId' && $method !== 'setId' && $method !== 'jsonSerialize') {
                 $initializer   = null; // disable initialization
 
                 // load data and modify the object here
                 if ($id) {
-                    $key = $classMetadata->getKey();
-                    $client = $sdk->getClient($key);
-                    $model = $client->find($id);
+                    $repository = $sdk->getRepository($classMetadata->getModelName());
+                    $model = $repository->find($id);
 
                     $attributeList = $classMetadata->getAttributeList();
 

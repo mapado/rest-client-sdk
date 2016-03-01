@@ -54,20 +54,6 @@ class Mapping
     }
 
     /**
-     * return the client class name for a given key
-     *
-     * @param string $key
-     * @access public
-     * @return string
-     */
-    public function getClientName($key)
-    {
-        $this->checkMappingExistence($key, 'clientName');
-
-        return $this->getClassMetadataByKey($key)->getClientName();
-    }
-
-    /**
      * return a model class name for a given key
      *
      * @param string $key
@@ -111,24 +97,6 @@ class Mapping
         $this->checkMappingExistence($key);
 
         return $key;
-    }
-
-    /**
-     * get key from client name
-     *
-     * @param string $clientName
-     * @access public
-     * @return string
-     */
-    public function getKeyFromClientName($clientName)
-    {
-        foreach ($this->mapping as $mapping) {
-            if ($clientName === $mapping->getClientName()) {
-                return $mapping->getKey();
-            }
-        }
-
-        throw new MappingException('Client name ' . $clientName . ' not found in mapping');
     }
 
     /**

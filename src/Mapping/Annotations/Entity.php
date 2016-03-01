@@ -22,12 +22,11 @@ final class Entity
     public $key;
 
     /**
-     * client
+     * repository
      *
      * @var string
      * @access public
      *
-     * @Required
      */
-    public $client;
+    public $repository;
 }

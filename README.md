@@ -13,8 +13,8 @@ composer require mapado/rest-client-sdk
 Imagine you have those API endpoints:
   * /v2/carts
   * /v2/carts/{id}
-  * /v2/cart\_items
-  * /v2/cart\_items/{id}
+  * /v2/cart_items
+  * /v2/cart_items/{id}
 
 You will need to have two entities, let's say:
   * Foo\Bar\Model\Cart
@@ -22,7 +22,7 @@ You will need to have two entities, let's say:
 
 You will need to declare one `Mapping` containing your two `ClassMetadata`
 
-## Configuration
+## Entity declarations
 ### Configure an entity
 Imagine the following entities:
 ```php
@@ -31,7 +31,7 @@ namespace Acme\Foo\Bar;
 use Mapado\RestClientSdk\Mapping\Annotations as Rest;
 
 /**
- * @Rest\Entity(key="carts", client="Acme\Foo\Bar\CartClient")
+ * @Rest\Entity(key="carts")
  */
 class Cart {
     /**
@@ -59,7 +59,7 @@ class Cart {
 }
 
 /**
- * @Rest\Entity(key="cart_items", client="Acme\Foo\Bar\CartItemsClient")
+ * @Rest\Entity(key="cart_items")
  */
 class CartItem {
     /**
@@ -83,7 +83,6 @@ class CartItem {
 ### Explanations
 `Entity` definitions:
   * `key` must be the key of your API endpoint
-  * `client` is an empty class extending `Mapado\RestClientSdk\Client\AbstractClient`
 
 Attributes definition:
   * `name` the name of the key in the API return format
@@ -93,14 +92,20 @@ Relations definition:
   * `name` the name of the key in the API return format
   * `targetEntity` class name of the target entity
 
-## Declaring the SdkClient
+## Configuration
 ### Using Symfony ?
-There is a bundle to easily integrate this component: [mapado/rest-client-sdk-bundle](https://github.com/mapado/rest-client-sdk-bundle)
+There is a bundle to easily integrate this component: [mapado/rest-client-sdk-bundle](https://github.com/mapado/rest-client-sdk-bundle).
+
+Once configured, you can get a client like this:
+```php
+$sdkClient = $this->get('mapado.rest_client_sdk.foo');
+```
 
 ### Not using Symfony
+You need to configure client this way:
 ```php
 use Mapado\RestClientSdk\Mapping;
-use Mapado\RestClientSdk\RestClient;
+use Mapado\RestClientSdk\RestClient
 use Mapado\RestClientSdk\SdkClient;
 use Mapado\RestClientSdk\Mapping\Driver\AnnotationDriver;
 
@@ -114,104 +119,70 @@ $mapping->setMapping($annotationDriver->loadDirectory($pathToEntityDirectory));
 $sdkClient = new SdkClient($restClient, $mapping);
 ```
 
-## Usage
+## Accessing data
 ### Fetching an entity / a list of entities
 ```php
-$cartClient = $sdkClient->getClient('carts');
-$cart = $cartClient->find(838); // find cart by id
-$cartList = $cartClient->findAll(); // find all carts
+$repository = $sdkClient->getRepository('Acme\Foo\Bar\Cart');
 
-$cartItemList = $cart->getCartItemList();
+// you can also access the repository by model key:
+// $repository = $sdkClient->getRepository('cart');
 
-foreach ($cartItemList as $cartItem) {
-    echo $cartItemList->getNumber();
-}
+// Find entity based on ID as defined in the entity by @Rest\Id
+$cart = $repository->find(1);
+
+// Find all entities in the database
+$cart = $repository->findAll();
+
+// Find one entity based on the fielddefined in the function name (in this case <Name>)
+$cart = $repository->findOneByName('username');
+
+// Find one entity based on the criteria defined in the array
+$cart = $repository->findOneBy(array('name'=>'username','date'=>'1-1-2016'));
+
+To find all matches for the two examples above replace findOneByName() with findByName() and findOneBy() with findBy()
 ```
 
 ### Creating a new instance
 ```php
-$cart = new Cart();
+$cart = new \Acme\Foo\Bar\Cart;
 $cart->setStatus('awaiting_payment');
 $cart->setCreatedAt(new \DateTime());
-
-$cartClient = $sdkClient->getClient('carts');
-$cart = $cartClient->persist($cart);
+$repository->persist($cart);
 ```
 
-The `persist` operation will send a `POST` request with the serialized object to the API endpoint and return the newly created object.
+The `persist` operation will send a `POST` request with the serialized object to the API endpoint and return the newly created object
 
 ### Updating an instance
 ```php
-$cartClient = $sdkClient->getClient('carts');
-$cart = $cartClient->find(838); // find cart by id
-
+$cart = $repository->find(13);
 $cart->setStatus('payed');
-$cart = $cartClient->update($cart);
+$repository->update($cart);
 ```
 
 The `update` operation will send a `PUT` request with the serialized object to the API endpoint (using the object `id`) and return the updated object.
 
 ### Deleting an instance
 ```php
-$cartClient = $sdkClient->getClient('carts');
-$cart = $cartClient->find(838); // find cart by id
-
-$cartClient->remove($cart);
+$cart = $repository->find(13);
+$repository->remove($cart);
 ```
 
 The `remove` operation will send a `DELETE` request to the API endpoint using the object ID.
 
-### Extending the client
-The default client provides the basic CRUD methods (as seen before). But in many case, you will need to extends it to add your own methods.
+### Extending the repository
 
-If you have a `Cart` Model, you defined a `CartClient` extending `Mapado\RestClientSdk\Client\AbstractClient`. The default implementation is an empty class.
+If you need to extend the [EntityRepository](https://github.com/mapado/rest-client-sdk/blob/master/src/EntityRepository.php), you can just do something like that:
 
-You can just define the method you want in this class:
 ```php
-namespace Acme\Foo\Bar;
+use \Mapado\RestClientSdk\EntityRepository;
 
-use Mapado\RestClientSdk\Client\AbstractClient;
-
-class CartClient extends AbstractClient
+class CartRepository extends EntityRepository
 {
-    public function findByCustomer($customer)
-    {
-        $cartList = $this->restClient->get(sprintf('/v1/carts?customer=%s', $customer->getId())); // this endpoint should return a hydra list
-        return $this->convertList($cartList);
-    }
-
-    public function findOneByPayment($payment)
-    {
-        $cart = $this->restClient->get(sprintf('/v1/carts?payment=%s', $payment->getId())); // this endpoint should return an item
-        return $this->convert($cart);
+    public function findOneByFoo($bar) {
+        // generate the path to call
+        $path = // ...
+        $data = $this->restClient->get($path);
+        return $this->sdk->getModelHydrator()->hydrate($data, $this->entityName); // hydrate for an entity, hydrateList for a list
     }
 }
 ```
-
-## Want to help ? Found a bug ?
-If you want to use it, [pleeeaase](https://s-media-cache-ak0.pinimg.com/736x/4e/94/1c/4e941cc9fea61425f21ed18ebc86d0d7.jpg) report every bug you may find by [opening an issue](https://github.com/mapado/rest-client-sdk/issues/new) or even better, a [Pull Request](https://github.com/mapado/rest-client-sdk/compare).
-
-## TODO
-  * Auto-generate empty client classes and make them optional
-  * YAML declaration on entity / relations (?)
-
-
-## Missing tests
-```json
-{
-    "cart": {
-        "cartItemList": [
-            {
-                "@id": "..."
-            }
-        ],
-        "anotherList": [
-            {
-                "@id": "..."
-            }
-        ]
-    }
-}
-```
-
-check that `anotherList` metadata does not have the cartItemList metadata

@@ -16,12 +16,12 @@ use Mapado\RestClientSdk\Model\Serializer;
 class SdkClient extends atoum
 {
     /**
-     * testGetClient
+     * testGetRepository
      *
      * @access public
      * @return void
      */
-    public function testGetClient()
+    public function testGetRepository()
     {
         $this->mockGenerator->orphanize('__construct');
         $this->mockGenerator->shuntParentClassCalls();
@@ -33,7 +33,7 @@ class SdkClient extends atoum
             new ClassMetadata(
                 'orders',
                 'Mapado\RestClientSdk\Tests\Model\Model',
-                'Mapado\RestClientSdk\Tests\Model\Client'
+                'Mapado\RestClientSdk\Tests\Model\ModelRepository'
             )
         ]);
 
@@ -54,10 +54,14 @@ class SdkClient extends atoum
                     ->isIdenticalTo($serializer)
 
             ->then
-                ->object($testedInstance->getClient('orders'))
-                    ->isInstanceOf('Mapado\RestClientSdk\Tests\Model\Client')
+                ->object($testedInstance->getRepository('Mapado\RestClientSdk\Tests\Model\Model'))
+                    ->isInstanceOf('Mapado\RestClientSdk\Tests\Model\ModelRepository')
+
+                ->object($testedInstance->getRepository('orders'))
+                    ->isInstanceOf('Mapado\RestClientSdk\Tests\Model\ModelRepository')
+
                 ->exception(function () use ($testedInstance) {
-                    $testedInstance->getClient('foo');
+                    $testedInstance->getRepository('foo');
                 })
                     ->isInstanceOf('Mapado\RestClientSdk\Exception\MappingException')
         ;

@@ -166,7 +166,10 @@ class Serializer
                 foreach ($data as $key => $item) {
                     if ($item instanceof \DateTime) {
                         $newData[$key] = $item->format('c');
-                    } elseif (is_object($item) && $relation && $this->mapping->hasClassMetadata($relation->getTargetEntity())) {
+                    } elseif (is_object($item) &&
+                        $relation &&
+                        $this->mapping->hasClassMetadata($relation->getTargetEntity())
+                    ) {
                         $newData[$key] = $this->recursiveSerialize($item, $relation->getTargetEntity(), $level + 1);
                     } else {
                         $newData[$key] = $item;

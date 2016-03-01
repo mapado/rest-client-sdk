@@ -9,14 +9,6 @@ namespace Mapado\RestClientSdk\Mapping;
 class ClassMetadata
 {
     /**
-     * clientName
-     *
-     * @var string
-     * @access private
-     */
-    private $clientName;
-
-    /**
      * modelName
      *
      * @var string
@@ -31,6 +23,14 @@ class ClassMetadata
      * @access private
      */
     private $key;
+
+    /**
+     * repositoryName
+     *
+     * @var string
+     * @access private
+     */
+    private $repositoryName;
 
     /**
      * attributeList
@@ -53,36 +53,13 @@ class ClassMetadata
      *
      * @param string $key
      * @param string $modelName
-     * @param string $clientName
      * @access public
      */
-    public function __construct($key, $modelName, $clientName)
+    public function __construct($key, $modelName, $repositoryName)
     {
         $this->key = $key;
         $this->modelName = $modelName;
-        $this->clientName = $clientName;
-    }
-
-    /**
-     * Getter for clientName
-     *
-     * return string
-     */
-    public function getClientName()
-    {
-        return $this->clientName;
-    }
-
-    /**
-     * Setter for clientName
-     *
-     * @param string $clientName
-     * @return ClassMetadata
-     */
-    public function setClientName($clientName)
-    {
-        $this->clientName = $clientName;
-        return $this;
+        $this->repositoryName = $repositoryName;
     }
 
     /**
@@ -205,5 +182,27 @@ class ClassMetadata
                 }
             }
         }
+    }
+
+    /**
+     * Getter for repositoryName
+     *
+     * return string
+     */
+    public function getRepositoryName()
+    {
+        return $this->repositoryName;
+    }
+
+    /**
+     * Setter for repositoryName
+     *
+     * @param string $repositoryName
+     * @return ClassMetadata
+     */
+    public function setRepositoryName($repositoryName)
+    {
+        $this->repositoryName = $repositoryName;
+        return $this;
     }
 }

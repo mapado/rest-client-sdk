@@ -9,7 +9,7 @@ use Mapado\RestClientSdk\Mapping\Annotations as Rest;
  * Class Cart
  * @author Julien Deniau <julien.deniau@mapado.com>
  *
- * @Rest\Entity(key="cart", client="Mapado\Foo\Bar\CartClient")
+ * @Rest\Entity(key="cart")
  */
 class Cart
 {
