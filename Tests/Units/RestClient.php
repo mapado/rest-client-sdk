@@ -283,4 +283,50 @@ class RestClient extends atoum
                     ->size->isEqualTo(3)
         ;
     }
+
+    public function testHttpHeaders()
+    {
+        $mock = new MockHandler(
+            [
+                new Response(
+                    200,
+                    [ 'Content-Type' => 'application/ld+json' ],
+                    file_get_contents(__DIR__ . '/../data/ticketing.list.no_result.json')
+                ),
+
+                new Response(
+                    200,
+                    [ 'Content-Type' => 'application/ld+json' ],
+                    file_get_contents(__DIR__ . '/../data/ticketing.list.no_result.json')
+                ),
+            ]
+        );
+
+        $historyContainer = [];
+        $history = Middleware::history($historyContainer);
+        $handler = HandlerStack::create($mock);
+        $handler->push($history);
+
+        $this
+            // no headers
+            ->given($http = new HttpClient(['handler' => $handler]))
+                ->and($this->newTestedInstance(
+                    $http
+                ))
+            ->then($this->testedInstance->get('/no-error'))
+                ->and($headers = array_pop($historyContainer)['request']->getHeaders())
+            ->array($headers)
+                ->notHasKey('Accept-Language')
+
+            // with headers
+            ->given($http = new HttpClient(['handler' => $handler, 'headers' => ['Accept-Language' => 'fr']]))
+                ->and($this->newTestedInstance(
+                    $http
+                ))
+            ->then($this->testedInstance->get('/no-error'))
+                ->and($headers = array_pop($historyContainer)['request']->getHeaders())
+            ->array($headers)
+                ->hasKey('Accept-Language')
+        ;
+    }
 }

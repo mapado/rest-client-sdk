@@ -143,6 +143,22 @@ class RestClient
     }
 
     /**
+     * merge default parameters
+     *
+     * @param array $parameters
+     * @access protected
+     * @return array
+     */
+    protected function mergeDefaultParameters(array $parameters)
+    {
+        if (empty($parameters['version'])) {
+            $parameters['version'] = '1.0';
+        }
+
+        return $parameters;
+    }
+
+    /**
      * executeRequest
      *
      * @param string $method
@@ -153,9 +169,7 @@ class RestClient
      */
     private function executeRequest($method, $url, $parameters = [])
     {
-        if (empty($parameters['version'])) {
-            $parameters['version'] = '1.0';
-        }
+        $parameters = $this->mergeDefaultParameters($parameters);
 
         $startTime = null;
         if ($this->isHistoryLogged()) {
