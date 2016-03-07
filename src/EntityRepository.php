@@ -211,7 +211,7 @@ class EntityRepository
             function ($item) use ($sdk) {
                 if (is_object($item)) {
                     $mapping = $sdk->getMapping();
-                    if ($mapping->hasClassMetadata(get_class($item))) {
+                    if (method_exists($item, 'getId')) {
                         return $item->getId();
                     }
                 }
