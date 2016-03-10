@@ -48,17 +48,19 @@ class SdkClient
      */
     public function getRepository($modelName)
     {
-        if (!isset($this->repositoryList[$modelName])) {
-            // get repository by key
-            $metadata = $this->mapping->getClassMetadataByKey($modelName);
-            if (!$metadata) {
-                // get by classname
-                $metadata = $this->mapping->getClassMetadata($modelName);
-            }
-            $repositoryName = $metadata->getRepositoryName() ?: '\Mapado\RestClientSdk\EntityRepository';
-            $this->repositoryList[$modelName] = new $repositoryName($this, $this->restClient, $metadata->getModelName());
+        // get repository by key
+        $metadata = $this->mapping->getClassMetadataByKey($modelName);
+        if (!$metadata) {
+            // get by classname
+            $metadata = $this->mapping->getClassMetadata($modelName);
         }
 
+        $modelName = $metadata->getModelName();
+
+        if (!isset($this->repositoryList[$modelName])) {
+            $repositoryName = $metadata->getRepositoryName() ?: '\Mapado\RestClientSdk\EntityRepository';
+            $this->repositoryList[$modelName] = new $repositoryName($this, $this->restClient, $modelName);
+        }
         return $this->repositoryList[$modelName];
     }
 
