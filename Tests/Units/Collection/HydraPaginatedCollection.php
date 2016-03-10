@@ -29,7 +29,7 @@ class HydraPaginatedCollection extends atoum
             ->then
             ->object($collection)
             ->isInstanceOf('Mapado\RestClientSdk\Collection\HydraPaginatedCollection')
-            ->isInstanceOf('\Iterator')
+            ->isInstanceOf('\Traversable')
             ->hasSize(2)
             ->and
             ->integer($collection->getTotalItems())->isEqualTo(6)

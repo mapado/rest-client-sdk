@@ -28,7 +28,7 @@ class HydraCollection extends atoum
             ->then
             ->object($collection)
             ->isInstanceOf('Mapado\RestClientSdk\Collection\HydraCollection')
-            ->isInstanceOf('\Iterator')
+            ->isInstanceOf('\Traversable')
             ->hasSize(6)
             ->and
             ->integer($collection->getTotalItems())->isEqualTo(6)

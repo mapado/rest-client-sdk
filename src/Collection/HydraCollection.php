@@ -2,12 +2,14 @@
 
 namespace Mapado\RestClientSdk\Collection;
 
+use \ArrayIterator;
+
 /**
  * Class HydraCollection
  *
  * @author Florent Clerc <florent.clerc@mapado.com>
  */
-class HydraCollection implements \Iterator, \Serializable, \Countable, \ArrayAccess
+class HydraCollection implements \IteratorAggregate, \Serializable, \Countable, \ArrayAccess
 {
     private $elements;
     private $count = 0;
@@ -29,32 +31,6 @@ class HydraCollection implements \Iterator, \Serializable, \Countable, \ArrayAcc
     public function toArray()
     {
         return $this->elements;
-    }
-
-    public function current()
-    {
-        return current($this->elements);
-    }
-
-    public function key()
-    {
-        return key($this->elements);
-    }
-
-    public function next()
-    {
-        return next($this->elements);
-    }
-
-    public function rewind()
-    {
-        reset($this->elements);
-    }
-
-    public function valid()
-    {
-        $key = key($this->elements);
-        return ($key !== null && $key !== false);
     }
 
     public function serialize()
@@ -94,6 +70,11 @@ class HydraCollection implements \Iterator, \Serializable, \Countable, \ArrayAcc
     public function offsetGet($offset)
     {
         return isset($this->elements[$offset]) ? $this->elements[$offset] : null;
+    }
+
+    public function getIterator()
+    {
+        return new ArrayIterator($this->elements);
     }
 
     /**
