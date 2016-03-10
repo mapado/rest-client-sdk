@@ -2,6 +2,8 @@
 
 namespace Mapado\RestClientSdk\Model;
 
+use Mapado\RestClientSdk\Collection\HydraCollection;
+use Mapado\RestClientSdk\Collection\HydraPaginatedCollection;
 use Mapado\RestClientSdk\SdkClient;
 
 /**
