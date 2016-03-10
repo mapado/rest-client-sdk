@@ -5,38 +5,39 @@ namespace Mapado\RestClientSdk\Model;
 use Mapado\RestClientSdk\SdkClient;
 
 /**
- * Class ModelHydrator
- * @author Julien Deniau <julien.deniau@mapado.com>
- */
+* Class ModelHydrator
+ *
+* @author Julien Deniau <julien.deniau@mapado.com>
+*/
 class ModelHydrator
 {
     /**
-     * sdk
-     *
-     * @var SdkClient
-     * @access private
-     */
+   * sdk
+   *
+   * @var    SdkClient
+   * @access private
+   */
     protected $sdk;
 
     /**
-     * __construct
-     *
-     * @param RestClient
-     * @access public
-     */
+   * __construct
+   *
+   * @param  RestClient
+   * @access public
+   */
     public function __construct(SdkClient $sdk)
     {
         $this->sdk = $sdk;
     }
 
-   /**
-     * convertId
-     *
-     * @param string $id
-     * @param string $modelName
-     * @access public
-     * @return string
-     */
+    /**
+   * convertId
+   *
+   * @param  string $id
+   * @param  string $modelName
+   * @access public
+   * @return string
+   */
     public function convertId($id, $modelName)
     {
         // add slash if needed to have a valid hydra id
@@ -54,13 +55,13 @@ class ModelHydrator
     }
 
     /**
-     * hydrate
-     *
-     * @param array $data
-     * @param string $modelName
-     * @access public
-     * @return object
-     */
+   * hydrate
+   *
+   * @param  array  $data
+   * @param  string $modelName
+   * @access public
+   * @return object
+   */
     public function hydrate($data, $modelName)
     {
         $mapping = $this->sdk->getMapping();
@@ -71,37 +72,57 @@ class ModelHydrator
     }
 
     /**
-     * hydrateList
-     *
-     * @param array $data
-     * @param string $modelName
-     * @access public
-     * @return array
-     */
+   * hydrateList
+   *
+   * @param  array  $data
+   * @param  string $modelName
+   * @access public
+   * @return array
+   */
     public function hydrateList($data, $modelName)
     {
         if ($data && is_array($data) && !empty($data['hydra:member'])) {
-            $list = [];
+            $hydratedList = [];
             if (!empty($data) && !empty($data['hydra:member'])) {
-                foreach ($data['hydra:member'] as $instanceData) {
-                    $list[] = $this->deserialize($instanceData, $modelName);
-                }
+                $hydratedList = $this->deserializeAll($data, $modelName);
             }
 
-            return $list;
+            return $hydratedList;
         }
 
         return [];
     }
 
+    public function deserializeAll($data, $modelName)
+    {
+        $hydratedList = [];
+
+        $data['hydra:member'] = array_map(
+            function ($member) use ($modelName) {
+                return $this->deserialize($member, $modelName);
+            },
+            $data['hydra:member']
+        );
+
+        if (!empty($data['@type'])) {
+            if ($data['@type'] === 'hydra:Collection') {
+                $hydratedList = new HydraCollection($data);
+            } elseif ($data['@type'] === 'hydra:PagedCollection') {
+                $hydratedList = new HydraPaginatedCollection($data);
+            }
+        }
+
+        return $hydratedList;
+    }
+
     /**
-     * deserialize
-     *
-     * @param array $data
-     * @param string $modelName
-     * @access private
-     * @return object
-     */
+   * deserialize
+   *
+   * @param  array  $data
+   * @param  string $modelName
+   * @access private
+   * @return object
+   */
     private function deserialize($data, $modelName)
     {
         if (!$data) {
