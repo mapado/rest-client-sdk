@@ -33,7 +33,21 @@ class HydraCollection extends atoum
             ->and
             ->integer($collection->getTotalItems())->isEqualTo(6)
             ->and
-            ->array($collection->toArray())->isEqualTo($json['hydra:member']);
+            ->array($collection->toArray())->isEqualTo($json['hydra:member'])
 
+            ;
+
+    }
+
+    public function testCreateHydraCollectionWithNoData()
+    {
+        $this
+            ->given($collection = new \Mapado\RestClientSdk\Collection\HydraCollection())
+
+            ->then
+            ->object($collection)
+            ->isInstanceOf('Mapado\RestClientSdk\Collection\HydraCollection')
+            ->hasSize(0)
+        ;
     }
 }

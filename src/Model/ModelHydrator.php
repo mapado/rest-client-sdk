@@ -84,20 +84,16 @@ class ModelHydrator
     public function hydrateList($data, $modelName)
     {
         if ($data && is_array($data) && !empty($data['hydra:member'])) {
-            $hydratedList = [];
             if (!empty($data) && !empty($data['hydra:member'])) {
-                $hydratedList = $this->deserializeAll($data, $modelName);
+                return $this->deserializeAll($data, $modelName);
             }
-
-            return $hydratedList;
         }
 
-        return [];
+        return new HydraCollection();
     }
 
     public function deserializeAll($data, $modelName)
     {
-        $hydratedList = [];
 
         $data['hydra:member'] = array_map(
             function ($member) use ($modelName) {
@@ -106,10 +102,10 @@ class ModelHydrator
             $data['hydra:member']
         );
 
+        $hydratedList = new HydraCollection($data);
+
         if (!empty($data['@type'])) {
-            if ($data['@type'] === 'hydra:Collection') {
-                $hydratedList = new HydraCollection($data);
-            } elseif ($data['@type'] === 'hydra:PagedCollection') {
+            if ($data['@type'] === 'hydra:PagedCollection') {
                 $hydratedList = new HydraPaginatedCollection($data);
             }
         }
