@@ -17,17 +17,11 @@ class HydraCollection implements \IteratorAggregate, \Serializable, \Countable, 
     private $elements;
 
     /**
-     * @var integer the number of elements
-     */
-    private $count = 0;
-
-    /**
      * @param array response - The Hydra data as an array
      */
     public function __construct($response)
     {
         $this->elements = $response['hydra:member'];
-        $this->count = count($this->elements);
     }
 
     /**
@@ -65,7 +59,17 @@ class HydraCollection implements \IteratorAggregate, \Serializable, \Countable, 
      */
     public function count()
     {
-        return $this->count;
+        return count($this->elements);
+    }
+
+    /**
+     *  getTotalItems
+     *
+     *  @return integer
+     */
+    public function getTotalItems()
+    {
+        return $this->count();
     }
 
     /**
@@ -116,15 +120,5 @@ class HydraCollection implements \IteratorAggregate, \Serializable, \Countable, 
     public function getIterator()
     {
         return new ArrayIterator($this->elements);
-    }
-
-    /**
-     *  getTotalItems
-     *
-     *  @return integer
-     */
-    public function getTotalItems()
-    {
-        return $this->count();
     }
 }
