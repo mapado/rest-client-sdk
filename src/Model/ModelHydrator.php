@@ -2,12 +2,15 @@
 
 namespace Mapado\RestClientSdk\Model;
 
+use Mapado\RestClientSdk\Collection\HydraCollection;
+use Mapado\RestClientSdk\Collection\HydraPaginatedCollection;
 use Mapado\RestClientSdk\SdkClient;
 
 /**
- * Class ModelHydrator
- * @author Julien Deniau <julien.deniau@mapado.com>
- */
+* Class ModelHydrator
+*
+* @author Julien Deniau <julien.deniau@mapado.com>
+*/
 class ModelHydrator
 {
     /**
@@ -29,14 +32,14 @@ class ModelHydrator
         $this->sdk = $sdk;
     }
 
-   /**
-     * convertId
-     *
-     * @param string $id
-     * @param string $modelName
-     * @access public
-     * @return string
-     */
+    /**
+      * convertId
+      *
+      * @param string $id
+      * @param string $modelName
+      * @access public
+      * @return string
+      */
     public function convertId($id, $modelName)
     {
         // add slash if needed to have a valid hydra id
@@ -81,17 +84,33 @@ class ModelHydrator
     public function hydrateList($data, $modelName)
     {
         if ($data && is_array($data) && !empty($data['hydra:member'])) {
-            $list = [];
             if (!empty($data) && !empty($data['hydra:member'])) {
-                foreach ($data['hydra:member'] as $instanceData) {
-                    $list[] = $this->deserialize($instanceData, $modelName);
-                }
+                return $this->deserializeAll($data, $modelName);
             }
-
-            return $list;
         }
 
-        return [];
+        return new HydraCollection();
+    }
+
+    public function deserializeAll($data, $modelName)
+    {
+
+        $data['hydra:member'] = array_map(
+            function ($member) use ($modelName) {
+                return $this->deserialize($member, $modelName);
+            },
+            $data['hydra:member']
+        );
+
+        $hydratedList = new HydraCollection($data);
+
+        if (!empty($data['@type'])) {
+            if ($data['@type'] === 'hydra:PagedCollection') {
+                $hydratedList = new HydraPaginatedCollection($data);
+            }
+        }
+
+        return $hydratedList;
     }
 
     /**

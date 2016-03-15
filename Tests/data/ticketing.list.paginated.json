@@ -1,0 +1,24 @@
+{
+    "@context": "/v1/contexts/Ticketing",
+    "@id": "/v1/ticketings",
+    "@type": "hydra:PaginatedCollection",
+    "hydra:nextPage": "/v1/ticketings?page=2",
+    "hydra:totalItems": 6,
+    "hydra:itemsPerPage": 2,
+    "hydra:firstPage": "/v1/ticketings",
+    "hydra:lastPage": "/v1/ticketings?page=3",
+    "hydra:member": [
+        {
+            "@id": "/v1/ticketings/1",
+            "@type": "Ticketing",
+            "activityUuid": "e41c7e98-6b10-4159-bce1-372177cf0731",
+            "eventDateList": []
+        },
+        {
+            "@id": "/v1/ticketings/2",
+            "@type": "Ticketing",
+            "activityUuid": "9c1fa0b6-815f-4860-b419-3ce93cc50d54",
+            "eventDateList": []
+        }
+    ]
+}

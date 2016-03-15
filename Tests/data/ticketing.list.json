@@ -1,0 +1,44 @@
+{
+    "@context": "/v1/contexts/Ticketing",
+    "@id": "/v1/ticketings",
+    "@type": "hydra:Collection",
+    "hydra:totalItems": 6,
+    "hydra:member": [
+        {
+            "@id": "/v1/ticketings/1",
+            "@type": "Ticketing",
+            "activityUuid": "e41c7e98-6b10-4159-bce1-372177cf0731",
+            "eventDateList": []
+        },
+        {
+            "@id": "/v1/ticketings/2",
+            "@type": "Ticketing",
+            "activityUuid": "9c1fa0b6-815f-4860-b419-3ce93cc50d54",
+            "eventDateList": []
+        },
+        {
+            "@id": "/v1/ticketings/3",
+            "@type": "Ticketing",
+            "activityUuid": "ef43e596-7906-42ac-a5b4-01803bf25f47",
+            "eventDateList": []
+        },
+        {
+            "@id": "/v1/ticketings/4",
+            "@type": "Ticketing",
+            "activityUuid": "8cb634d5-3ddf-4a67-8d10-8078bc673346",
+            "eventDateList": []
+        },
+        {
+            "@id": "/v1/ticketings/5",
+            "@type": "Ticketing",
+            "activityUuid": "4ca1a037-a134-4c86-9dcb-5db78162faab",
+            "eventDateList": []
+        },
+        {
+            "@id": "/v1/ticketings/6",
+            "@type": "Ticketing",
+            "activityUuid": "060993ee-d70f-4ab7-8e44-8003093eba82",
+            "eventDateList": []
+        }
+    ]
+}
