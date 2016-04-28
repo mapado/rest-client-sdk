@@ -26,8 +26,6 @@ class Serializer extends atoum
     public function testJsonEncode()
     {
         $this->createNewInstance();
-        $cart = $this->createCart();
-        $data = $this->testedInstance->serialize($cart, 'Mapado\RestClientSdk\Tests\Model\Cart');
 
         $this
             ->given($cart = $this->createCart())
@@ -328,6 +326,7 @@ class Serializer extends atoum
     {
         $this->createNewInstance();
         $phoneNumberUtil = PhoneNumberUtil::getInstance();
+
         $this
             ->given($data = [
                     '@id' => '/v1/carts/8',
