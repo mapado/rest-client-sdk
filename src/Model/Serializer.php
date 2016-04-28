@@ -73,6 +73,7 @@ class Serializer
     {
         // classname may be detected for hydra api with @type key
         $classMetadata = $this->mapping->getClassMetadata($className);
+
         $instance = new $className();
 
         foreach ($data as $key => $value) {
@@ -136,6 +137,7 @@ class Serializer
         }
 
         $classMetadata = $this->mapping->getClassMetadata($modelName);
+
         $attributeList = $classMetadata->getAttributeList();
 
         $out = [];
@@ -153,7 +155,7 @@ class Serializer
                 continue;
             } elseif ($data instanceof \DateTime) {
                 $data = $data->format('c');
-            } elseif (is_object($data) && get_class($data) == "libphonenumber\PhoneNumber") {
+            } elseif (is_object($data) && get_class($data) === "libphonenumber\PhoneNumber") {
                 $phoneNumberUtil = PhoneNumberUtil::getInstance();
                 $data = $phoneNumberUtil->format(
                     $data,

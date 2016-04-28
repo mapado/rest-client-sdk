@@ -26,7 +26,6 @@ class Serializer extends atoum
     public function testJsonEncode()
     {
         $this->createNewInstance();
-        $phoneNumberUtil = PhoneNumberUtil::getInstance();
         $cart = $this->createCart();
         $data = $this->testedInstance->serialize($cart, 'Mapado\RestClientSdk\Tests\Model\Cart');
 
@@ -67,7 +66,6 @@ class Serializer extends atoum
     public function testJsonEncodeRelationWithLink()
     {
         $this->createNewInstance();
-        $phoneNumberUtil = PhoneNumberUtil::getInstance();
 
         $this
             ->given($cart = $this->createCart())
@@ -106,7 +104,6 @@ class Serializer extends atoum
     public function testJsonEncodeRelationWithoutLink()
     {
         $this->createNewInstance();
-        $phoneNumberUtil = PhoneNumberUtil::getInstance();
 
         $this
             ->given($cart = $this->createCart())
@@ -144,7 +141,6 @@ class Serializer extends atoum
     public function testSerializeThreeLevel()
     {
         $this->createNewInstance();
-        $phoneNumberUtil = PhoneNumberUtil::getInstance();
 
         $this
             ->given($cart = $this->createNewCart())
@@ -181,7 +177,6 @@ class Serializer extends atoum
     public function testJsonEncodeRelationWithoutLinkMultipleLevel()
     {
         $this->createNewInstance();
-        $phoneNumberUtil = PhoneNumberUtil::getInstance();
         $this
             ->given($cart = $this->createCart())
                 ->and($cartItem = $this->createNewCartItem(false))
@@ -222,7 +217,6 @@ class Serializer extends atoum
     public function testJsonEncodeMixRelations()
     {
         $this->createNewInstance();
-        $phoneNumberUtil = PhoneNumberUtil::getInstance();
 
         $this
             ->given($cart = $this->createCart())
