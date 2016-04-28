@@ -10,7 +10,8 @@
     "require": {
         "guzzlehttp/guzzle": "^6.1",
         "ocramius/proxy-manager": "^1.0",
-        "doctrine/annotations": "^1.2"
+        "doctrine/annotations": "^1.2",
+        "misd/phone-number-bundle": "^1.1"
     },
     "require-dev": {
         "atoum/atoum": "@stable",

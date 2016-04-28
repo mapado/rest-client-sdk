@@ -4,6 +4,8 @@ namespace Mapado\RestClientSdk\Tests\Units\Model;
 
 use atoum;
 use DateTime;
+use libphonenumber\PhoneNumberUtil;
+use libphonenumber\PhoneNumberFormat;
 use Mapado\RestClientSdk\Mapping;
 use Mapado\RestClientSdk\Mapping\Attribute;
 use Mapado\RestClientSdk\Mapping\ClassMetadata;
@@ -24,6 +26,9 @@ class Serializer extends atoum
     public function testJsonEncode()
     {
         $this->createNewInstance();
+        $phoneNumberUtil = PhoneNumberUtil::getInstance();
+        $cart = $this->createCart();
+        $data = $this->testedInstance->serialize($cart, 'Mapado\RestClientSdk\Tests\Model\Cart');
 
         $this
             ->given($cart = $this->createCart())
@@ -32,6 +37,7 @@ class Serializer extends atoum
                     ->isIdenticalTo([
                         '@id' => '/v1/carts/8',
                         'status' => 'payed',
+                        "clientPhoneNumber" => '+33 1 23 45 67 89',
                         'createdAt' => (new \DateTime('2015-09-20T12:08:00'))->format(DateTime::RFC3339),
                         'cartItemList' => [],
                     ])
@@ -61,6 +67,7 @@ class Serializer extends atoum
     public function testJsonEncodeRelationWithLink()
     {
         $this->createNewInstance();
+        $phoneNumberUtil = PhoneNumberUtil::getInstance();
 
         $this
             ->given($cart = $this->createCart())
@@ -71,6 +78,7 @@ class Serializer extends atoum
                     ->isIdenticalTo([
                         '@id' => '/v1/carts/8',
                         'status' => 'payed',
+                        'clientPhoneNumber' => '+33 1 23 45 67 89',
                         'createdAt' => (new \DateTime('2015-09-20T12:08:00'))->format(DateTime::RFC3339),
                         'cartItemList' => [
                             '/v1/cart_items/16',
@@ -98,6 +106,7 @@ class Serializer extends atoum
     public function testJsonEncodeRelationWithoutLink()
     {
         $this->createNewInstance();
+        $phoneNumberUtil = PhoneNumberUtil::getInstance();
 
         $this
             ->given($cart = $this->createCart())
@@ -108,6 +117,7 @@ class Serializer extends atoum
                     ->isIdenticalTo([
                         '@id' => '/v1/carts/8',
                         'status' => 'payed',
+                        'clientPhoneNumber' => '+33 1 23 45 67 89',
                         'createdAt' => (new \DateTime('2015-09-20T12:08:00'))->format(DateTime::RFC3339),
                         'cartItemList' => [
                             [
@@ -134,6 +144,7 @@ class Serializer extends atoum
     public function testSerializeThreeLevel()
     {
         $this->createNewInstance();
+        $phoneNumberUtil = PhoneNumberUtil::getInstance();
 
         $this
             ->given($cart = $this->createNewCart())
@@ -143,6 +154,7 @@ class Serializer extends atoum
                 ->array($data = $this->testedInstance->serialize($cart, 'Mapado\RestClientSdk\Tests\Model\Cart'))
                     ->isIdenticalTo([
                         'status' => 'payed',
+                        'clientPhoneNumber' => '+33 1 23 45 67 89',
                         'createdAt' => (new \DateTime('2015-09-20T12:08:00'))->format(DateTime::RFC3339),
                         'cartItemList' => [
                             [
@@ -169,6 +181,7 @@ class Serializer extends atoum
     public function testJsonEncodeRelationWithoutLinkMultipleLevel()
     {
         $this->createNewInstance();
+        $phoneNumberUtil = PhoneNumberUtil::getInstance();
         $this
             ->given($cart = $this->createCart())
                 ->and($cartItem = $this->createNewCartItem(false))
@@ -180,6 +193,7 @@ class Serializer extends atoum
                     ->isIdenticalTo([
                         '@id' => '/v1/carts/8',
                         'status' => 'payed',
+                        'clientPhoneNumber' => '+33 1 23 45 67 89',
                         'createdAt' => (new \DateTime('2015-09-20T12:08:00'))->format(DateTime::RFC3339),
                         'cartItemList' => [
                             [
@@ -208,6 +222,8 @@ class Serializer extends atoum
     public function testJsonEncodeMixRelations()
     {
         $this->createNewInstance();
+        $phoneNumberUtil = PhoneNumberUtil::getInstance();
+
         $this
             ->given($cart = $this->createCart())
                 ->and($cartItem = $this->createNewCartItem())
@@ -219,6 +235,7 @@ class Serializer extends atoum
                     ->isIdenticalTo([
                         '@id' => '/v1/carts/8',
                         'status' => 'payed',
+                        'clientPhoneNumber' => '+33 1 23 45 67 89',
                         'createdAt' => (new \DateTime('2015-09-20T12:08:00'))->format(DateTime::RFC3339),
                         'cartItemList' => [
                             '/v1/cart_items/16',
@@ -288,6 +305,7 @@ class Serializer extends atoum
                 ->array($this->testedInstance->serialize($cart, 'Mapado\RestClientSdk\Tests\Model\Cart'))
                     ->isIdenticalTo([
                         'status' => 'payed',
+                        'clientPhoneNumber' => '+33 1 23 45 67 89',
                         'createdAt' => (new \DateTime('2015-09-20T12:08:00'))->format(DateTime::RFC3339),
                         'cartItemList' => [
                             [
@@ -315,10 +333,12 @@ class Serializer extends atoum
     public function testLinkedUnserialize()
     {
         $this->createNewInstance();
+        $phoneNumberUtil = PhoneNumberUtil::getInstance();
         $this
             ->given($data = [
                     '@id' => '/v1/carts/8',
                     'status' => 'payed',
+                    'clientPhoneNumber' => $phoneNumberUtil->parse('+330123456789', PhoneNumberFormat::INTERNATIONAL),
                     'createdAt' => (new \DateTime('2015-09-20T12:08:00'))->format(DateTime::RFC3339),
                     'cartItemList' => [
                         [
@@ -337,6 +357,8 @@ class Serializer extends atoum
             ->then
                 ->object($cart = $this->testedInstance->deserialize($data, 'Mapado\RestClientSdk\Tests\Model\Cart'))
                     ->isInstanceOf('Mapado\RestClientSdk\Tests\Model\Cart')
+                ->object($cart->getClientPhoneNumber())
+                    ->isInstanceOf('libphonenumber\PhoneNumber')
                 ->array($cart->getCartItemList())
                     ->size->isEqualTo(1)
                 ->object($cartItem = current($cart->getCartItemList()))
@@ -368,6 +390,7 @@ class Serializer extends atoum
                     'cart' => [
                         '@id' => '/v1/carts/10',
                         'status' => 'waiting',
+                        'clientPhoneNumber' => '+33 1 23 45 67 89',
                     ]
                 ])
 
@@ -376,6 +399,8 @@ class Serializer extends atoum
                     ->isInstanceOf('Mapado\RestClientSdk\Tests\Model\CartItem')
                 ->object($cart = $cartItem->getCart())
                     ->isInstanceOf('Mapado\RestClientSdk\Tests\Model\Cart')
+                ->string($cart->getClientPhoneNumber())
+                    ->isEqualTo('+33 1 23 45 67 89')
                 ->string($cart->getId())
                     ->isEqualTo('/v1/carts/10')
                 ->string($cart->getStatus())
@@ -400,6 +425,7 @@ class Serializer extends atoum
         $cartMetadata->setAttributeList([
             new Attribute('id', 'string', true),
             new Attribute('status'),
+            new Attribute('clientPhoneNumber', 'phone_number'),
             new Attribute('createdAt', 'datetime'),
             new Attribute('cartItemList'),
         ]);
@@ -479,6 +505,10 @@ class Serializer extends atoum
         $cart = new \Mapado\RestClientSdk\Tests\Model\Cart();
         $cart->setStatus('payed');
         $cart->setCreatedAt(new DateTime('2015-09-20 12:08:00'));
+
+        $phoneNumberUtil = PhoneNumberUtil::getInstance();
+        $clientPhoneNumber = $phoneNumberUtil->parse('+33123456789', PhoneNumberFormat::INTERNATIONAL);
+        $cart->setClientPhoneNumber($clientPhoneNumber);
 
         return $cart;
     }
