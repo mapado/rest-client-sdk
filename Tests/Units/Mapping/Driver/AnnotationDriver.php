@@ -78,7 +78,7 @@ class AnnotationDriver extends atoum
                     ->isEqualTo('cart')
 
                 ->array($classMetadata->getAttributeList())
-                    ->size->isEqualTo(4)
+                    ->size->isEqualTo(5)
 
                 ->array($classMetadata->getRelationList())
                     ->size->isEqualTo(1)

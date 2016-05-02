@@ -55,6 +55,16 @@ class Cart
     private $cartItemList = [];
 
     /**
+     * clientPhoneNumber
+     *
+     * @var string
+     * @access private
+     *
+     * @Rest\Attribute(name="clientPhoneNumber", type="phone_number")
+     */
+    private $clientPhoneNumber;
+
+    /**
      * Getter for id
      *
      * return string
@@ -145,5 +155,27 @@ class Cart
     public function addCartItemList($cartItem)
     {
         $this->cartItemList[] =  $cartItem;
+    }
+
+    /**
+     * Getter for clientPhoneNumber
+     *
+     * @return string
+     */
+    public function getClientPhoneNumber()
+    {
+        return $this->clientPhoneNumber;
+    }
+
+    /**
+     * Setter for clientPhoneNumber
+     *
+     * @param string $clientPhoneNumber
+     * @return Cart
+     */
+    public function setClientPhoneNumber($clientPhoneNumber)
+    {
+        $this->clientPhoneNumber = $clientPhoneNumber;
+        return $this;
     }
 }

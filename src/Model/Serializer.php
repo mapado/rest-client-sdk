@@ -6,6 +6,9 @@ use Mapado\RestClientSdk\Exception\SdkException;
 use Mapado\RestClientSdk\Mapping;
 use Mapado\RestClientSdk\SdkClient;
 use Mapado\RestClientSdk\Mapping\ClassMetadata;
+use libphonenumber\PhoneNumber;
+use libphonenumber\PhoneNumberUtil;
+use libphonenumber\PhoneNumberFormat;
 
 /**
  * Class Serializer
@@ -110,6 +113,7 @@ class Serializer
                     if ($attribute && $attribute->getType() === 'datetime') {
                         $value = new \DateTime($value);
                     }
+
                     $instance->$setter($value);
                 }
             }
@@ -151,6 +155,12 @@ class Serializer
                 continue;
             } elseif ($data instanceof \DateTime) {
                 $data = $data->format('c');
+            } elseif (is_object($data) && get_class($data) === "libphonenumber\PhoneNumber") {
+                $phoneNumberUtil = PhoneNumberUtil::getInstance();
+                $data = $phoneNumberUtil->format(
+                    $data,
+                    PhoneNumberFormat::INTERNATIONAL
+                );
             } elseif (is_object($data) && $relation && $this->mapping->hasClassMetadata($relation->getTargetEntity())) {
                 if ($data->getId()) {
                     $data = $data->getId();
