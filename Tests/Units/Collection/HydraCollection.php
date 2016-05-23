@@ -36,7 +36,6 @@ class HydraCollection extends atoum
             ->array($collection->toArray())->isEqualTo($json['hydra:member'])
 
             ;
-
     }
 
     public function testCreateHydraCollectionWithNoData()

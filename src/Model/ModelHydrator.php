@@ -94,7 +94,6 @@ class ModelHydrator
 
     public function deserializeAll($data, $modelName)
     {
-
         $data['hydra:member'] = array_map(
             function ($member) use ($modelName) {
                 return $this->deserialize($member, $modelName);
