@@ -46,7 +46,7 @@ class Product
     /**
      * Getter for id
      *
-     * return string
+     * return int
      */
     public function getId()
     {
@@ -56,7 +56,7 @@ class Product
     /**
      * Setter for id
      *
-     * @param string $id
+     * @param int $id
      * @return Product
      */
     public function setId($id)
@@ -68,7 +68,7 @@ class Product
     /**
      * Getter for value
      *
-     * return float
+     * return string
      */
     public function getValue()
     {
@@ -78,7 +78,7 @@ class Product
     /**
      * Setter for value
      *
-     * @param float $value
+     * @param string $value
      * @return Product
      */
     public function setValue($value)

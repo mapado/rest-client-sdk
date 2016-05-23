@@ -36,11 +36,11 @@ class EntityRepository
     protected $clientKey;
 
     /**
+     * EntityRepository constructor
      *
-     * @param type $client - the client to process the data with
      * @param object $sdkClient - the client to connect to the datasource with
-     * @param object $restClient - cleitn to process the http requests
-     * @param type $class The entiy to work with
+     * @param object $restClient - client to process the http requests
+     * @param string $entityName The entiy to work with
      */
     public function __construct($sdkClient, $restClient, $entityName)
     {
@@ -209,11 +209,8 @@ class EntityRepository
 
         return array_map(
             function ($item) use ($sdk) {
-                if (is_object($item)) {
-                    $mapping = $sdk->getMapping();
-                    if (method_exists($item, 'getId')) {
-                        return $item->getId();
-                    }
+                if (is_object($item) && method_exists($item, 'getId')) {
+                    return $item->getId();
                 }
 
                 return $item;

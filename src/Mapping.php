@@ -173,7 +173,7 @@ class Mapping
      * checkMappingExistence
      *
      * @param string $key
-     * @param string $subKey
+     * @param string|null $subKey
      * @access private
      * @return void
      */
@@ -188,7 +188,7 @@ class Mapping
             throw new MappingException($key . ' key is not mapped');
         }
 
-        if ($subKey) {
+        if (!empty($subKey)) {
             $methodName = 'get' . ucfirst($subKey);
             if (!$metadata->$methodName()) {
                 throw new MappingException($key . ' key is mapped but no ' . $subKey . ' found');

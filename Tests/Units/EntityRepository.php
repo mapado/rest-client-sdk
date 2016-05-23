@@ -15,7 +15,6 @@ class EntityRepository extends atoum
     /**
      * testFind
      *
-     * @param mixed $method
      * @access public
      * @return void
      */
@@ -91,7 +90,6 @@ class EntityRepository extends atoum
     /**
      * testFindNotFound
      *
-     * @param mixed $method
      * @access public
      * @return void
      */
@@ -116,8 +114,6 @@ class EntityRepository extends atoum
 
         $this->calling($mockedSdk)->getRestClient = $mockedRestClient;
         $this->calling($mockedRestClient)->get = null;
-
-        $modelHydrator = new \mock\Mapado\RestClientSdk\Model\ModelHydrator($mockedSdk);
 
         $repository = new \mock\Mapado\RestClientSdk\EntityRepository(
             $mockedSdk,

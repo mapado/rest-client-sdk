@@ -83,10 +83,8 @@ class ModelHydrator
      */
     public function hydrateList($data, $modelName)
     {
-        if ($data && is_array($data) && !empty($data['hydra:member'])) {
-            if (!empty($data) && !empty($data['hydra:member'])) {
-                return $this->deserializeAll($data, $modelName);
-            }
+        if (is_array($data) && !empty($data['hydra:member'])) {
+            return $this->deserializeAll($data, $modelName);
         }
 
         return new HydraCollection();
@@ -122,7 +120,7 @@ class ModelHydrator
      */
     private function deserialize($data, $modelName)
     {
-        if (!$data) {
+        if (empty($data)) {
             return null;
         }
 

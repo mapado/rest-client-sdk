@@ -35,7 +35,7 @@ class ClassMetadata
     /**
      * attributeList
      *
-     * @var string
+     * @var array<Attribute>
      * @access private
      */
     private $attributeList;
@@ -43,7 +43,7 @@ class ClassMetadata
     /**
      * relationList
      *
-     * @var string
+     * @var array<Relation>
      * @access private
      */
     private $relationList;
@@ -125,7 +125,7 @@ class ClassMetadata
     /**
      * Getter for attributeList
      *
-     * return array
+     * return array<Attribute>
      */
     public function getAttributeList()
     {
@@ -147,7 +147,7 @@ class ClassMetadata
     /**
      * Getter for relationList
      *
-     * return array
+     * return array<Relation>
      */
     public function getRelationList()
     {
@@ -157,7 +157,7 @@ class ClassMetadata
     /**
      * Setter for relationList
      *
-     * @param array $relationList
+     * @param array<Relation> $relationList
      * @return ClassMetadata
      */
     public function setRelationList($relationList)
