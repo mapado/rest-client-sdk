@@ -41,7 +41,6 @@ class Relation
      * @param string $key
      * @param string $type
      * @access public
-     * @return void
      */
     public function __construct($key, $type, $targetEntity)
     {
