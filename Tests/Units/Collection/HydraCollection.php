@@ -34,7 +34,6 @@ class HydraCollection extends atoum
             ->integer($collection->getTotalItems())->isEqualTo(6)
             ->and
             ->array($collection->toArray())->isEqualTo($json['hydra:member'])
-
             ;
     }
 
