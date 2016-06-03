@@ -2,9 +2,12 @@
 namespace Mapado\RestClientSdk;
 
 use Mapado\RestClientSdk\Exception\SdkException;
+use Symfony\Component\Cache\CacheItem;
 
 class EntityRepository
 {
+    private $count = 0;
+
     /**
      * @object REST Client
      */
@@ -44,9 +47,9 @@ class EntityRepository
      */
     public function __construct($sdkClient, $restClient, $entityName)
     {
-        $this->sdk           = $sdkClient;
-        $this->restClient    = $restClient;
-        $this->entityName    = $entityName;
+        $this->sdk = $sdkClient;
+        $this->restClient = $restClient;
+        $this->entityName = $entityName;
     }
 
     /**
@@ -60,8 +63,20 @@ class EntityRepository
     {
         $hydrator = $this->sdk->getModelHydrator();
         $id = $hydrator->convertId($id, $this->entityName);
+
+        // if entity is found in cache, return it
+        $entityFromCache = $this->fetchFromCache($id);
+        if ($entityFromCache != false) {
+            return $entityFromCache;
+        }
+
         $data = $this->restClient->get($id);
-        return $hydrator->hydrate($data, $this->entityName);
+        $entity = $hydrator->hydrate($data, $this->entityName);
+
+        // cache entity
+        $this->saveToCache($id, $entity);
+
+        return $entity;
     }
 
     /**
@@ -76,10 +91,28 @@ class EntityRepository
         $key = $mapping->getKeyFromModel($this->entityName);
         $prefix = $mapping->getIdPrefix();
         $path = (null == $prefix) ? $key : $prefix . '/' . $key;
+
+        $entityListFromCache = $this->fetchFromCache($path);
+
+        // if entityList is found in cache, return it
+        if ($entityListFromCache !== false) {
+            return $entityListFromCache;
+        }
+
         $data = $this->restClient->get($path);
 
         $hydrator = $this->sdk->getModelHydrator();
-        return $hydrator->hydrateList($data, $this->entityName);
+        $entityList = $hydrator->hydrateList($data, $this->entityName);
+
+        // cache entity list
+        $this->saveToCache($path, $entityList);
+
+        // then cache each entity from list
+        foreach ($entityList as $entity) {
+            $this->saveToCache($entity->getId(), $entity);
+        }
+
+        return $entityList;
     }
 
     /**
@@ -217,5 +250,60 @@ class EntityRepository
             },
             $queryParameters
         );
+    }
+
+    /**
+     * fetchFromCache
+     *
+     * @param array $data
+     * @access private
+     * @return object
+     */
+    private function fetchFromCache($key)
+    {
+        $key = $this->normalizeCacheKey($key);
+        $cacheItemPool = $this->sdk->getCacheItemPool();
+        if (isset($cacheItemPool)) {
+            $cacheKey = $this->sdk->getCachePrefix() . $key;
+            if ($cacheItemPool->hasItem($cacheKey)) {
+                $cacheItem = $cacheItemPool->getItem($cacheKey);
+                $cacheData = $cacheItem->get();
+                return $cacheData;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * saveToCache
+     *
+     * @param array $data
+     * @access private
+     * @return object
+     */
+    private function saveToCache($key, $value)
+    {
+        $key = $this->normalizeCacheKey($key);
+        $cacheItemPool = $this->sdk->getCacheItemPool();
+        if (isset($cacheItemPool)) {
+            $cacheKey = $this->sdk->getCachePrefix() . $key;
+
+            if (!$cacheItemPool->hasItem($cacheKey)) {
+                $cacheItem = $cacheItemPool->getItem($cacheKey);
+                $cacheItem->set($value);
+                $cacheItemPool->save($cacheItem);
+            }
+        }
+    }
+
+    /**
+     * normalizeCacheKey
+     *
+     * @access private
+     * @return string
+     */
+    private function normalizeCacheKey($key)
+    {
+        return preg_replace('~[\\/\{\}@:\(\)]~', '_', $key);
     }
 }

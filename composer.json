@@ -11,11 +11,13 @@
         "guzzlehttp/guzzle": "^6.1",
         "ocramius/proxy-manager": "^1.0",
         "doctrine/annotations": "^1.2",
-        "misd/phone-number-bundle": "^1.1"
+        "misd/phone-number-bundle": "^1.1",
+        "psr/cache": "^1.0"
     },
     "require-dev": {
         "atoum/atoum": "@stable",
-        "raulfraile/ladybug": "^1.0"
+        "raulfraile/ladybug": "^1.0",
+        "symfony/cache": "^3.1"
     },
     "license": "MIT",
     "authors": [

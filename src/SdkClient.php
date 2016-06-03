@@ -6,6 +6,7 @@ use Mapado\RestClientSdk\Model\ModelHydrator;
 use Mapado\RestClientSdk\Model\Serializer;
 use ProxyManager\Factory\LazyLoadingGhostFactory;
 use ProxyManager\Proxy\LazyLoadingInterface;
+use Psr\Cache\CacheItemPoolInterface;
 
 /**
  * Sdk Client
@@ -23,6 +24,22 @@ class SdkClient
     private $repositoryList = [];
 
     /**
+     * cacheItemPool
+     *
+     * @var CacheItemPoolInterface
+     * @access private
+     */
+    protected $cacheItemPool;
+
+    /**
+     * cachePrefix
+     *
+     * @var string
+     * @access private
+     */
+    protected $cachePrefix;
+
+    /**
      * Constructor
      * @param ClientInterface $restClient
      */
@@ -37,6 +54,43 @@ class SdkClient
         $this->serializer->setSdk($this);
 
         $this->modelHydrator = new ModelHydrator($this);
+    }
+
+    /**
+     * setCacheItemPool
+     *
+     * @param CacheItemPoolInterface $cacheItemPool
+     * @access public
+     * @return EntityRepository
+     */
+    public function setCacheItemPool(CacheItemPoolInterface $cacheItemPool, $cachePrefix = '')
+    {
+        $this->cacheItemPool = $cacheItemPool;
+        $this->cachePrefix = $cachePrefix;
+
+        return $this;
+    }
+
+    /**
+     * getCacheItemPool
+     *
+     * @access public
+     * @return CacheItemPool
+     */
+    public function getCacheItemPool()
+    {
+        return $this->cacheItemPool;
+    }
+
+    /**
+     * getCachePrefix
+     *
+     * @access public
+     * @return string
+     */
+    public function getCachePrefix()
+    {
+        return $this->cachePrefix;
     }
 
     /**
