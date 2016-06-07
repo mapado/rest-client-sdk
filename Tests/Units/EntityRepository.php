@@ -13,14 +13,28 @@ use Symfony\Component\Cache\Adapter\ArrayAdapter;
  */
 class EntityRepository extends atoum
 {
-    /**
-     * testFind
-     *
-     * @access public
-     * @return void
-     */
-    public function testFind()
+    private $mockedRestClient;
+
+    private $mockedSdk;
+
+    private $mockedHydrator;
+
+    private $repository;
+
+    public function beforeTestMethod($method)
     {
+        $this->mockGenerator->orphanize('__construct');
+        $this->mockedSdk = new \mock\Mapado\RestClientSdk\SdkClient();
+        $mockedHydrator = new \mock\Mapado\RestClientSdk\Model\ModelHydrator($this->mockedSdk);
+        $this->calling($this->mockedSdk)->getModelHydrator = $mockedHydrator;
+
+        $this->mockGenerator->orphanize('__construct');
+        $this->mockedRestClient = new \mock\Mapado\RestClientSdk\RestClient();
+        // $this->resetMock($this->mockedRestClient);
+
+        $this->mockedHydrator = new \mock\Mapado\RestClientSdk\Model\ModelHydrator($this->mockedSdk);
+        $this->calling($this->mockedSdk)->getModelHydrator = $this->mockedHydrator;
+
         $mapping = new Mapping('v12');
         $mapping->setMapping([
             new ClassMetadata(
@@ -30,59 +44,60 @@ class EntityRepository extends atoum
             )
         ]);
 
-        $this->mockGenerator->orphanize('__construct');
-        $mockedSdk = new \mock\Mapado\RestClientSdk\SdkClient();
-        $this->calling($mockedSdk)->getMapping = $mapping;
-        $mockedHydrator = new \mock\Mapado\RestClientSdk\Model\ModelHydrator($mockedSdk);
-        $this->calling($mockedSdk)->getModelHydrator = $mockedHydrator;
+        $this->calling($this->mockedSdk)->getMapping = $mapping;
 
-        $this->mockGenerator->orphanize('__construct');
-        $mockedRestClient = new \mock\Mapado\RestClientSdk\RestClient();
-
-        $this->calling($mockedSdk)->getRestClient = $mockedRestClient;
-        $this->calling($mockedRestClient)->get = [];
-
-        $repository = new \mock\Mapado\RestClientSdk\EntityRepository(
-            $mockedSdk,
-            $mockedRestClient,
+        $this->repository = new \mock\Mapado\RestClientSdk\EntityRepository(
+            $this->mockedSdk,
+            $this->mockedRestClient,
             'Mapado\RestClientSdk\Tests\Model\Model'
         );
+    }
+
+    /**
+     * testFind
+     *
+     * @access public
+     * @return void
+     */
+    public function testFind()
+    {
+        $this->calling($this->mockedRestClient)->get = [];
 
         $this
-            ->if($repository->find('1'))
+            ->if($this->repository->find('1'))
             ->then
-                ->mock($mockedRestClient)
+                ->mock($this->mockedRestClient)
                     ->call('get')
                         ->withArguments('v12/orders/1')->once()
 
-            ->given($this->resetMock($mockedRestClient))
-            ->if($repository->find('v12/orders/999'))
+            ->given($this->resetMock($this->mockedRestClient))
+            ->if($this->repository->find('v12/orders/999'))
             ->then
-                ->mock($mockedRestClient)
+                ->mock($this->mockedRestClient)
                     ->call('get')
                         ->withArguments('v12/orders/999')->once()
 
-            ->if($repository->findAll())
+            ->if($this->repository->findAll())
             ->then
-                ->mock($mockedRestClient)
+                ->mock($this->mockedRestClient)
                     ->call('get')
                         ->withArguments('v12/orders')->once()
 
-            ->if($repository->findOneByFoo('bar'))
+            ->if($this->repository->findOneByFoo('bar'))
             ->then
-                ->mock($mockedRestClient)
+                ->mock($this->mockedRestClient)
                     ->call('get')
                         ->withArguments('v12/orders?foo=bar')->once()
-                ->mock($mockedHydrator)
+                ->mock($this->mockedHydrator)
                     ->call('hydrate')
                         ->twice()
 
-            ->if($repository->findByFoo('baz'))
+            ->if($this->repository->findByFoo('baz'))
             ->then
-                ->mock($mockedRestClient)
+                ->mock($this->mockedRestClient)
                     ->call('get')
                         ->withArguments('v12/orders?foo=baz')->once()
-                ->mock($mockedHydrator)
+                ->mock($this->mockedHydrator)
                     ->call('hydrateList')
                         ->twice()
         ;
@@ -97,22 +112,6 @@ class EntityRepository extends atoum
      */
     public function testFindWithCache()
     {
-        $mapping = new Mapping('v12');
-        $mapping->setMapping([
-            new ClassMetadata(
-                'orders',
-                'Mapado\RestClientSdk\Tests\Model\Model',
-                'mock\Mapado\RestClientSdk\EntityRepository'
-            )
-        ]);
-
-        $this->mockGenerator->orphanize('__construct');
-        $mockedSdk = new \mock\Mapado\RestClientSdk\SdkClient();
-        $mockedSdk->getCacheItemPool();
-        $this->calling($mockedSdk)->getMapping = $mapping;
-        $mockedHydrator = new \mock\Mapado\RestClientSdk\Model\ModelHydrator($mockedSdk);
-        $this->calling($mockedSdk)->getModelHydrator = $mockedHydrator;
-
         $mockOrder1 = new \mock\entity;
         $mockOrder2 = new \mock\entity;
         $mockOrder3 = new \mock\entity;
@@ -120,42 +119,32 @@ class EntityRepository extends atoum
         $this->calling($mockOrder2)->getId = 'v12/orders/2';
         $this->calling($mockOrder3)->getId = 'v12/orders/3';
 
-        $this->calling($mockedHydrator)->hydrate = $mockOrder1;
-        $this->calling($mockedHydrator)->hydrateList = [$mockOrder1, $mockOrder2, $mockOrder3];
+        $this->calling($this->mockedHydrator)->hydrate = $mockOrder1;
+        $this->calling($this->mockedHydrator)->hydrateList = [$mockOrder1, $mockOrder2, $mockOrder3];
 
         $arrayAdapter = new ArrayAdapter(0, false);
-        $this->calling($mockedSdk)->getCacheItemPool = $arrayAdapter;
-        $this->calling($mockedSdk)->getCachePrefix = 'test_prefix_';
+        $this->calling($this->mockedSdk)->getCacheItemPool = $arrayAdapter;
+        $this->calling($this->mockedSdk)->getCachePrefix = 'test_prefix_';
 
-        $this->mockGenerator->orphanize('__construct');
-        $mockedRestClient = new \mock\Mapado\RestClientSdk\RestClient();
+        $this->calling($this->mockedRestClient)->get = [];
 
-        $this->calling($mockedSdk)->getRestClient = $mockedRestClient;
-        $this->calling($mockedRestClient)->get = [];
-
-        $repository = new \mock\Mapado\RestClientSdk\EntityRepository(
-            $mockedSdk,
-            $mockedRestClient,
-            'Mapado\RestClientSdk\Tests\Model\Model'
-        );
-
-        $this->calling($mockedHydrator)->convertId[0] = 'v12/orders/1';
-        $this->calling($mockedHydrator)->convertId[1] = 'v12/orders/1';
-        $this->calling($mockedHydrator)->convertId[4] = 'v12/orders/3';
+        $this->calling($this->mockedHydrator)->convertId[0] = 'v12/orders/1';
+        $this->calling($this->mockedHydrator)->convertId[1] = 'v12/orders/1';
+        $this->calling($this->mockedHydrator)->convertId[4] = 'v12/orders/3';
 
         $this
-            ->if($repository->find(1))
-            ->and($repository->find(1))
+            ->if($this->repository->find(1))
+            ->and($this->repository->find(1))
             ->then
-                ->mock($mockedRestClient)
+                ->mock($this->mockedRestClient)
                     ->call('get')
                         ->withArguments('v12/orders/1')->once()
 
-            ->if($repository->findAll())
-            ->and($repository->findAll())
-            ->if($repository->find(3))
+            ->if($this->repository->findAll())
+            ->and($this->repository->findAll())
+            ->if($this->repository->find(3))
             ->then
-                ->mock($mockedRestClient)
+                ->mock($this->mockedRestClient)
                     ->call('get')
                         ->withArguments('v12/orders')->once()
                     ->call('get')
@@ -171,34 +160,10 @@ class EntityRepository extends atoum
      */
     public function testFindNotFound()
     {
-        $mapping = new Mapping();
-        $mapping->setMapping([
-            new ClassMetadata(
-                'orders',
-                'Mapado\RestClientSdk\Tests\Model\Model',
-                'mock\Mapado\RestClientSdk\EntityRepository'
-            )
-        ]);
-
-        $this->mockGenerator->orphanize('__construct');
-        $mockedSdk = new \mock\Mapado\RestClientSdk\SdkClient();
-        $this->calling($mockedSdk)->getMapping = $mapping;
-        $this->calling($mockedSdk)->getModelHydrator = new \mock\Mapado\RestClientSdk\Model\ModelHydrator($mockedSdk);
-
-        $this->mockGenerator->orphanize('__construct');
-        $mockedRestClient = new \mock\Mapado\RestClientSdk\RestClient();
-
-        $this->calling($mockedSdk)->getRestClient = $mockedRestClient;
-        $this->calling($mockedRestClient)->get = null;
-
-        $repository = new \mock\Mapado\RestClientSdk\EntityRepository(
-            $mockedSdk,
-            $mockedRestClient,
-            'Mapado\RestClientSdk\Tests\Model\Model'
-        );
+        $this->calling($this->mockedRestClient)->get = null;
 
         $this
-            ->variable($repository->find('1'))
+            ->variable($this->repository->find('1'))
             ->isNull()
         ;
     }
@@ -219,21 +184,13 @@ class EntityRepository extends atoum
             ),
         ]);
 
-        $this->mockGenerator->orphanize('__construct');
-        $mockedSdk = new \mock\Mapado\RestClientSdk\SdkClient();
-        $this->calling($mockedSdk)->getMapping = $mapping;
-        $mockedHydrator = new \mock\Mapado\RestClientSdk\Model\ModelHydrator($mockedSdk);
-        $this->calling($mockedSdk)->getModelHydrator = $mockedHydrator;
+        $this->calling($this->mockedSdk)->getMapping = $mapping;
 
-        $this->mockGenerator->orphanize('__construct');
-        $mockedRestClient = new \mock\Mapado\RestClientSdk\RestClient();
-
-        $this->calling($mockedSdk)->getRestClient = $mockedRestClient;
-        $this->calling($mockedRestClient)->get = [];
+        $this->calling($this->mockedRestClient)->get = [];
 
         $cartItemRepository = new \mock\Mapado\RestClientSdk\EntityRepository(
-            $mockedSdk,
-            $mockedRestClient,
+            $this->mockedSdk,
+            $this->mockedRestClient,
             'Mapado\RestClientSdk\Tests\Model\CartItem'
         );
 
@@ -246,7 +203,7 @@ class EntityRepository extends atoum
                 ->and($cart->setId(1))
             ->if($cartItemRepository->findOneByCart($cart))
             ->then
-                ->mock($mockedRestClient)
+                ->mock($this->mockedRestClient)
                     ->call('get')
                         ->withArguments('v12/cart_items?cart=1')->once()
 
@@ -254,7 +211,7 @@ class EntityRepository extends atoum
             ->given($cart = new \mock\stdClass)
             ->if($cartItemRepository->findOneByCart($cart))
             ->then
-                ->mock($mockedRestClient)
+                ->mock($this->mockedRestClient)
                     ->call('get')
                         ->withArguments('v12/cart_items?')->once()
         ;
