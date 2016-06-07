@@ -190,6 +190,7 @@ class EntityRepository extends atoum
 
         $this->calling($this->mockedRestClient)->get = $product1;
         $this->calling($this->mockedRestClient)->put = $product1;
+        $this->calling($this->mockedRestClient)->delete = null;
 
         $repository = new \mock\Mapado\RestClientSdk\EntityRepository(
             $this->mockedSdk,
@@ -199,20 +200,33 @@ class EntityRepository extends atoum
 
         $this
             ->if($repository->find(1))
-            ->and($repository->find(1))
+            ->then
+                ->boolean($arrayAdapter->hasItem('test_prefix__v12_products_1'))
+                    ->isTrue()
+
+            ->if($repository->find(1))
             ->then
                 ->mock($this->mockedRestClient)
                     ->call('get')
                         ->withArguments('/v12/products/1')->once()
 
+            // after update
             ->if($repository->update($product1))
-                ->and($repository->find(1))
+                ->boolean($arrayAdapter->hasItem('test_prefix__v12_products_1'))
+                    ->isFalse()
+
+            ->if($repository->find(1))
             ->then
                 ->mock($this->mockedRestClient)
                     ->call('get')
                         ->withArguments('/v12/products/1')->twice()
-        ;
 
+            // after deletion
+            ->if($repository->remove($product1))
+            ->then
+                ->boolean($arrayAdapter->hasItem('test_prefix__v12_products_1'))
+                    ->isFalse()
+        ;
     }
 
     /**

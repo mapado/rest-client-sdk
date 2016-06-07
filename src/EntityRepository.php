@@ -126,6 +126,8 @@ class EntityRepository
      */
     public function remove($model)
     {
+        $this->removeFromCache($model->getId());
+
         return $this->restClient->delete($model->getId());
     }
 
