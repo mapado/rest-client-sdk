@@ -153,6 +153,69 @@ class EntityRepository extends atoum
     }
 
     /**
+     * testClearCacheAfterUpdate
+     *
+     * @access public
+     *
+     * @return void
+     */
+    public function testClearCacheAfterUpdate()
+    {
+        $mapping = new Mapping('/v12');
+        $mapping->setMapping([
+            new ClassMetadata(
+                'products',
+                'Mapado\RestClientSdk\Tests\Model\Product',
+                'mock\Mapado\RestClientSdk\EntityRepository'
+            ),
+        ]);
+
+        $this->calling($this->mockedSdk)->getMapping = $mapping;
+        $this->calling($this->mockedSdk)->getSerializer = new \Mapado\RestClientSdk\Model\Serializer($mapping);
+
+
+        $product1 = new \Mapado\RestClientSdk\Tests\Model\Product;
+        $product2 = new \Mapado\RestClientSdk\Tests\Model\Product;
+        $product3 = new \Mapado\RestClientSdk\Tests\Model\Product;
+        $product1->setId('/v12/products/1');
+        $product2->setId('/v12/products/2');
+        $product3->setId('/v12/products/3');
+
+        $this->calling($this->mockedHydrator)->hydrate = $product1;
+        $this->calling($this->mockedHydrator)->hydrateList = [$product1, $product2, $product3];
+
+        $arrayAdapter = new ArrayAdapter(0, false);
+        $this->calling($this->mockedSdk)->getCacheItemPool = $arrayAdapter;
+        $this->calling($this->mockedSdk)->getCachePrefix = 'test_prefix_';
+
+        $this->calling($this->mockedRestClient)->get = $product1;
+        $this->calling($this->mockedRestClient)->put = $product1;
+
+        $repository = new \mock\Mapado\RestClientSdk\EntityRepository(
+            $this->mockedSdk,
+            $this->mockedRestClient,
+            'Mapado\RestClientSdk\Tests\Model\Product'
+        );
+
+        $this
+            ->if($repository->find(1))
+            ->and($repository->find(1))
+            ->then
+                ->mock($this->mockedRestClient)
+                    ->call('get')
+                        ->withArguments('/v12/products/1')->once()
+
+            ->if($repository->update($product1))
+                ->and($repository->find(1))
+            ->then
+                ->mock($this->mockedRestClient)
+                    ->call('get')
+                        ->withArguments('/v12/products/1')->twice()
+        ;
+
+    }
+
+    /**
      * testFindNotFound
      *
      * @access public
