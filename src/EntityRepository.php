@@ -126,6 +126,8 @@ class EntityRepository
      */
     public function remove($model)
     {
+        $this->removeFromCache($model->getId());
+
         return $this->restClient->delete($model->getId());
     }
 
@@ -142,6 +144,8 @@ class EntityRepository
             $model->getId(),
             $this->sdk->getSerializer()->serialize($model, $this->entityName)
         );
+
+        $this->removeFromCache($model->getId());
 
         $hydrator = $this->sdk->getModelHydrator();
         return $hydrator->hydrate($data, $this->entityName);
@@ -271,6 +275,7 @@ class EntityRepository
                 return $cacheData;
             }
         }
+
         return false;
     }
 
@@ -305,5 +310,27 @@ class EntityRepository
     private function normalizeCacheKey($key)
     {
         return preg_replace('~[\\/\{\}@:\(\)]~', '_', $key);
+    }
+
+    /**
+     * removeFromCache
+     *
+     * @param string $key
+     * @access private
+     * @return boolean true if no cache or cache successfully cleared, false otherwise
+     */
+    private function removeFromCache($key)
+    {
+        $key = $this->normalizeCacheKey($key);
+        $cacheItemPool = $this->sdk->getCacheItemPool();
+        if (isset($cacheItemPool)) {
+            $cacheKey = $this->sdk->getCachePrefix() . $key;
+
+            if ($cacheItemPool->hasItem($cacheKey)) {
+                return $cacheItemPool->deleteItem($cacheKey);
+            }
+        }
+
+        return true;
     }
 }

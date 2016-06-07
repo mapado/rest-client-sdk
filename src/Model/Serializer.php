@@ -141,56 +141,58 @@ class Serializer
         $attributeList = $classMetadata->getAttributeList();
 
         $out = [];
-        foreach ($attributeList as $attribute) {
-            $method = 'get' . ucfirst($attribute->getName());
+        if (!empty($attributeList)) {
+            foreach ($attributeList as $attribute) {
+                $method = 'get' . ucfirst($attribute->getName());
 
-            if ($attribute->isIdentifier() && !$entity->$method()) {
-                continue;
-            }
-            $relation = $classMetadata->getRelation($attribute->getName());
-
-            $data = $entity->$method();
-
-            if (null === $data && $relation && $relation->isManyToOne()) {
-                continue;
-            } elseif ($data instanceof \DateTime) {
-                $data = $data->format('c');
-            } elseif (is_object($data) && get_class($data) === "libphonenumber\PhoneNumber") {
-                $phoneNumberUtil = PhoneNumberUtil::getInstance();
-                $data = $phoneNumberUtil->format(
-                    $data,
-                    PhoneNumberFormat::INTERNATIONAL
-                );
-            } elseif (is_object($data) && $relation && $this->mapping->hasClassMetadata($relation->getTargetEntity())) {
-                if ($data->getId()) {
-                    $data = $data->getId();
-                } elseif ($relation->isManyToOne()) {
-                    if ($level > 0) {
-                        continue;
-                    } else {
-                        throw new SdkException('Case not allowed for now');
-                    }
+                if ($attribute->isIdentifier() && !$entity->$method()) {
+                    continue;
                 }
-            } elseif (is_array($data)) {
-                $newData = [];
-                foreach ($data as $key => $item) {
-                    if ($item instanceof \DateTime) {
-                        $newData[$key] = $item->format('c');
-                    } elseif (is_object($item) &&
-                        $relation &&
-                        $this->mapping->hasClassMetadata($relation->getTargetEntity())
-                    ) {
-                        $newData[$key] = $this->recursiveSerialize($item, $relation->getTargetEntity(), $level + 1);
-                    } else {
-                        $newData[$key] = $item;
+                $relation = $classMetadata->getRelation($attribute->getName());
+
+                $data = $entity->$method();
+
+                if (null === $data && $relation && $relation->isManyToOne()) {
+                    continue;
+                } elseif ($data instanceof \DateTime) {
+                    $data = $data->format('c');
+                } elseif (is_object($data) && get_class($data) === "libphonenumber\PhoneNumber") {
+                    $phoneNumberUtil = PhoneNumberUtil::getInstance();
+                    $data = $phoneNumberUtil->format(
+                        $data,
+                        PhoneNumberFormat::INTERNATIONAL
+                    );
+                } elseif (is_object($data) && $relation && $this->mapping->hasClassMetadata($relation->getTargetEntity())) {
+                    if ($data->getId()) {
+                        $data = $data->getId();
+                    } elseif ($relation->isManyToOne()) {
+                        if ($level > 0) {
+                            continue;
+                        } else {
+                            throw new SdkException('Case not allowed for now');
+                        }
                     }
+                } elseif (is_array($data)) {
+                    $newData = [];
+                    foreach ($data as $key => $item) {
+                        if ($item instanceof \DateTime) {
+                            $newData[$key] = $item->format('c');
+                        } elseif (is_object($item) &&
+                            $relation &&
+                            $this->mapping->hasClassMetadata($relation->getTargetEntity())
+                        ) {
+                            $newData[$key] = $this->recursiveSerialize($item, $relation->getTargetEntity(), $level + 1);
+                        } else {
+                            $newData[$key] = $item;
+                        }
+                    }
+                    $data = $newData;
                 }
-                $data = $newData;
+
+                $key = $attribute->getName() === 'id' ? '@id' : $attribute->getName();
+
+                $out[$key] = $data;
             }
-
-            $key = $attribute->getName() === 'id' ? '@id' : $attribute->getName();
-
-            $out[$key] = $data;
         }
 
         return $out;
