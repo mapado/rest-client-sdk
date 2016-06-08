@@ -119,12 +119,6 @@ class EntityRepository extends atoum
                 ->mock($this->mockedRestClient)
                     ->call('get')
                         ->withArguments('v12/orders/1?foo=bar&bar=baz')->once()
-
-            ->if($this->repository->findAll(['foo' => 'bar', 'bar' => 'baz']))
-            ->then
-                ->mock($this->mockedRestClient)
-                    ->call('get')
-                        ->withArguments('v12/orders?foo=bar&bar=baz')->once()
         ;
     }
 
@@ -170,14 +164,11 @@ class EntityRepository extends atoum
 
             ->if($this->repository->findAll())
             ->and($this->repository->findAll())
-            ->and($this->repository->findAll(['foo' => 'bar']))
             ->if($this->repository->find(3))
             ->then
                 ->mock($this->mockedRestClient)
                     ->call('get')
                         ->withArguments('v12/orders')->once()
-                    ->call('get')
-                        ->withArguments('v12/orders?foo=bar')->once()
                     ->call('get')
                         ->withArguments('v12/orders/3')->never()
         ;

@@ -85,18 +85,15 @@ class EntityRepository
     /**
      * findAll
      *
-     * @param array $queryParams query parameters to add to the query
      * @access public
      * @return array
      */
-    public function findAll($queryParams = [])
+    public function findAll()
     {
         $mapping = $this->sdk->getMapping();
         $key = $mapping->getKeyFromModel($this->entityName);
         $prefix = $mapping->getIdPrefix();
         $path = (null == $prefix) ? $key : $prefix . '/' . $key;
-
-        $path = $this->addQueryParameter($path, $queryParams);
 
         $entityListFromCache = $this->fetchFromCache($path);
 
