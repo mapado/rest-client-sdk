@@ -162,6 +162,7 @@ class EntityRepository extends atoum
                     ->call('get')
                         ->withArguments('v12/orders/1?foo=bar')->once()
 
+            // find all
             ->if($this->repository->findAll())
             ->and($this->repository->findAll())
             ->if($this->repository->find(3))
@@ -171,6 +172,61 @@ class EntityRepository extends atoum
                         ->withArguments('v12/orders')->once()
                     ->call('get')
                         ->withArguments('v12/orders/3')->never()
+
+            // find by
+            ->given($this->resetMock($this->mockedRestClient))
+                ->and($this->mockedSdk->getCacheItemPool()->clear())
+
+            ->if($this->repository->findBy([ 'foo' => 'bar', 'bar'  => 'baz' ]))
+            ->and($this->repository->findBy([ 'foo' => 'bar', 'bar'  => 'baz' ]))
+            ->if($this->repository->find(1))
+            ->then
+                ->mock($this->mockedRestClient)
+                    ->call('get')
+                        ->withArguments('v12/orders?foo=bar&bar=baz')->once()
+                    ->call('get')
+                        ->withArguments('v12/orders/1')->never()
+
+            // find by something
+            ->given($this->resetMock($this->mockedRestClient))
+
+            ->if($this->repository->findByBar('baz'))
+                ->and($this->repository->findByBar('baz'))
+                ->and($this->repository->find(1))
+            ->then
+                ->mock($this->mockedRestClient)
+                    ->call('get')
+                        ->withArguments('v12/orders?bar=baz')->once()
+                    ->call('get')
+                        ->withArguments('v12/orders/1')->never()
+
+            // find one by
+            ->given($this->resetMock($this->mockedRestClient))
+
+            ->if($this->repository->findOneBy([ 'foo' => 'baz', 'bar'  => 'bar' ]))
+            ->and($this->repository->findOneBy([ 'foo' => 'baz', 'bar'  => 'bar' ]))
+            ->then
+                ->mock($this->mockedRestClient)
+                    ->call('get')
+                        ->withArguments('v12/orders?foo=baz&bar=bar')->once()
+
+            // find one by thing
+            ->given($this->resetMock($this->mockedRestClient))
+
+            ->if($this->repository->findOneByFoo('bar'))
+            ->and($this->repository->findOneByFoo('bar'))
+            ->then
+                ->mock($this->mockedRestClient)
+                    ->call('get')
+                        ->withArguments('v12/orders?foo=bar')->once()
+
+            // find one by with data already in cache
+            ->given($this->resetMock($this->mockedRestClient))
+            ->if($this->repository->findOneBy([ 'foo' => 'bar', 'bar'  => 'baz' ]))
+            ->then
+                ->mock($this->mockedRestClient)
+                    ->call('get')
+                        ->withArguments('v12/orders?foo=bar&bar=baz')->never()
         ;
     }
 

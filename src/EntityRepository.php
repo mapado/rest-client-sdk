@@ -218,8 +218,13 @@ class EntityRepository
         }
         $path .= '?' . http_build_query($this->convertQueryParameters($queryParams));
 
-        $data =  $this->restClient->get($path);
+        // if entityList is found in cache, return it
+        $entityListFromCache = $this->fetchFromCache($path);
+        if ($entityListFromCache !== false) {
+            return $entityListFromCache;
+        }
 
+        $data = $this->restClient->get($path);
 
         $hydrator = $this->sdk->getModelHydrator();
 
@@ -227,13 +232,22 @@ class EntityRepository
             // If more results are found but one is requested return the first hit.
             if (!empty($data['hydra:member'])) {
                 $data = current($data['hydra:member']);
-                return $hydrator->hydrate($data, $this->entityName);
+                $hydratedData = $hydrator->hydrate($data, $this->entityName);
             } else {
-                return null;
+                $hydratedData = null;
+            }
+        } else {
+            $hydratedData = $hydrator->hydrateList($data, $this->entityName);
+
+            // then cache each entity from list
+            foreach ($hydratedData as $entity) {
+                $this->saveToCache($entity->getId(), $entity);
             }
         }
 
-        return $hydrator->hydrateList($data, $this->entityName);
+        $this->saveToCache($path, $hydratedData);
+
+        return $hydratedData;
     }
 
     /**
