@@ -163,9 +163,9 @@ class RestClient
      *
      * @param string $method
      * @param string $url
-     * @param bool $parameters
+     * @param array $parameters
      * @access private
-     * @return Response|array
+     * @return \Psr\Http\Message\ResponseInterface|array
      */
     private function executeRequest($method, $url, $parameters = [])
     {
