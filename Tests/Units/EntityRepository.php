@@ -104,6 +104,31 @@ class EntityRepository extends atoum
     }
 
     /**
+     * testFindWithQueryParameters
+     *
+     * @access public
+     * @return void
+     */
+    public function testFindWithQueryParameters()
+    {
+        $this->calling($this->mockedRestClient)->get = [];
+
+        $this
+            ->if($this->repository->find('1', [ 'foo' => 'bar', 'bar'  => 'baz' ]))
+            ->then
+                ->mock($this->mockedRestClient)
+                    ->call('get')
+                        ->withArguments('v12/orders/1?foo=bar&bar=baz')->once()
+
+            ->if($this->repository->findAll(['foo' => 'bar', 'bar' => 'baz']))
+            ->then
+                ->mock($this->mockedRestClient)
+                    ->call('get')
+                        ->withArguments('v12/orders?foo=bar&bar=baz')->once()
+        ;
+    }
+
+    /**
      * testFindWithCache
      *
      * @param mixed $method
@@ -135,18 +160,24 @@ class EntityRepository extends atoum
         $this
             ->if($this->repository->find(1))
             ->and($this->repository->find(1))
+            ->and($this->repository->find(1, ['foo' => 'bar']))
             ->then
                 ->mock($this->mockedRestClient)
                     ->call('get')
                         ->withArguments('v12/orders/1')->once()
+                    ->call('get')
+                        ->withArguments('v12/orders/1?foo=bar')->once()
 
             ->if($this->repository->findAll())
             ->and($this->repository->findAll())
+            ->and($this->repository->findAll(['foo' => 'bar']))
             ->if($this->repository->find(3))
             ->then
                 ->mock($this->mockedRestClient)
                     ->call('get')
                         ->withArguments('v12/orders')->once()
+                    ->call('get')
+                        ->withArguments('v12/orders?foo=bar')->once()
                     ->call('get')
                         ->withArguments('v12/orders/3')->never()
         ;
