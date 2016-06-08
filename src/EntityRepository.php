@@ -55,14 +55,17 @@ class EntityRepository
     /**
      * find - finds one item of the entity based on the @REST\Id field in the entity
      *
-     * @param string $id
+     * @param string $id id of the element to fetch
+     * @param array $queryParams query parameters to add to the query
      * @access public
      * @return object
      */
-    public function find($id)
+    public function find($id, $queryParams = [])
     {
         $hydrator = $this->sdk->getModelHydrator();
         $id = $hydrator->convertId($id, $this->entityName);
+
+        $id = $this->addQueryParameter($id, $queryParams);
 
         // if entity is found in cache, return it
         $entityFromCache = $this->fetchFromCache($id);
@@ -82,15 +85,18 @@ class EntityRepository
     /**
      * findAll
      *
+     * @param array $queryParams query parameters to add to the query
      * @access public
      * @return array
      */
-    public function findAll()
+    public function findAll($queryParams = [])
     {
         $mapping = $this->sdk->getMapping();
         $key = $mapping->getKeyFromModel($this->entityName);
         $prefix = $mapping->getIdPrefix();
         $path = (null == $prefix) ? $key : $prefix . '/' . $key;
+
+        $path = $this->addQueryParameter($path, $queryParams);
 
         $entityListFromCache = $this->fetchFromCache($path);
 
@@ -332,5 +338,22 @@ class EntityRepository
         }
 
         return true;
+    }
+
+    /**
+     * addQueryParameter
+     *
+     * @param string $path path to call
+     * @param array $params query parameters to add
+     * @access private
+     * @return string
+     */
+    private function addQueryParameter($path, $params = [])
+    {
+        if (empty($params)) {
+            return $path;
+        }
+
+        return $path . '?' . http_build_query($params);
     }
 }
