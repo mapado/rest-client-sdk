@@ -233,6 +233,8 @@ class EntityRepository
             if (!empty($data['hydra:member'])) {
                 $data = current($data['hydra:member']);
                 $hydratedData = $hydrator->hydrate($data, $this->entityName);
+
+                $this->saveToCache($hydratedData->getId(), $hydratedData);
             } else {
                 $hydratedData = null;
             }
