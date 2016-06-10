@@ -4,6 +4,7 @@ namespace Mapado\RestClientSdk;
 
 use Mapado\RestClientSdk\Model\ModelHydrator;
 use Mapado\RestClientSdk\Model\Serializer;
+use ProxyManager\Configuration;
 use ProxyManager\Factory\LazyLoadingGhostFactory;
 use ProxyManager\Proxy\LazyLoadingInterface;
 use Psr\Cache\CacheItemPoolInterface;
@@ -22,6 +23,14 @@ class SdkClient
     private $modelHydrator;
 
     private $repositoryList = [];
+
+    /**
+     * proxyManagerConfig
+     *
+     * @var Configuration
+     * @access private
+     */
+    private $proxyManagerConfig;
 
     /**
      * cacheItemPool
@@ -178,7 +187,12 @@ class SdkClient
 
         $sdk = $this;
 
-        $factory     = new LazyLoadingGhostFactory();
+        if ($this->proxyManagerConfig) {
+            $factory = new LazyLoadingGhostFactory($this->proxyManagerConfig);
+        } else {
+            $factory = new LazyLoadingGhostFactory();
+        }
+
         $initializer = function (
             LazyLoadingInterface &$proxy,
             $method,
@@ -215,5 +229,19 @@ class SdkClient
         $instance->setId($id);
 
         return $instance;
+    }
+
+    /**
+     * Setter for fileCachePath
+     *
+     * @param string $fileCachePath
+     * @return SdkClient
+     */
+    public function setFileCachePath($fileCachePath)
+    {
+        $this->proxyManagerConfig = new Configuration();
+        $this->proxyManagerConfig->setProxiesTargetDir($fileCachePath);
+
+        return $this;
     }
 }
