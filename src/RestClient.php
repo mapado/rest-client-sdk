@@ -216,7 +216,7 @@ class RestClient
      * @access private
      * @return void
      */
-    private function logRequest($startTime, $method, $url, $parameters, $response = null)
+    private function logRequest($startTime, $method, $url, $parameters, $response)
     {
         if ($this->isHistoryLogged()) {
             $queryTime = microtime(true) - $startTime;
