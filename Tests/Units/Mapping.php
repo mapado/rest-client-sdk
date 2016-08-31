@@ -104,6 +104,13 @@ class Mapping extends atoum
             ->then
                 ->string($this->testedInstance->getKeyFromId('/orders/8'))
                     ->isEqualTo('orders')
+
+            // a really complicated id
+            ->given($this->newTestedInstance)
+                ->and($this->testedInstance->setMapping($this->getMappingArray()))
+            ->then
+                ->string($this->testedInstance->getKeyFromId('/sales/customers/3/orders/8'))
+                    ->isEqualTo('orders')
         ;
     }
 

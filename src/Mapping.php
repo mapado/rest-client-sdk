@@ -93,7 +93,12 @@ class Mapping
     public function getKeyFromId($id)
     {
         $id = $this->removePrefix($id);
-        $key = substr($id, 1, strrpos($id, '/') - 1);
+
+        $lastSeparator = strrpos($id, '/');
+        $secondLast = strrpos($id, '/', $lastSeparator - strlen($id) - 1) + 1;
+
+        $keyLength = abs($secondLast - $lastSeparator);
+        $key = substr($id, $secondLast, $keyLength);
         $this->checkMappingExistence($key);
 
         return $key;
