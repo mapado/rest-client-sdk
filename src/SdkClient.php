@@ -205,7 +205,6 @@ class SdkClient
         ) {
             if ($method !== 'getId' && $method !== 'setId' && $method !== 'jsonSerialize') {
                 $initializer   = null; // disable initialization
-
                 // load data and modify the object here
                 if ($id) {
                     $repository = $sdk->getRepository($classMetadata->getModelName());

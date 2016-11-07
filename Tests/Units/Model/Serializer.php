@@ -77,7 +77,18 @@ class Serializer extends atoum
                         'clientPhoneNumber' => '+33 1 23 45 67 89',
                         'createdAt' => (new \DateTime('2015-09-20T12:08:00'))->format(DateTime::RFC3339),
                         'cartItemList' => [
-                            '/v1/cart_items/16',
+                            [
+                                '@id' => '/v1/cart_items/16',
+                                'amount' => 1,
+                                'createdAt' => (new \DateTime('2015-11-04 15:13:00'))->format(DateTime::RFC3339),
+                                'data' => [
+                                    'when' => (new \DateTime('2015-11-04 15:00:00'))->format(DateTime::RFC3339),
+                                    'who' => 'Jane',
+                                ],
+                                'cart' => '/v1/carts/8',
+                                'product' => '/v1/products/10',
+                                'cartItemDetailList' => [],
+                            ],
                         ],
                     ])
 
@@ -230,7 +241,18 @@ class Serializer extends atoum
                         'clientPhoneNumber' => '+33 1 23 45 67 89',
                         'createdAt' => (new \DateTime('2015-09-20T12:08:00'))->format(DateTime::RFC3339),
                         'cartItemList' => [
-                            '/v1/cart_items/16',
+                            [
+                                '@id' => '/v1/cart_items/16',
+                                'amount' => 1,
+                                'createdAt' => (new \DateTime('2015-11-04 15:13:00'))->format(DateTime::RFC3339),
+                                'data' => [
+                                    'when' => (new \DateTime('2015-11-04 15:00:00'))->format(DateTime::RFC3339),
+                                    'who' => 'Jane',
+                                ],
+                                'cart' => '/v1/carts/8',
+                                'product' => '/v1/products/10',
+                                'cartItemDetailList' => [],
+                            ],
                             [
                                 'amount' => 2,
                                 'createdAt' => (new \DateTime('2015-09-20T12:11:00'))->format(DateTime::RFC3339),
@@ -530,6 +552,13 @@ class Serializer extends atoum
     {
         $cartItem = $this->createNewCartItem();
         $cartItem->setId('/v1/cart_items/16');
+        $cartItem->setAmount(1);
+        $cartItem->setCreatedAt(new DateTime('2015-11-04 15:13:00'));
+        $cartItem->setData([
+            'when' => new DateTime('2015-11-04 15:00:00'),
+            'who' => 'Jane',
+        ]);
+        $cartItem->setCart($this->createCart());
 
         return $cartItem;
     }
@@ -613,6 +642,34 @@ class Serializer extends atoum
         $this->mockGenerator->unshuntParentClassCalls();
         $sdk = new \mock\Mapado\RestClientSdk\SdkClient($restClient, $this->getMapping(), $this->testedInstance);
 
+        $cartRepositoryMock = $this->getCartRepositoryMock($sdk, $restClient, 'Mapado\RestClientSdk\Tests\Model\Cart');
+
+        $this->calling($sdk)->getRepository = function($modelName) use($cartRepositoryMock) {
+            switch($modelName) {
+                case 'Mapado\RestClientSdk\Tests\Model\Cart':
+                    return $cartRepositoryMock;
+                default:
+                    return null;
+            }
+        };
+
         $this->testedInstance->setSdk($sdk);
+    }
+
+    private function getCartRepositoryMock($sdk, $restClient, $modelName)
+    {
+        $repository = new \mock\Mapado\RestClientSdk\EntityRepository(
+            $sdk,
+            $restClient,
+            $modelName
+        );
+
+        $_this = $this;
+
+        $this->calling($repository)->find = function($id) use ($_this) {
+            return $_this->createCart();
+        };
+
+        return $repository;
     }
 }
