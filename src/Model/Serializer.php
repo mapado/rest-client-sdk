@@ -132,7 +132,7 @@ class Serializer
      */
     private function recursiveSerialize($entity, $modelName, $level = 0)
     {
-        if ($level > 0 && $entity->getId()) {
+        if ($level > 1 && $entity->getId()) {
             return $entity->getId();
         }
 
