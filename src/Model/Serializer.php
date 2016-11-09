@@ -57,9 +57,9 @@ class Serializer
      * @access public
      * @return array
      */
-    public function serialize($entity, $modelName)
+    public function serialize($entity, $modelName, $context = [])
     {
-        return $this->recursiveSerialize($entity, $modelName);
+        return $this->recursiveSerialize($entity, $modelName, 0, $context);
     }
 
     /**
@@ -127,12 +127,13 @@ class Serializer
      *
      * @param object $entity
      * @param int $level
+     * @param array $context
      * @access private
      * @return array
      */
-    private function recursiveSerialize($entity, $modelName, $level = 0)
+    private function recursiveSerialize($entity, $modelName, $level = 0, $context = [])
     {
-        if ($level > 1 && $entity->getId()) {
+        if ($level > 0 && empty($context['serializeRelation']) && $entity->getId()) {
             return $entity->getId();
         }
 
@@ -181,7 +182,15 @@ class Serializer
                             $relation &&
                             $this->mapping->hasClassMetadata($relation->getTargetEntity())
                         ) {
-                            $newData[$key] = $this->recursiveSerialize($item, $relation->getTargetEntity(), $level + 1);
+                            $serializeRelation = !empty($context['serializeRelations'])
+                                && in_array($relation->getKey(), $context['serializeRelations']);
+
+                            $newData[$key] = $this->recursiveSerialize(
+                                $item,
+                                $relation->getTargetEntity(),
+                                $level + 1,
+                                [ 'serializeRelation' => $serializeRelation ]
+                            );
                         } else {
                             $newData[$key] = $item;
                         }
