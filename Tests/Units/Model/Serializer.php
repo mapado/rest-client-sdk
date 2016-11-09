@@ -680,8 +680,8 @@ class Serializer extends atoum
 
         $cartRepositoryMock = $this->getCartRepositoryMock($sdk, $restClient, 'Mapado\RestClientSdk\Tests\Model\Cart');
 
-        $this->calling($sdk)->getRepository = function($modelName) use($cartRepositoryMock) {
-            switch($modelName) {
+        $this->calling($sdk)->getRepository = function ($modelName) use ($cartRepositoryMock) {
+            switch ($modelName) {
                 case 'Mapado\RestClientSdk\Tests\Model\Cart':
                     return $cartRepositoryMock;
                 default:
@@ -702,7 +702,7 @@ class Serializer extends atoum
 
         $_this = $this;
 
-        $this->calling($repository)->find = function($id) use ($_this) {
+        $this->calling($repository)->find = function ($id) use ($_this) {
             return $_this->createCart();
         };
 
