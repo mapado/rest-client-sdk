@@ -69,8 +69,40 @@ class Serializer extends atoum
             ->given($cart = $this->createCart())
                 ->and($cartItem = $this->createKnownCartItem())
                 ->and($cart->addCartItemList($cartItem))
+
             ->then
-                ->array($data = $this->testedInstance->serialize($cart, 'Mapado\RestClientSdk\Tests\Model\Cart'))
+                ->array($data = $this->testedInstance->serialize(
+                    $cart,
+                    'Mapado\RestClientSdk\Tests\Model\Cart',
+                    [ 'serializeRelations' => ['cartItemList'] ]
+                ))
+                    ->isIdenticalTo([
+                        '@id' => '/v1/carts/8',
+                        'status' => 'payed',
+                        'clientPhoneNumber' => '+33 1 23 45 67 89',
+                        'createdAt' => (new \DateTime('2015-09-20T12:08:00'))->format(DateTime::RFC3339),
+                        'cartItemList' => [
+                            [
+                                '@id' => '/v1/cart_items/16',
+                                'amount' => 1,
+                                'createdAt' => (new \DateTime('2015-11-04 15:13:00'))->format(DateTime::RFC3339),
+                                'data' => [
+                                    'when' => (new \DateTime('2015-11-04 15:00:00'))->format(DateTime::RFC3339),
+                                    'who' => 'Jane',
+                                ],
+                                'cart' => '/v1/carts/8',
+                                'product' => '/v1/products/10',
+                                'cartItemDetailList' => [],
+                            ],
+                        ],
+                    ])
+
+            ->then
+                ->array($data = $this->testedInstance->serialize(
+                    $cart,
+                    'Mapado\RestClientSdk\Tests\Model\Cart',
+                    [ 'serializeRelations' => ['cartItemList'] ]
+                ))
                     ->isIdenticalTo([
                         '@id' => '/v1/carts/8',
                         'status' => 'payed',
@@ -234,7 +266,11 @@ class Serializer extends atoum
             ->if($cart->addCartItemList($knownedCartItem))
                 ->and($cart->addCartItemList($cartItem))
             ->then
-                ->array($data = $this->testedInstance->serialize($cart, 'Mapado\RestClientSdk\Tests\Model\Cart'))
+                ->array($data = $this->testedInstance->serialize(
+                    $cart,
+                    'Mapado\RestClientSdk\Tests\Model\Cart',
+                    [ 'serializeRelations' => ['cartItemList'] ]
+                ))
                     ->isIdenticalTo([
                         '@id' => '/v1/carts/8',
                         'status' => 'payed',
@@ -483,7 +519,7 @@ class Serializer extends atoum
 
 
         $cartItemDetailMetadata = new ClassMetadata(
-            'cart_items',
+            'cart_item_details',
             'Mapado\RestClientSdk\Tests\Model\CartItemDetail',
             ''
         );
