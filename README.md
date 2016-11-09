@@ -171,6 +171,17 @@ $repository->remove($cart);
 
 The `remove` operation will send a `DELETE` request to the API endpoint using the object ID.
 
+### Custom serialization
+By default, when serializing, the SDK return only the ID to existing relations (like one-to-many).
+
+You may want to serialize OneToMany relations though (imagine you have a `Cart` and you want to update linked `cartItems`)
+
+to do so, you can specify a `$serializationContext` in the `persist` and `update` method:
+
+```php
+$repostory->update($cart, [ 'serializeRelations' => [ 'cartItems' ] ]);
+```
+
 ### Extending the repository
 
 If you need to extend the [EntityRepository](https://github.com/mapado/rest-client-sdk/blob/master/src/EntityRepository.php), you can just do something like that:
