@@ -141,11 +141,11 @@ class EntityRepository
      * @access public
      * @return void
      */
-    public function update($model)
+    public function update($model, $serializationContext = [])
     {
         $data = $this->restClient->put(
             $model->getId(),
-            $this->sdk->getSerializer()->serialize($model, $this->entityName)
+            $this->sdk->getSerializer()->serialize($model, $this->entityName, $serializationContext)
         );
 
         $this->removeFromCache($model->getId());
@@ -161,14 +161,14 @@ class EntityRepository
      * @access public
      * @return void
      */
-    public function persist($model)
+    public function persist($model, $serializationContext = [])
     {
         $mapping = $this->sdk->getMapping();
         $prefix = $mapping->getIdPrefix();
         $key = $mapping->getKeyFromModel($this->entityName);
 
         $path = (null == $prefix) ? $key : $prefix . '/' . $key;
-        $data = $this->restClient->post($path, $this->sdk->getSerializer()->serialize($model, $this->entityName));
+        $data = $this->restClient->post($path, $this->sdk->getSerializer()->serialize($model, $this->entityName, $serializationContext));
 
         $hydrator = $this->sdk->getModelHydrator();
         return $hydrator->hydrate($data, $this->entityName);
