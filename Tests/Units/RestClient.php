@@ -39,6 +39,7 @@ class RestClient extends atoum
                     201,
                     []
                 ),
+                new Response(403),
             ]
         );
 
@@ -71,6 +72,14 @@ class RestClient extends atoum
             ->then
                 ->object($this->testedInstance->get('/not-json'))
                     ->isInstanceOf('\GuzzleHttp\Psr7\Response')
+
+            ->then($testedInstance = $this->testedInstance)
+                ->exception(function () use ($testedInstance) {
+                    $testedInstance->get('/403');
+                })
+                    ->isInstanceOf('Mapado\RestClientSdk\Exception\RestException')
+                    ->hasMessage('Error while getting resource')
+                    ->hasCode(7)
            ;
     }
 
