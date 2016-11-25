@@ -459,6 +459,23 @@ class Serializer extends atoum
         ;
     }
 
+    public function testSerializeNullValues()
+    {
+        $this->createNewInstance();
+        $this
+            ->given($cart = $this->createNewCart())
+                ->and($cart->setStatus(null))
+            ->then
+                ->array($data = $this->testedInstance->serialize($cart, 'Mapado\RestClientSdk\Tests\Model\Cart'))
+                    ->isIdenticalTo([
+                        'status' => null,
+                        'clientPhoneNumber' => '+33 1 23 45 67 89',
+                        'createdAt' => (new \DateTime('2015-09-20T12:08:00'))->format(DateTime::RFC3339),
+                        'cartItemList' => [],
+                    ])
+        ;
+    }
+
 
     /**
      * getMapping
