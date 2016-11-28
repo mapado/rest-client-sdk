@@ -1,0 +1,4 @@
+checks:
+    php:
+        excluded_dependencies:
+            - atoum/atoum
