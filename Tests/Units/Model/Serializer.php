@@ -37,6 +37,7 @@ class Serializer extends atoum
                         "clientPhoneNumber" => '+33 1 23 45 67 89',
                         'createdAt' => (new \DateTime('2015-09-20T12:08:00'))->format(DateTime::RFC3339),
                         'cartItemList' => [],
+                        'order' => null,
                     ])
 
             // reverse the serialization
@@ -95,6 +96,7 @@ class Serializer extends atoum
                                 'cartItemDetailList' => [],
                             ],
                         ],
+                        'order' => null,
                     ])
 
             ->then
@@ -122,6 +124,7 @@ class Serializer extends atoum
                                 'cartItemDetailList' => [],
                             ],
                         ],
+                        'order' => null,
                     ])
 
             // reverse the serialization
@@ -169,6 +172,7 @@ class Serializer extends atoum
                                 'cartItemDetailList' => [],
                             ],
                         ],
+                        'order' => null,
                     ])
 
             // reverse the serialization
@@ -205,6 +209,7 @@ class Serializer extends atoum
                                 'cartItemDetailList' => [],
                             ],
                         ],
+                        'order' => null,
                     ])
         ;
     }
@@ -240,11 +245,12 @@ class Serializer extends atoum
                                     'who' => 'John',
                                 ],
                                 'cartItemDetailList' => [
-                                    [ 'name' => 'Bill', ],
+                                    [ 'name' => 'Bill' ],
                                     [ 'name' => 'Bill', ],
                                 ],
                             ],
                         ],
+                        'order' => null,
                     ])
         ;
     }
@@ -300,6 +306,7 @@ class Serializer extends atoum
                                 'cartItemDetailList' => [],
                             ],
                         ],
+                        'order' => null,
                     ])
 
             // reverse the serialization
@@ -369,6 +376,7 @@ class Serializer extends atoum
                                 'cartItemDetailList' => [],
                             ],
                         ],
+                        'order' => null,
                     ])
 
         ;
@@ -442,7 +450,7 @@ class Serializer extends atoum
                         '@id' => '/v1/carts/10',
                         'status' => 'waiting',
                         'clientPhoneNumber' => '+33 1 23 45 67 89',
-                    ]
+                    ],
                 ])
 
             ->then
@@ -465,6 +473,7 @@ class Serializer extends atoum
         $this
             ->given($cart = $this->createNewCart())
                 ->and($cart->setStatus(null))
+                ->and($cart->setOrder(null))
             ->then
                 ->array($data = $this->testedInstance->serialize($cart, 'Mapado\RestClientSdk\Tests\Model\Cart'))
                     ->isIdenticalTo([
@@ -472,6 +481,7 @@ class Serializer extends atoum
                         'clientPhoneNumber' => '+33 1 23 45 67 89',
                         'createdAt' => (new \DateTime('2015-09-20T12:08:00'))->format(DateTime::RFC3339),
                         'cartItemList' => [],
+                        'order' => null,
                     ])
         ;
     }
@@ -496,9 +506,11 @@ class Serializer extends atoum
             new Attribute('clientPhoneNumber', 'phone_number'),
             new Attribute('createdAt', 'datetime'),
             new Attribute('cartItemList'),
+            new Attribute('order'),
         ]);
         $cartMetadata->setRelationList([
             new Relation('cartItemList', Relation::ONE_TO_MANY, 'Mapado\RestClientSdk\Tests\Model\CartItem'),
+            new Relation('order', Relation::MANY_TO_ONE, 'Mapado\RestClientSdk\Tests\Model\Order'),
         ]);
 
         $cartItemMetadata = new ClassMetadata(
