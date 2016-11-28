@@ -153,7 +153,13 @@ class Serializer
 
                 $data = $entity->$method();
 
-                if (null === $data && $relation && $relation->isManyToOne()) {
+                if (null === $data && $relation && $relation->isManyToOne() && $level > 0) {
+                    /*
+                        We only serialize the root many-to-one relations to prevent, hopefully,
+                        unlinked and/or duplicated content. For instance, a cart with cartItemList containing
+                        null values for the cart [{ cart => null, ... }] may lead the creation of
+                        CartItem entities explicitly bound to a null Cart instead of the created/updated Cart.
+                     */
                     continue;
                 } elseif ($data instanceof \DateTime) {
                     $data = $data->format('c');

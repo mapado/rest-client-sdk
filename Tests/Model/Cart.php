@@ -65,6 +65,16 @@ class Cart
     private $clientPhoneNumber;
 
     /**
+     * order
+     *
+     * @var mixed
+     * @access private
+     *
+     * @Rest\ManyToOne(name="order", targetEntity="Order")
+     */
+    private $order = null;
+
+    /**
      * Getter for id
      *
      * return string
@@ -83,6 +93,7 @@ class Cart
     public function setId($id)
     {
         $this->id = $id;
+
         return $this;
     }
 
@@ -105,6 +116,7 @@ class Cart
     public function setStatus($status)
     {
         $this->status = $status;
+
         return $this;
     }
 
@@ -127,6 +139,7 @@ class Cart
     public function setCreatedAt(DateTime $createdAt)
     {
         $this->createdAt = $createdAt;
+
         return $this;
     }
 
@@ -149,6 +162,7 @@ class Cart
     public function setCartItemList($cartItemList)
     {
         $this->cartItemList = $cartItemList;
+
         return $this;
     }
 
@@ -176,6 +190,30 @@ class Cart
     public function setClientPhoneNumber($clientPhoneNumber)
     {
         $this->clientPhoneNumber = $clientPhoneNumber;
+
+        return $this;
+    }
+
+    /**
+     * Getter for order
+     *
+     * @return string
+     */
+    public function getOrder()
+    {
+        return $this->order;
+    }
+
+    /**
+     * Setter for order
+     *
+     * @param string $order
+     * @return Cart
+     */
+    public function setOrder($order)
+    {
+        $this->order = $order;
+
         return $this;
     }
 }
