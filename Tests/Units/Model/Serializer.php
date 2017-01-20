@@ -706,6 +706,7 @@ class Serializer extends atoum
         $restClient = new \mock\Mapado\RestClientSdk\RestClient();
         $this->mockGenerator->unshuntParentClassCalls();
         $sdk = new \mock\Mapado\RestClientSdk\SdkClient($restClient, $this->getMapping(), $this->testedInstance);
+        $sdk->setFileCachePath(__DIR__ . '/../../cache/');
 
         $cartRepositoryMock = $this->getCartRepositoryMock($sdk, $restClient, 'Mapado\RestClientSdk\Tests\Model\Cart');
 
