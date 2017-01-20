@@ -144,12 +144,12 @@ class Serializer
         $out = [];
         if (!empty($attributeList)) {
             foreach ($attributeList as $attribute) {
-                $method = 'get' . ucfirst($attribute->getName());
+                $method = 'get' . ucfirst($attribute->getSerializedKey());
 
                 if ($attribute->isIdentifier() && !$entity->$method()) {
                     continue;
                 }
-                $relation = $classMetadata->getRelation($attribute->getName());
+                $relation = $classMetadata->getRelation($attribute->getSerializedKey());
 
                 $data = $entity->$method();
 
@@ -189,7 +189,7 @@ class Serializer
                             $this->mapping->hasClassMetadata($relation->getTargetEntity())
                         ) {
                             $serializeRelation = !empty($context['serializeRelations'])
-                                && in_array($relation->getKey(), $context['serializeRelations']);
+                                && in_array($relation->getSerializedKey(), $context['serializeRelations']);
 
                             $newData[$key] = $this->recursiveSerialize(
                                 $item,
@@ -204,7 +204,7 @@ class Serializer
                     $data = $newData;
                 }
 
-                $key = $attribute->getName() === 'id' ? '@id' : $attribute->getName();
+                $key = $attribute->getSerializedKey() === 'id' ? '@id' : $attribute->getSerializedKey();
 
                 $out[$key] = $data;
             }

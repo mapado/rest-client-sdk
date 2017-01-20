@@ -17,7 +17,7 @@ class Relation
      * @var string
      * @access private
      */
-    private $key;
+    private $serializedKey;
 
     /**
      * type
@@ -38,36 +38,37 @@ class Relation
     /**
      * __construct
      *
-     * @param string $key
+     * @param string $serializedKey
      * @param string $type
      * @access public
      */
-    public function __construct($key, $type, $targetEntity)
+    public function __construct($serializedKey, $type, $targetEntity)
     {
-        $this->key = $key;
+        $this->serializedKey = $serializedKey;
         $this->type = $type;
         $this->targetEntity = $targetEntity;
     }
 
     /**
-     * Getter for key
+     * Getter for serializedKey
      *
-     * return string
+     * @return string
      */
-    public function getKey()
+    public function getSerializedKey()
     {
-        return $this->key;
+        return $this->serializedKey;
     }
 
     /**
-     * Setter for key
+     * Setter for serializedKey
      *
-     * @param string $key
+     * @param string $serializedKey
      * @return Relation
      */
-    public function setKey($key)
+    public function setSerializedKey($serializedKey)
     {
-        $this->key = $key;
+        $this->serializedKey = $serializedKey;
+
         return $this;
     }
 

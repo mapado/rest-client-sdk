@@ -8,50 +8,55 @@ namespace Mapado\RestClientSdk\Mapping;
  */
 class Attribute
 {
-    private $name;
+    private $serializedKey;
 
     private $type;
 
     private $isIdentifier;
 
+    private $attributeName;
+
     /**
      * __construct
      *
-     * @param string $name
+     * @param string $serializedKey
      * @param string $type
      * @param boolean $isIdentifier
+     * @param string $attributeName
      * @access public
      */
-    public function __construct($name, $type = 'string', $isIdentifier = false)
+    public function __construct($serializedKey, $type = 'string', $isIdentifier = false, $attributeName = null)
     {
-        if (empty($name)) {
+        if (empty($serializedKey)) {
             throw \InvalidArgumentException('attribute name must be set');
         }
 
-        $this->name = $name;
+        $this->serializedKey = $serializedKey;
         $this->type = $type;
         $this->isIdentifier = $isIdentifier;
+        $this->attributeName = $attributeName ?: $this->serializedKey;
     }
 
     /**
-     * Getter for name
+     * Getter for serializedKey
      *
-     * return string
+     * @return string
      */
-    public function getName()
+    public function getSerializedKey()
     {
-        return $this->name;
+        return $this->serializedKey;
     }
 
     /**
-     * Setter for name
+     * Setter for serializedKey
      *
-     * @param string $name
+     * @param string $serializedKey
      * @return Attribute
      */
-    public function setName($name)
+    public function setSerializedKey($serializedKey)
     {
-        $this->name = $name;
+        $this->serializedKey = $serializedKey;
+
         return $this;
     }
 
@@ -96,6 +101,29 @@ class Attribute
     public function setIsIdentifier($isIdentifier)
     {
         $this->isIdentifier = $isIdentifier;
+        return $this;
+    }
+
+    /**
+     * Getter for attributeName
+     *
+     * @return string
+     */
+    public function getAttributeName()
+    {
+        return $this->attributeName;
+    }
+
+    /**
+     * Setter for attributeName
+     *
+     * @param string $attributeName
+     * @return Attribute
+     */
+    public function setAttributeName($attributeName)
+    {
+        $this->attributeName = $attributeName;
+
         return $this;
     }
 }

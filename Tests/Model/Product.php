@@ -29,7 +29,7 @@ class Product
      * @var string
      * @access private
      *
-     * @Rest\Attribute(name="value", type="string")
+     * @Rest\Attribute(name="product_value", type="string")
      */
     private $value;
 

@@ -151,7 +151,8 @@ class AnnotationDriver
                 $attributeList[] = new Attribute(
                     $propertyAnnotation->name,
                     $propertyAnnotation->type,
-                    $isId
+                    $isId,
+                    $property->getName()
                 );
             } else {
                 // manage relations
@@ -161,7 +162,9 @@ class AnnotationDriver
                 }
 
                 if ($relation) {
-                    $attributeList[] = new Attribute($relation->name);
+                    $attribute = new Attribute($relation->name);
+                    $attribute->setAttributeName($property->getName());
+                    $attributeList[] = $attribute;
 
                     $targetEntity = $relation->targetEntity;
                     if (strpos($targetEntity, '/') === false) {

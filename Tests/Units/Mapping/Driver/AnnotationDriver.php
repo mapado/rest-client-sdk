@@ -53,14 +53,20 @@ class AnnotationDriver extends atoum
                 ->string($classMetadata->getRepositoryName())
                     ->isEqualTo('Mapado\RestClientSdk\Test\Model\ModelRepository')
 
-                ->array($classMetadata->getAttributeList())
+                ->array($attributeList = $classMetadata->getAttributeList())
                     ->size->isEqualTo(3)
 
-                ->object($attribute = current($classMetadata->getAttributeList()))
+                ->object($attribute = current($attributeList))
                     ->isInstanceOf('Mapado\RestClientSdk\Mapping\Attribute')
 
-                ->string($attribute->getName())
+                ->string($attribute->getSerializedKey())
                     ->isEqualTo('id')
+
+                ->then($attribute = next($attributeList))
+                ->string($attribute->getSerializedKey())
+                    ->isEqualTo('product_value')
+                ->string($attribute->getAttributeName())
+                    ->isEqualTo('value')
         ;
     }
 

@@ -116,7 +116,7 @@ class ClassMetadata
     public function getAttribute($name)
     {
         foreach ($this->attributeList as $attribute) {
-            if ($attribute->getName() == $name) {
+            if ($attribute->getSerializedKey() == $name) {
                 return $attribute;
             }
         }
@@ -177,7 +177,7 @@ class ClassMetadata
     {
         if (!empty($this->relationList)) {
             foreach ($this->relationList as $relation) {
-                if ($relation->getKey() == $key) {
+                if ($relation->getSerializedKey() == $key) {
                     return $relation;
                 }
             }
