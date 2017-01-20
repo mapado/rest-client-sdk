@@ -1,6 +1,13 @@
 Changelog
 ======================
 
+## 0.18.0
+### Breaking change
+  * `@id` key is not automatically serialized when the attribute name is `id`, you must set `@Attribute(name="@id")` in your relation (or `new Attribute('@id', 'id')`)
+  * `Mapado\RestClientSdk\Mapping\Attribute` constructor now takes the parameter name as second parameter
+### Bugfix
+  * Fix bug when attribute name and `@Attribute(name="foo")` is not the same (#13)
+
 ## 0.8.0
 * Replace the `AbstractClient` by the `EntityRepository`
 * remove the `client` parameter to the Annotation, replaced by `repository` if needed

@@ -20,21 +20,21 @@ class Attribute
      * __construct
      *
      * @param string $serializedKey
+     * @param string $attributeName
      * @param string $type
      * @param boolean $isIdentifier
-     * @param string $attributeName
      * @access public
      */
-    public function __construct($serializedKey, $type = 'string', $isIdentifier = false, $attributeName = null)
+    public function __construct($serializedKey, $attributeName = null, $type = 'string', $isIdentifier = false)
     {
         if (empty($serializedKey)) {
             throw \InvalidArgumentException('attribute name must be set');
         }
 
         $this->serializedKey = $serializedKey;
+        $this->attributeName = $attributeName ?: $this->serializedKey;
         $this->type = $type;
         $this->isIdentifier = $isIdentifier;
-        $this->attributeName = $attributeName ?: $this->serializedKey;
     }
 
     /**

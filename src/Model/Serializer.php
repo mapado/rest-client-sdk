@@ -73,12 +73,14 @@ class Serializer
     {
         // classname may be detected for hydra api with @type key
         $classMetadata = $this->mapping->getClassMetadata($className);
+        $identifierAttribute = $classMetadata->getIdentifierAttribute();
+        $identifierAttrKey = $identifierAttribute ? $identifierAttribute->getSerializedKey() : null;
 
         $instance = new $className();
 
         foreach ($data as $key => $value) {
-            $key = $key === '@id' ? 'id' : $key;
-            $setter = 'set' . ucfirst($key);
+            $attribute = $classMetadata->getAttribute($key);
+            $setter = 'set' . ucfirst($attribute->getAttributeName());
 
             if (method_exists($instance, $setter)) {
                 $relation = $classMetadata->getRelation($key);
@@ -86,19 +88,23 @@ class Serializer
                     if (is_string($value)) {
                         $value = $this->sdk->createProxy($value);
                     } elseif (is_array($value)) {
-                        if (isset($value['@id'])) {
-                            $key = $this->mapping->getKeyFromId($value['@id']);
-                            $subClassMetadata = $this->getClassMetadataFromId($value['@id']);
+                        if (isset($value[$identifierAttrKey])) {
+                            $key = $this->mapping->getKeyFromId($value[$identifierAttrKey]);
+                            $subClassMetadata = $this->getClassMetadataFromId($value[$identifierAttrKey]);
                             $value = $this->deserialize($value, $subClassMetadata->getModelName());
                         } else {
                             $list = [];
                             foreach ($value as $item) {
                                 if (is_string($item)) {
                                     $list[] = $this->sdk->createProxy($item);
-                                } elseif (is_array($item) && isset($item['@id'])) {
-                                    // cette partie n'est pas encore testée
-                                    $key = $this->mapping->getKeyFromId($item['@id']);
-                                    $subClassMetadata = $this->getClassMetadataFromId($item['@id']);
+                                } elseif (is_array($item) && isset($item[$identifierAttrKey])) {
+                                    // not tested for now
+                                    // /the $identifierAttrKey is not the real identifier, as it is
+                                    // the main object identifier, but we do not have the metadada for now
+                                    // the thing we assume now is that every entity "may" have the same key
+                                    // as identifier
+                                    $key = $this->mapping->getKeyFromId($item[$identifierAttrKey]);
+                                    $subClassMetadata = $this->getClassMetadataFromId($item[$identifierAttrKey]);
                                     $list[] = $this->deserialize($item, $subClassMetadata->getModelName());
                                 }
                             }
@@ -109,7 +115,6 @@ class Serializer
                 }
 
                 if (isset($value)) {
-                    $attribute = $classMetadata->getAttribute($key);
                     if ($attribute && $attribute->getType() === 'datetime') {
                         $value = new \DateTime($value);
                     }
@@ -144,7 +149,7 @@ class Serializer
         $out = [];
         if (!empty($attributeList)) {
             foreach ($attributeList as $attribute) {
-                $method = 'get' . ucfirst($attribute->getSerializedKey());
+                $method = 'get' . ucfirst($attribute->getAttributeName());
 
                 if ($attribute->isIdentifier() && !$entity->$method()) {
                     continue;
@@ -204,7 +209,7 @@ class Serializer
                     $data = $newData;
                 }
 
-                $key = $attribute->getSerializedKey() === 'id' ? '@id' : $attribute->getSerializedKey();
+                $key = $attribute->getSerializedKey();
 
                 $out[$key] = $data;
             }

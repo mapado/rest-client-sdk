@@ -36,7 +36,7 @@ class Serializer extends atoum
                         'status' => 'payed',
                         "clientPhoneNumber" => '+33 1 23 45 67 89',
                         'createdAt' => (new \DateTime('2015-09-20T12:08:00'))->format(DateTime::RFC3339),
-                        'cartItemList' => [],
+                        'cart_items' => [],
                         'order' => null,
                     ])
 
@@ -75,14 +75,14 @@ class Serializer extends atoum
                 ->array($data = $this->testedInstance->serialize(
                     $cart,
                     'Mapado\RestClientSdk\Tests\Model\Cart',
-                    [ 'serializeRelations' => ['cartItemList'] ]
+                    [ 'serializeRelations' => ['cart_items'] ]
                 ))
                     ->isIdenticalTo([
                         '@id' => '/v1/carts/8',
                         'status' => 'payed',
                         'clientPhoneNumber' => '+33 1 23 45 67 89',
                         'createdAt' => (new \DateTime('2015-09-20T12:08:00'))->format(DateTime::RFC3339),
-                        'cartItemList' => [
+                        'cart_items' => [
                             [
                                 '@id' => '/v1/cart_items/16',
                                 'amount' => 1,
@@ -103,14 +103,14 @@ class Serializer extends atoum
                 ->array($data = $this->testedInstance->serialize(
                     $cart,
                     'Mapado\RestClientSdk\Tests\Model\Cart',
-                    [ 'serializeRelations' => ['cartItemList'] ]
+                    [ 'serializeRelations' => ['cart_items'] ]
                 ))
                     ->isIdenticalTo([
                         '@id' => '/v1/carts/8',
                         'status' => 'payed',
                         'clientPhoneNumber' => '+33 1 23 45 67 89',
                         'createdAt' => (new \DateTime('2015-09-20T12:08:00'))->format(DateTime::RFC3339),
-                        'cartItemList' => [
+                        'cart_items' => [
                             [
                                 '@id' => '/v1/cart_items/16',
                                 'amount' => 1,
@@ -160,7 +160,7 @@ class Serializer extends atoum
                         'status' => 'payed',
                         'clientPhoneNumber' => '+33 1 23 45 67 89',
                         'createdAt' => (new \DateTime('2015-09-20T12:08:00'))->format(DateTime::RFC3339),
-                        'cartItemList' => [
+                        'cart_items' => [
                             [
                                 'amount' => 2,
                                 'createdAt' => (new \DateTime('2015-09-20T12:11:00'))->format(DateTime::RFC3339),
@@ -197,7 +197,7 @@ class Serializer extends atoum
                         'status' => 'payed',
                         'clientPhoneNumber' => '+33 1 23 45 67 89',
                         'createdAt' => (new \DateTime('2015-09-20T12:08:00'))->format(DateTime::RFC3339),
-                        'cartItemList' => [
+                        'cart_items' => [
                             [
                                 'amount' => 2,
                                 'createdAt' => (new \DateTime('2015-09-20T12:11:00'))->format(DateTime::RFC3339),
@@ -236,7 +236,7 @@ class Serializer extends atoum
                         'status' => 'payed',
                         'clientPhoneNumber' => '+33 1 23 45 67 89',
                         'createdAt' => (new \DateTime('2015-09-20T12:08:00'))->format(DateTime::RFC3339),
-                        'cartItemList' => [
+                        'cart_items' => [
                             [
                                 'amount' => 2,
                                 'createdAt' => (new \DateTime('2015-09-20T12:11:00'))->format(DateTime::RFC3339),
@@ -275,14 +275,14 @@ class Serializer extends atoum
                 ->array($data = $this->testedInstance->serialize(
                     $cart,
                     'Mapado\RestClientSdk\Tests\Model\Cart',
-                    [ 'serializeRelations' => ['cartItemList'] ]
+                    [ 'serializeRelations' => ['cart_items'] ]
                 ))
                     ->isIdenticalTo([
                         '@id' => '/v1/carts/8',
                         'status' => 'payed',
                         'clientPhoneNumber' => '+33 1 23 45 67 89',
                         'createdAt' => (new \DateTime('2015-09-20T12:08:00'))->format(DateTime::RFC3339),
-                        'cartItemList' => [
+                        'cart_items' => [
                             [
                                 '@id' => '/v1/cart_items/16',
                                 'amount' => 1,
@@ -364,7 +364,7 @@ class Serializer extends atoum
                         'status' => 'payed',
                         'clientPhoneNumber' => '+33 1 23 45 67 89',
                         'createdAt' => (new \DateTime('2015-09-20T12:08:00'))->format(DateTime::RFC3339),
-                        'cartItemList' => [
+                        'cart_items' => [
                             [
                                 'amount' => 2,
                                 'createdAt' => (new \DateTime('2015-09-20T12:11:00'))->format(DateTime::RFC3339),
@@ -399,7 +399,7 @@ class Serializer extends atoum
                     'status' => 'payed',
                     'clientPhoneNumber' => $phoneNumberUtil->parse('+330123456789', PhoneNumberFormat::INTERNATIONAL),
                     'createdAt' => (new \DateTime('2015-09-20T12:08:00'))->format(DateTime::RFC3339),
-                    'cartItemList' => [
+                    'cart_items' => [
                         [
                             '@id' => '/v1/cart_items/16',
                             'amount' => 2,
@@ -480,12 +480,104 @@ class Serializer extends atoum
                         'status' => null,
                         'clientPhoneNumber' => '+33 1 23 45 67 89',
                         'createdAt' => (new \DateTime('2015-09-20T12:08:00'))->format(DateTime::RFC3339),
-                        'cartItemList' => [],
+                        'cart_items' => [],
                         'order' => null,
                     ])
         ;
     }
 
+    public function testSerializingAttributeNameDiffThanPropertyName()
+    {
+        $this->createNewInstance();
+        $this
+            ->given($product = $this->createNewProduct())
+            ->then
+                ->array($data = $this->testedInstance->serialize($product, 'Mapado\RestClientSdk\Tests\Model\Product'))
+                ->isIdenticalTo([
+                    'product_value' => 8.2,
+                    'currency' => 'eur',
+                ])
+        ;
+    }
+
+    public function testWeirdIdentifier()
+    {
+        $this->createNewInstance($this->getMapping('weirdId'));
+
+        $this
+            ->given($cart = $this->createCart())
+                ->and($cartItem = $this->createKnownCartItem())
+                ->and($cart->addCartItemList($cartItem))
+
+            ->then
+                ->array($data = $this->testedInstance->serialize(
+                    $cart,
+                    'Mapado\RestClientSdk\Tests\Model\Cart',
+                    [ 'serializeRelations' => ['cart_items'] ]
+                ))
+                    ->isIdenticalTo([
+                        'weirdId' => '/v1/carts/8',
+                        'status' => 'payed',
+                        'clientPhoneNumber' => '+33 1 23 45 67 89',
+                        'createdAt' => (new \DateTime('2015-09-20T12:08:00'))->format(DateTime::RFC3339),
+                        'cart_items' => [
+                            [
+                                'weirdId' => '/v1/cart_items/16',
+                                'amount' => 1,
+                                'createdAt' => (new \DateTime('2015-11-04 15:13:00'))->format(DateTime::RFC3339),
+                                'data' => [
+                                    'when' => (new \DateTime('2015-11-04 15:00:00'))->format(DateTime::RFC3339),
+                                    'who' => 'Jane',
+                                ],
+                                'cart' => '/v1/carts/8',
+                                'product' => '/v1/products/10',
+                                'cartItemDetailList' => [],
+                            ],
+                        ],
+                        'order' => null,
+                    ])
+
+            ->then
+                ->array($data = $this->testedInstance->serialize(
+                    $cart,
+                    'Mapado\RestClientSdk\Tests\Model\Cart',
+                    [ 'serializeRelations' => ['cart_items'] ]
+                ))
+                    ->isIdenticalTo([
+                        'weirdId' => '/v1/carts/8',
+                        'status' => 'payed',
+                        'clientPhoneNumber' => '+33 1 23 45 67 89',
+                        'createdAt' => (new \DateTime('2015-09-20T12:08:00'))->format(DateTime::RFC3339),
+                        'cart_items' => [
+                            [
+                                'weirdId' => '/v1/cart_items/16',
+                                'amount' => 1,
+                                'createdAt' => (new \DateTime('2015-11-04 15:13:00'))->format(DateTime::RFC3339),
+                                'data' => [
+                                    'when' => (new \DateTime('2015-11-04 15:00:00'))->format(DateTime::RFC3339),
+                                    'who' => 'Jane',
+                                ],
+                                'cart' => '/v1/carts/8',
+                                'product' => '/v1/products/10',
+                                'cartItemDetailList' => [],
+                            ],
+                        ],
+                        'order' => null,
+                    ])
+
+            // reverse the serialization
+            ->then
+                ->object($cart = $this->testedInstance->deserialize($data, 'Mapado\RestClientSdk\Tests\Model\Cart'))
+                ->string($cart->getId())
+                    ->isEqualTo('/v1/carts/8')
+                ->array($cart->getCartItemList())
+                    ->size->isEqualTo(1)
+                // ->object($cartItem = current($cart->getCartItemList()))
+                //     ->isInstanceOf('Mapado\RestClientSdk\Tests\Model\CartItem')
+                // ->string($cartItem->getId())
+                //     ->isEqualTo('/v1/cart_items/16')
+            ;
+    }
 
     /**
      * getMapping
@@ -493,7 +585,7 @@ class Serializer extends atoum
      * @access private
      * @return Mapping
      */
-    private function getMapping()
+    private function getMapping($idKey = '@id')
     {
         $cartMetadata = new ClassMetadata(
             'carts',
@@ -501,15 +593,15 @@ class Serializer extends atoum
             ''
         );
         $cartMetadata->setAttributeList([
-            new Attribute('id', 'string', true),
+            new Attribute($idKey, 'id', 'string', true),
             new Attribute('status'),
-            new Attribute('clientPhoneNumber', 'phone_number'),
-            new Attribute('createdAt', 'datetime'),
-            new Attribute('cartItemList'),
+            new Attribute('clientPhoneNumber', 'clientPhoneNumber', 'phone_number'),
+            new Attribute('createdAt', 'createdAt', 'datetime'),
+            new Attribute('cart_items', 'cartItemList'),
             new Attribute('order'),
         ]);
         $cartMetadata->setRelationList([
-            new Relation('cartItemList', Relation::ONE_TO_MANY, 'Mapado\RestClientSdk\Tests\Model\CartItem'),
+            new Relation('cart_items', Relation::ONE_TO_MANY, 'Mapado\RestClientSdk\Tests\Model\CartItem'),
             new Relation('order', Relation::MANY_TO_ONE, 'Mapado\RestClientSdk\Tests\Model\Order'),
         ]);
 
@@ -525,9 +617,9 @@ class Serializer extends atoum
             new Relation('cartItemDetailList', Relation::ONE_TO_MANY, 'Mapado\RestClientSdk\Tests\Model\CartItemDetail'),
         ]);
         $cartItemMetadata->setAttributeList([
-            new Attribute('id', 'string', true),
+            new Attribute($idKey, 'id', 'string', true),
             new Attribute('amount'),
-            new Attribute('createdAt', 'datetime'),
+            new Attribute('createdAt', 'createdAt', 'datetime'),
             new Attribute('data'),
             new Attribute('cart'),
             new Attribute('product'),
@@ -541,8 +633,8 @@ class Serializer extends atoum
         );
 
         $productMetadata->setAttributeList([
-            new Attribute('id', 'string', true),
-            new Attribute('value'),
+            new Attribute($idKey, 'id', 'string', true),
+            new Attribute('product_value', 'value'),
             new Attribute('currency'),
         ]);
 
@@ -557,7 +649,7 @@ class Serializer extends atoum
             new Relation('cartItem', Relation::MANY_TO_ONE, 'Mapado\RestClientSdk\Tests\Model\CartItem'),
         ]);
         $cartItemDetailMetadata->setAttributeList([
-            new Attribute('id', 'string', true),
+            new Attribute($idKey, 'id', 'string', true),
             new Attribute('name'),
             new Attribute('cartItem'),
         ]);
@@ -697,15 +789,16 @@ class Serializer extends atoum
      * @access private
      * @return void
      */
-    private function createNewInstance()
+    private function createNewInstance($mapping = null)
     {
-        $this->newTestedInstance($this->getMapping());
+        $mapping = $mapping ?: $this->getMapping();
+        $this->newTestedInstance($mapping);
 
         $this->mockGenerator->orphanize('__construct');
         $this->mockGenerator->shuntParentClassCalls();
         $restClient = new \mock\Mapado\RestClientSdk\RestClient();
         $this->mockGenerator->unshuntParentClassCalls();
-        $sdk = new \mock\Mapado\RestClientSdk\SdkClient($restClient, $this->getMapping(), $this->testedInstance);
+        $sdk = new \mock\Mapado\RestClientSdk\SdkClient($restClient, $mapping, $this->testedInstance);
         $sdk->setFileCachePath(__DIR__ . '/../../cache/');
 
         $cartRepositoryMock = $this->getCartRepositoryMock($sdk, $restClient, 'Mapado\RestClientSdk\Tests\Model\Cart');

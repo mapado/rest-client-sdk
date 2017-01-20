@@ -49,6 +49,14 @@ class ClassMetadata
     private $relationList;
 
     /**
+     * identifierAttribute
+     *
+     * @var Attribute
+     * @access private
+     */
+    private $identifierAttribute;
+
+    /**
      * __construct
      *
      * @param string $key
@@ -115,11 +123,18 @@ class ClassMetadata
      */
     public function getAttribute($name)
     {
-        foreach ($this->attributeList as $attribute) {
-            if ($attribute->getSerializedKey() == $name) {
-                return $attribute;
-            }
-        }
+        return isset($this->attributeList[$name]) ? $this->attributeList[$name] : null;
+    }
+
+    /**
+     * getIdentifierAttribute
+     *
+     * @access public
+     * @return Attribute
+     */
+    public function getIdentifierAttribute()
+    {
+        return $this->identifierAttribute;
     }
 
     /**
@@ -140,7 +155,14 @@ class ClassMetadata
      */
     public function setAttributeList($attributeList)
     {
-        $this->attributeList = $attributeList;
+        $this->attributeList = [];
+        foreach ($attributeList as $attribute) {
+            $this->attributeList[$attribute->getSerializedKey()] = $attribute;
+
+            if ($attribute->isIdentifier()) {
+                $this->identifierAttribute = $attribute;
+            }
+        }
         return $this;
     }
 

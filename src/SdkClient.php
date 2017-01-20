@@ -213,8 +213,8 @@ class SdkClient
                     $attributeList = $classMetadata->getAttributeList();
 
                     foreach ($attributeList as $attribute) {
-                        $getter = 'get' . ucfirst($attribute->getSerializedKey());
-                        $setter = 'set' . ucfirst($attribute->getSerializedKey());
+                        $getter = 'get' . ucfirst($attribute->getAttributeName());
+                        $setter = 'set' . ucfirst($attribute->getAttributeName());
                         $value = $model->$getter();
                         $proxy->$setter($value);
                     }
