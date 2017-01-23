@@ -579,6 +579,27 @@ class Serializer extends atoum
             ;
     }
 
+    public function testDeserializeWithExtraFields()
+    {
+        $this->createNewInstance();
+
+        $this
+            ->given($data = [
+                '@foo' => 'bar',
+                '@id' => '/v1/carts/8',
+                'status' => 'payed',
+                "clientPhoneNumber" => '+33 1 23 45 67 89',
+                'createdAt' => (new \DateTime('2015-09-20T12:08:00'))->format(DateTime::RFC3339),
+                'cart_items' => [],
+                'order' => null,
+            ])
+
+            ->then
+                ->object($cart = $this->testedInstance->deserialize($data, 'Mapado\RestClientSdk\Tests\Model\Cart'))
+                    ->isInstanceOf('Mapado\RestClientSdk\Tests\Model\Cart')
+        ;
+    }
+
     /**
      * getMapping
      *

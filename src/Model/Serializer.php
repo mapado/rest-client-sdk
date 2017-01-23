@@ -80,6 +80,10 @@ class Serializer
 
         foreach ($data as $key => $value) {
             $attribute = $classMetadata->getAttribute($key);
+            if (!$attribute) {
+                continue;
+            }
+
             $setter = 'set' . ucfirst($attribute->getAttributeName());
 
             if (method_exists($instance, $setter)) {
