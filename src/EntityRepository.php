@@ -266,8 +266,8 @@ class EntityRepository
     /**
      * fetchFromCache
      *
-     * @param array $data
      * @access private
+     * @param string $key
      * @return object
      */
     private function fetchFromCache($key)
@@ -289,7 +289,6 @@ class EntityRepository
     /**
      * saveToCache
      *
-     * @param array $data
      * @access private
      * @return object
      */
