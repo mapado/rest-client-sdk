@@ -194,7 +194,7 @@ class SdkClient
      *
      * @param string $id
      * @access public
-     * @return object
+     * @return \ProxyManager\Proxy\GhostObjectInterface
      */
     public function createProxy($id)
     {
