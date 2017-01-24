@@ -268,7 +268,7 @@ class EntityRepository
      *
      * @access private
      * @param string $key
-     * @return object
+     * @return object|false
      */
     private function fetchFromCache($key)
     {

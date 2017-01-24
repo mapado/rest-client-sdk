@@ -3,7 +3,7 @@
 namespace Mapado\RestClientSdk\Tests\Units;
 
 use atoum;
-use Mapado\RestClientSdk\Mapping;
+use Mapado\RestClientSdk\Mapping as RestMapping;
 use Mapado\RestClientSdk\Mapping\ClassMetadata;
 use Symfony\Component\Cache\Adapter\ArrayAdapter;
 
@@ -35,7 +35,7 @@ class EntityRepository extends atoum
         $this->mockedHydrator = new \mock\Mapado\RestClientSdk\Model\ModelHydrator($this->mockedSdk);
         $this->calling($this->mockedSdk)->getModelHydrator = $this->mockedHydrator;
 
-        $mapping = new Mapping('v12');
+        $mapping = new RestMapping('v12');
         $mapping->setMapping([
             new ClassMetadata(
                 'orders',
@@ -239,7 +239,7 @@ class EntityRepository extends atoum
      */
     public function testClearCacheAfterUpdate()
     {
-        $mapping = new Mapping('/v12');
+        $mapping = new RestMapping('/v12');
         $mapping->setMapping([
             new ClassMetadata(
                 'products',
@@ -325,7 +325,7 @@ class EntityRepository extends atoum
 
     public function testFindOneByObject()
     {
-        $mapping = new Mapping('v12');
+        $mapping = new RestMapping('v12');
         $mapping->setMapping([
             new ClassMetadata(
                 'carts',
