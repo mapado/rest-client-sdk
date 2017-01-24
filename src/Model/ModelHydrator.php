@@ -22,9 +22,9 @@ class ModelHydrator
     protected $sdk;
 
     /**
-     * __construct
+     * Constructor.
      *
-     * @param RestClient
+     * @param SdkClient $sdk
      * @access public
      */
     public function __construct(SdkClient $sdk)
@@ -90,6 +90,11 @@ class ModelHydrator
         return new HydraCollection();
     }
 
+    /**
+     * @param array  $data
+     * @param string $modelName
+     * @return HydraCollection|HydraPaginatedCollection
+     */
     public function deserializeAll($data, $modelName)
     {
         $data['hydra:member'] = array_map(
@@ -113,10 +118,10 @@ class ModelHydrator
     /**
      * deserialize
      *
-     * @param array $data
+     * @param array  $data
      * @param string $modelName
      * @access private
-     * @return object
+     * @return object|null
      */
     private function deserialize($data, $modelName)
     {

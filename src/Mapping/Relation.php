@@ -75,7 +75,7 @@ class Relation
     /**
      * Getter for type
      *
-     * return string
+     * @return string
      */
     public function getType()
     {
@@ -119,7 +119,7 @@ class Relation
     /**
      * Getter for targetEntity
      *
-     * return string
+     * @return string
      */
     public function getTargetEntity()
     {

@@ -12,12 +12,14 @@ use \ArrayIterator;
 class HydraCollection implements \IteratorAggregate, \Serializable, \Countable, \ArrayAccess
 {
     /**
-     * @var array the elements of the collection
+     * The elements of the collection.
+     *
+     * @var array
      */
     private $elements;
 
     /**
-     * @param array response - The Hydra data as an array
+     * @param array $response The Hydra data as an array.
      */
     public function __construct($response = [])
     {
@@ -29,9 +31,9 @@ class HydraCollection implements \IteratorAggregate, \Serializable, \Countable, 
     }
 
     /**
-     *  toArray
+     * Returns inner elements collection.
      *
-     *  @return array
+     * @return array
      */
     public function toArray()
     {
@@ -39,9 +41,7 @@ class HydraCollection implements \IteratorAggregate, \Serializable, \Countable, 
     }
 
     /**
-     *  serialize
-     *
-     *  @return string
+     * {@inheritdoc}
      */
     public function serialize()
     {
@@ -49,7 +49,7 @@ class HydraCollection implements \IteratorAggregate, \Serializable, \Countable, 
     }
 
     /**
-     *  unserialize
+     * {@inheritdoc}
      */
     public function unserialize($values)
     {
@@ -57,9 +57,7 @@ class HydraCollection implements \IteratorAggregate, \Serializable, \Countable, 
     }
 
     /**
-     *  count
-     *
-     *  @return int
+     * {@inheritdoc}
      */
     public function count()
     {
@@ -67,9 +65,9 @@ class HydraCollection implements \IteratorAggregate, \Serializable, \Countable, 
     }
 
     /**
-     *  getTotalItems
+     * Returns element count in collection.
      *
-     *  @return integer
+     * @return int
      */
     public function getTotalItems()
     {
@@ -77,7 +75,7 @@ class HydraCollection implements \IteratorAggregate, \Serializable, \Countable, 
     }
 
     /**
-     *  ArrayAccess implementation of offsetSet()
+     * {@inheritdoc}
      */
     public function offsetSet($offset, $value)
     {
@@ -89,9 +87,7 @@ class HydraCollection implements \IteratorAggregate, \Serializable, \Countable, 
     }
 
     /**
-     *  ArrayAccess implementation of offsetExists()
-     *
-     *  @return bool
+     * {@inheritdoc}
      */
     public function offsetExists($offset)
     {
@@ -99,7 +95,7 @@ class HydraCollection implements \IteratorAggregate, \Serializable, \Countable, 
     }
 
     /**
-     *  ArrayAccess implementation of offsetUnset()
+     * {@inheritdoc}
      */
     public function offsetUnset($offset)
     {
@@ -107,9 +103,7 @@ class HydraCollection implements \IteratorAggregate, \Serializable, \Countable, 
     }
 
     /**
-     *  ArrayAccess implementation of offsetGet()
-     *
-     *  @return mixed
+     * {@inheritdoc}
      */
     public function offsetGet($offset)
     {
@@ -117,9 +111,7 @@ class HydraCollection implements \IteratorAggregate, \Serializable, \Countable, 
     }
 
     /**
-     * getIterator
-     *
-     * @return \ArrayIterator
+     * {@inheritdoc}
      */
     public function getIterator()
     {

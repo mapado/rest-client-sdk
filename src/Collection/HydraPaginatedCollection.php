@@ -10,27 +10,35 @@ namespace Mapado\RestClientSdk\Collection;
 class HydraPaginatedCollection extends HydraCollection
 {
     /**
-     * @var string URI of the first page
+     * URI of the first page.
+     *
+     * @var string|null
      */
     private $firstPage = null;
 
     /**
-    * @var string URI of the last page
+     * URI of the last page.
+     *
+     * @var string|null
      */
     private $lastPage = null;
 
     /**
-    * @var string URI of the next page
+     * URI of the next page.
+     *
+     * @var string|null
      */
     private $nextPage = null;
 
     /**
-     * @var integer the total number of elements regardless of the pagination
+     * The total number of elements regardless of the pagination.
+     *
+     * @var integer
      */
     private $totalItems = 0;
 
     /**
-     * @param array response - The Hydra data as an array
+     * @param array $response The Hydra data as an array
      */
     public function __construct($response)
     {
@@ -54,9 +62,9 @@ class HydraPaginatedCollection extends HydraCollection
     }
 
     /**
-     *  getFirstPage
+     * Returns first page URI.
      *
-     *  @return mixed
+     * @return string|null
      */
     public function getFirstPage()
     {
@@ -64,9 +72,9 @@ class HydraPaginatedCollection extends HydraCollection
     }
 
     /**
-     *  getLastPage
+     * Returns last page URI.
      *
-     *  @return mixed
+     * @return string|null
      */
     public function getLastPage()
     {
@@ -74,9 +82,9 @@ class HydraPaginatedCollection extends HydraCollection
     }
 
     /**
-     *  getNextPage
+     * Returns next page URI.
      *
-     *  @return mixed
+     * @return string|null
      */
     public function getNextPage()
     {
@@ -84,9 +92,9 @@ class HydraPaginatedCollection extends HydraCollection
     }
 
     /**
-     *  getTotalItems
+     * Returns total item count.
      *
-     *  @return integer
+     * @return int
      */
     public function getTotalItems()
     {

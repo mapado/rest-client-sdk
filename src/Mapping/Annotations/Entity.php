@@ -26,7 +26,6 @@ final class Entity
      *
      * @var string
      * @access public
-     *
      */
     public $repository;
 }

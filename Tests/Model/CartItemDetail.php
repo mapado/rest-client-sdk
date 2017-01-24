@@ -17,7 +17,7 @@ class CartItemDetail
     /**
      * Getter for id
      *
-     * return string
+     * @return string
      */
     public function getId()
     {
@@ -39,7 +39,7 @@ class CartItemDetail
     /**
      * Getter for name
      *
-     * return string
+     * @return string
      */
     public function getName()
     {
@@ -61,7 +61,7 @@ class CartItemDetail
     /**
      * Getter for cartItem
      *
-     * return CartItem
+     * @return CartItem
      */
     public function getCartItem()
     {

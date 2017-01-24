@@ -77,7 +77,7 @@ class Cart
     /**
      * Getter for id
      *
-     * return string
+     * @return string
      */
     public function getId()
     {
@@ -100,7 +100,7 @@ class Cart
     /**
      * Getter for status
      *
-     * return string
+     * @return string
      */
     public function getStatus()
     {
@@ -123,7 +123,7 @@ class Cart
     /**
      * Getter for createdAt
      *
-     * return DateTime
+     * @return DateTime
      */
     public function getCreatedAt()
     {
@@ -146,7 +146,7 @@ class Cart
     /**
      * Getter for cartItemList
      *
-     * return array
+     * @return array
      */
     public function getCartItemList()
     {

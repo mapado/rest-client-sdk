@@ -13,5 +13,8 @@ use Mapado\RestClientSdk\Mapping\Relation as RelationMapping;
  */
 final class OneToMany extends Relation
 {
+    /**
+     * @var string
+     */
     public $type = RelationMapping::ONE_TO_MANY;
 }

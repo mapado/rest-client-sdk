@@ -3,6 +3,7 @@
 namespace Mapado\RestClientSdk;
 
 use Mapado\RestClientSdk\Exception\MappingException;
+use Mapado\RestClientSdk\Mapping\ClassMetadata;
 
 /**
  * Class Mapping
@@ -10,14 +11,23 @@ use Mapado\RestClientSdk\Exception\MappingException;
  */
 class Mapping
 {
+    /**
+     * @var string
+     */
     private $idPrefix;
 
+    /**
+     * @var int
+     */
     private $idPrefixLength;
 
+    /**
+     * @var array
+     */
     private $mapping = [];
 
     /**
-     * __construct
+     * Constructor.
      *
      * @param string $idPrefix
      * @access public
@@ -88,7 +98,7 @@ class Mapping
      *
      * @param string $id
      * @access public
-     * @return void
+     * @return string
      */
     public function getKeyFromId($id)
     {
@@ -109,7 +119,8 @@ class Mapping
      *
      * @param string $modelName model name
      * @access public
-     * @return void
+     * @return string
+     * @throws MappingException
      */
     public function getKeyFromModel($modelName)
     {
@@ -163,7 +174,7 @@ class Mapping
      *
      * @param string $key
      * @access public
-     * @return ClassMetadata
+     * @return ClassMetadata|null
      */
     public function getClassMetadataByKey($key)
     {

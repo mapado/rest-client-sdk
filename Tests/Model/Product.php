@@ -46,7 +46,7 @@ class Product
     /**
      * Getter for id
      *
-     * return int
+     * @return int
      */
     public function getId()
     {
@@ -68,7 +68,7 @@ class Product
     /**
      * Getter for value
      *
-     * return string
+     * @return string
      */
     public function getValue()
     {
@@ -90,7 +90,7 @@ class Product
     /**
      * Getter for currency
      *
-     * return string
+     * @return string
      */
     public function getCurrency()
     {

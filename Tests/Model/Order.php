@@ -22,7 +22,7 @@ class Order
     /**
      * Getter for id
      *
-     * return string
+     * @return string
      */
     public function getId()
     {
