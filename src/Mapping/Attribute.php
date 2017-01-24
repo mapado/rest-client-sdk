@@ -8,27 +8,44 @@ namespace Mapado\RestClientSdk\Mapping;
  */
 class Attribute
 {
+    /**
+     * @var string
+     */
     private $serializedKey;
 
+    /**
+     * @var string
+     */
     private $type;
 
+    /**
+     * @var bool
+     */
     private $isIdentifier;
 
+    /**
+     * @var string
+     */
     private $attributeName;
 
     /**
-     * __construct
+     * Constructor.
      *
-     * @param string $serializedKey
-     * @param string $attributeName
-     * @param string $type
-     * @param boolean $isIdentifier
+     * @param string      $serializedKey
+     * @param string|null $attributeName
+     * @param string      $type
+     * @param bool        $isIdentifier
      * @access public
+     * @throws \InvalidArgumentException
      */
-    public function __construct($serializedKey, $attributeName = null, $type = 'string', $isIdentifier = false)
-    {
+    public function __construct(
+        $serializedKey,
+        $attributeName = null,
+        $type = 'string',
+        $isIdentifier = false
+    ) {
         if (empty($serializedKey)) {
-            throw \InvalidArgumentException('attribute name must be set');
+            throw new \InvalidArgumentException('attribute name must be set');
         }
 
         $this->serializedKey = $serializedKey;
@@ -63,7 +80,7 @@ class Attribute
     /**
      * Getter for type
      *
-     * return string
+     * @return string
      */
     public function getType()
     {
@@ -79,13 +96,14 @@ class Attribute
     public function setType($type)
     {
         $this->type = $type;
+
         return $this;
     }
 
     /**
      * Getter for isIdentifier
      *
-     * return boolean
+     * @return bool
      */
     public function isIdentifier()
     {
@@ -95,12 +113,13 @@ class Attribute
     /**
      * Setter for isIdentifier
      *
-     * @param boolean $isIdentifier
+     * @param bool $isIdentifier
      * @return Attribute
      */
     public function setIsIdentifier($isIdentifier)
     {
         $this->isIdentifier = $isIdentifier;
+
         return $this;
     }
 

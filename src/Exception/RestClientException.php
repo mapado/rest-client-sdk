@@ -3,7 +3,7 @@
 namespace Mapado\RestClientSdk\Exception;
 
 /**
- * Class SdkException
+ * Class RestClientException
  * @author Julien Deniau <julien.deniau@mapado.com>
  */
 class RestClientException extends RestException

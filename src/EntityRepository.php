@@ -1,4 +1,5 @@
 <?php
+
 namespace Mapado\RestClientSdk;
 
 use Mapado\RestClientSdk\Exception\SdkException;
@@ -6,25 +7,17 @@ use Symfony\Component\Cache\CacheItem;
 
 class EntityRepository
 {
-    private $count = 0;
-
     /**
-     * @object REST Client
+     * REST Client.
+     *
+     * @var RestClient
      */
     protected $restClient;
 
     /**
-     * @object The client for processing
-     */
-    protected $client;
-
-    /**
+     * SDK Client.
      *
-     */
-    protected $class;
-
-    /**
-     * @var SDK object
+     * @var SdkClient
      */
     protected $sdk;
 
@@ -34,20 +27,15 @@ class EntityRepository
     protected $entityName;
 
     /**
-     * @var string
-     */
-    protected $clientKey;
-
-    /**
      * EntityRepository constructor
      *
-     * @param object $sdkClient - the client to connect to the datasource with
-     * @param object $restClient - client to process the http requests
-     * @param string $entityName The entiy to work with
+     * @param SdkClient  $sdkClient  The client to connect to the datasource with
+     * @param RestClient $restClient The client to process the http requests
+     * @param string     $entityName The entity to work with
      */
-    public function __construct($sdkClient, $restClient, $entityName)
+    public function __construct(SdkClient $sdkClient, RestClient $restClient, $entityName)
     {
-        $this->sdk = $sdkClient;
+        $this->sdk        = $sdkClient;
         $this->restClient = $restClient;
         $this->entityName = $entityName;
     }
@@ -55,8 +43,8 @@ class EntityRepository
     /**
      * find - finds one item of the entity based on the @REST\Id field in the entity
      *
-     * @param string $id id of the element to fetch
-     * @param array $queryParams query parameters to add to the query
+     * @param string $id          id of the element to fetch
+     * @param array  $queryParams query parameters to add to the query
      * @access public
      * @return object
      */

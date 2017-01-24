@@ -4,11 +4,10 @@ namespace Mapado\RestClientSdk\Model;
 
 use Mapado\RestClientSdk\Exception\SdkException;
 use Mapado\RestClientSdk\Mapping;
-use Mapado\RestClientSdk\SdkClient;
 use Mapado\RestClientSdk\Mapping\ClassMetadata;
-use libphonenumber\PhoneNumber;
-use libphonenumber\PhoneNumberUtil;
+use Mapado\RestClientSdk\SdkClient;
 use libphonenumber\PhoneNumberFormat;
+use libphonenumber\PhoneNumberUtil;
 
 /**
  * Class Serializer
@@ -24,10 +23,13 @@ class Serializer
      */
     private $mapping;
 
+    /**
+     * @var SdkClient|null
+     */
     private $sdk;
 
     /**
-     * __construct
+     * Constructor.
      *
      * @param Mapping $mapping
      * @access public
@@ -42,7 +44,7 @@ class Serializer
      *
      * @param SdkClient $sdk
      * @access public
-     * @return self
+     * @return Serializer
      */
     public function setSdk(SdkClient $sdk)
     {
@@ -54,6 +56,8 @@ class Serializer
      * serialize entity for POST and PUT
      *
      * @param object $entity
+     * @param string $modelName
+     * @param array  $context
      * @access public
      * @return array
      */
@@ -65,7 +69,8 @@ class Serializer
     /**
      * deserialize
      *
-     * @param array $data
+     * @param array  $data
+     * @param string $className
      * @access public
      * @return object
      */
@@ -135,10 +140,11 @@ class Serializer
      * recursiveSerialize
      *
      * @param object $entity
-     * @param int $level
-     * @param array $context
+     * @param string $modelName
+     * @param int    $level
+     * @param array  $context
      * @access private
-     * @return array
+     * @return array|mixed
      */
     private function recursiveSerialize($entity, $modelName, $level = 0, $context = [])
     {
@@ -227,7 +233,7 @@ class Serializer
      *
      * @param string $id
      * @access private
-     * @return ClassMetadata
+     * @return ClassMetadata|null
      */
     private function getClassMetadataFromId($id)
     {

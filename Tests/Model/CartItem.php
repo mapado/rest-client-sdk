@@ -83,7 +83,7 @@ class CartItem
     /**
      * Getter for id
      *
-     * return string
+     * @return string
      */
     public function getId()
     {
@@ -105,7 +105,7 @@ class CartItem
     /**
      * Getter for amount
      *
-     * return float
+     * @return float
      */
     public function getAmount()
     {
@@ -127,7 +127,7 @@ class CartItem
     /**
      * Getter for createdAt
      *
-     * return DateTime
+     * @return DateTime
      */
     public function getCreatedAt()
     {
@@ -149,7 +149,7 @@ class CartItem
     /**
      * Getter for data
      *
-     * return array
+     * @return array
      */
     public function getData()
     {
@@ -171,7 +171,7 @@ class CartItem
     /**
      * Getter for cart
      *
-     * return Cart
+     * @return Cart
      */
     public function getCart()
     {
@@ -195,7 +195,7 @@ class CartItem
     /**
      * Getter for product
      *
-     * return Product
+     * @return Product
      */
     public function getProduct()
     {
@@ -217,7 +217,7 @@ class CartItem
     /**
      * Getter for cartItemDetailList
      *
-     * return array
+     * @return array
      */
     public function getCartItemDetailList()
     {

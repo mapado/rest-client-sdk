@@ -7,6 +7,7 @@ use GuzzleHttp\Exception\ClientException;
 use GuzzleHttp\Exception\TransferException;
 use Mapado\RestClientSdk\Exception\RestClientException;
 use Mapado\RestClientSdk\Exception\RestException;
+use Psr\Http\Message\ResponseInterface;
 
 /**
  * Class RestClient
@@ -48,17 +49,19 @@ class RestClient
 
     /**
      * @param ClientInterface $httpClient
-     * @param string $baseUrl
+     * @param string|null     $baseUrl
      */
     public function __construct(ClientInterface $httpClient, $baseUrl = null)
     {
-        $this->httpClient = $httpClient;
-        $this->baseUrl      = substr($baseUrl, -1) === '/' ? substr($baseUrl, 0, -1) : $baseUrl;
-
-        $this->logHistory = false;
+        $this->httpClient     = $httpClient;
+        $this->baseUrl        = substr($baseUrl, -1) === '/' ? substr($baseUrl, 0, -1) : $baseUrl;
+        $this->logHistory     = false;
         $this->requestHistory = [];
     }
 
+    /**
+     * @return bool
+     */
     public function isHistoryLogged()
     {
         return $this->logHistory;
@@ -74,9 +77,13 @@ class RestClient
     public function setLogHistory($logHistory)
     {
         $this->logHistory = $logHistory;
+
         return $this;
     }
 
+    /**
+     * @return array
+     */
     public function getRequestHistory()
     {
         return $this->requestHistory;
@@ -84,9 +91,11 @@ class RestClient
 
     /**
      * get a path
-     * @param string $path
      *
-     * @return array
+     * @param string $path
+     * @param array  $parameters
+     * @return array|ResponseInterface|null
+     * @throws RestException
      */
     public function get($path, $parameters = [])
     {
@@ -106,18 +115,27 @@ class RestClient
      * @param string $path
      * @access public
      * @return void
+     * @throws RestException
      */
     public function delete($path)
     {
         try {
             $this->executeRequest('DELETE', $this->baseUrl . $path);
         } catch (ClientException $e) {
-            return null;
+            return;
         } catch (TransferException $e) {
             throw new RestException('Error while deleting resource', $path, [], 2, $e);
         }
     }
 
+    /**
+     * @param string $path
+     * @param mixed  $data
+     * @param array  $parameters
+     * @return array|ResponseInterface
+     * @throws RestClientException
+     * @throws RestException
+     */
     public function post($path, $data, $parameters = [])
     {
         $parameters['json'] = $data;
@@ -130,9 +148,18 @@ class RestClient
         }
     }
 
+    /**
+     * @param string $path
+     * @param mixed  $data
+     * @param array  $parameters
+     * @return array|ResponseInterface
+     * @throws RestClientException
+     * @throws RestException
+     */
     public function put($path, $data, $parameters = [])
     {
         $parameters['json'] = $data;
+
         try {
             return $this->executeRequest('PUT', $this->baseUrl . $path, $parameters);
         } catch (ClientException $e) {
@@ -143,7 +170,7 @@ class RestClient
     }
 
     /**
-     * merge default parameters
+     * Merge default parameters.
      *
      * @param array $parameters
      * @access protected
@@ -159,13 +186,14 @@ class RestClient
     }
 
     /**
-     * executeRequest
+     * Executes request.
      *
      * @param string $method
      * @param string $url
-     * @param array $parameters
+     * @param array  $parameters
      * @access private
-     * @return \Psr\Http\Message\ResponseInterface|array
+     * @return ResponseInterface|array
+     * @throws TransferException
      */
     private function executeRequest($method, $url, $parameters = [])
     {
@@ -206,28 +234,28 @@ class RestClient
     }
 
     /**
-     * logRequest
+     * Logs request.
      *
-     * @param mixed $startTime
-     * @param mixed $method
-     * @param mixed $url
-     * @param mixed $parameters
-     * @param mixed $response
+     * @param float|null             $startTime
+     * @param string                 $method
+     * @param string                 $url
+     * @param array                  $parameters
+     * @param ResponseInterface|null $response
      * @access private
      * @return void
      */
-    private function logRequest($startTime, $method, $url, $parameters, $response)
+    private function logRequest($startTime, $method, $url, $parameters, ResponseInterface $response = null)
     {
         if ($this->isHistoryLogged()) {
             $queryTime = microtime(true) - $startTime;
 
             $this->requestHistory[] = [
-                'method' => $method,
-                'url' => $url,
-                'parameters' => $parameters,
-                'response' => $response,
+                'method'       => $method,
+                'url'          => $url,
+                'parameters'   => $parameters,
+                'response'     => $response,
                 'responseBody' => $response ? json_decode($response->getBody(), true) : null,
-                'queryTime' => $queryTime,
+                'queryTime'    => $queryTime,
             ];
         }
     }

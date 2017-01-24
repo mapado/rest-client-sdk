@@ -14,14 +14,29 @@ use Psr\Cache\CacheItemPoolInterface;
  */
 class SdkClient
 {
+    /**
+     * @var RestClient
+     */
     protected $restClient;
 
+    /**
+     * @var Mapping
+     */
     private $mapping;
 
+    /**
+     * @var Serializer
+     */
     private $serializer;
 
+    /**
+     * @var ModelHydrator
+     */
     private $modelHydrator;
 
+    /**
+     * @var array
+     */
     private $repositoryList = [];
 
     /**
@@ -33,7 +48,7 @@ class SdkClient
     private $proxyManagerConfig;
 
     /**
-     * cacheItemPool
+     * Cache item pool.
      *
      * @var CacheItemPoolInterface
      * @access private
@@ -41,7 +56,7 @@ class SdkClient
     protected $cacheItemPool;
 
     /**
-     * cachePrefix
+     * Cache prefix.
      *
      * @var string
      * @access private
@@ -49,8 +64,11 @@ class SdkClient
     protected $cachePrefix;
 
     /**
-     * Constructor
-     * @param ClientInterface $restClient
+     * Constructor.
+     *
+     * @param RestClient      $restClient
+     * @param Mapping         $mapping
+     * @param Serializer|null $serializer
      */
     public function __construct(RestClient $restClient, Mapping $mapping, Serializer $serializer = null)
     {
@@ -70,7 +88,7 @@ class SdkClient
      *
      * @param CacheItemPoolInterface $cacheItemPool
      * @access public
-     * @return EntityRepository
+     * @return SdkClient
      */
     public function setCacheItemPool(CacheItemPoolInterface $cacheItemPool, $cachePrefix = '')
     {
@@ -84,7 +102,7 @@ class SdkClient
      * getCacheItemPool
      *
      * @access public
-     * @return CacheItemPool
+     * @return CacheItemPoolInterface
      */
     public function getCacheItemPool()
     {

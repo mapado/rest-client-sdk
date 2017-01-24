@@ -35,7 +35,7 @@ class ClassMetadata
     /**
      * attributeList
      *
-     * @var array<Attribute>
+     * @var Attribute[]
      * @access private
      */
     private $attributeList;
@@ -43,7 +43,7 @@ class ClassMetadata
     /**
      * relationList
      *
-     * @var array<Relation>
+     * @var Relation[]
      * @access private
      */
     private $relationList;
@@ -57,10 +57,11 @@ class ClassMetadata
     private $identifierAttribute;
 
     /**
-     * __construct
+     * Constructor.
      *
      * @param string $key
      * @param string $modelName
+     * @param string $repositoryName
      * @access public
      */
     public function __construct($key, $modelName, $repositoryName)
@@ -73,7 +74,7 @@ class ClassMetadata
     /**
      * Getter for modelName
      *
-     * return string
+     * @return string
      */
     public function getModelName()
     {
@@ -95,7 +96,7 @@ class ClassMetadata
     /**
      * Getter for key
      *
-     * return string
+     * @return string
      */
     public function getKey()
     {
@@ -111,6 +112,7 @@ class ClassMetadata
     public function setKey($key)
     {
         $this->key = $key;
+
         return $this;
     }
 
@@ -140,7 +142,7 @@ class ClassMetadata
     /**
      * Getter for attributeList
      *
-     * return array<Attribute>
+     * @return Attribute[]
      */
     public function getAttributeList()
     {
@@ -150,7 +152,7 @@ class ClassMetadata
     /**
      * Setter for attributeList
      *
-     * @param array<Attribute> $attributeList
+     * @param Attribute[] $attributeList
      * @return ClassMetadata
      */
     public function setAttributeList($attributeList)
@@ -169,7 +171,7 @@ class ClassMetadata
     /**
      * Getter for relationList
      *
-     * return array<Relation>
+     * @return Relation[]
      */
     public function getRelationList()
     {
@@ -179,7 +181,7 @@ class ClassMetadata
     /**
      * Setter for relationList
      *
-     * @param array<Relation> $relationList
+     * @param Relation[] $relationList
      * @return ClassMetadata
      */
     public function setRelationList($relationList)
@@ -209,7 +211,7 @@ class ClassMetadata
     /**
      * Getter for repositoryName
      *
-     * return string
+     * @return string
      */
     public function getRepositoryName()
     {
