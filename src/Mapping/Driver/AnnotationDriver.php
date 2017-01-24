@@ -154,7 +154,7 @@ class AnnotationDriver
                     $propertyAnnotation->name,
                     $property->getName(),
                     $propertyAnnotation->type,
-                    $isId
+                    (bool) $isId
                 );
             } else {
                 // manage relations
