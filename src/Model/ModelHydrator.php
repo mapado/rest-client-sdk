@@ -42,14 +42,16 @@ class ModelHydrator
       */
     public function convertId($id, $modelName)
     {
+        $id = (string) $id;
+
         // add slash if needed to have a valid hydra id
-        if (!strstr($id, '/')) {
+        if (strpos($id, '/') === false) {
             $mapping = $this->sdk->getMapping();
             $key = $mapping->getKeyFromModel($modelName);
-            $id = $key . '/' . $id;
+            $id = '/' . $key . '/' . $id;
 
             if ($prefix = $mapping->getIdPrefix()) {
-                $id = $prefix . '/' . $id;
+                $id = $prefix . $id;
             }
         }
 
