@@ -371,4 +371,65 @@ class EntityRepository extends atoum
                         ->withArguments('v12/cart_items?')->once()
         ;
     }
+
+    public function testWithoutMappingPrefix()
+    {
+        $mapping = new RestMapping('/v12');
+        $mapping = new RestMapping();
+        $mapping->setMapping([
+            new ClassMetadata(
+                'carts',
+                'Mapado\RestClientSdk\Tests\Model\Cart',
+                'mock\Mapado\RestClientSdk\EntityRepository'
+            ),
+            new ClassMetadata(
+                'cart_items',
+                'Mapado\RestClientSdk\Tests\Model\CartItem',
+                'mock\Mapado\RestClientSdk\EntityRepository'
+            ),
+        ]);
+
+        $this->calling($this->mockedSdk)->getSerializer = new \Mapado\RestClientSdk\Model\Serializer($mapping);
+        $this->calling($this->mockedSdk)->getMapping = $mapping;
+
+        $this->calling($this->mockedRestClient)->get = [];
+        $this->calling($this->mockedRestClient)->post = [];
+
+        $cartItemRepository = new \mock\Mapado\RestClientSdk\EntityRepository(
+            $this->mockedSdk,
+            $this->mockedRestClient,
+            'Mapado\RestClientSdk\Tests\Model\CartItem'
+        );
+
+
+        $cart = new \Mapado\RestClientSdk\Tests\Model\Cart;
+        $cart->setId(1);
+
+        $this
+            ->if($cartItemRepository->find(1))
+            ->then
+                ->mock($this->mockedRestClient)
+                    ->call('get')
+                        ->withArguments('/cart_items/1')->once()
+
+            ->if($cartItemRepository->findAll())
+            ->then
+                ->mock($this->mockedRestClient)
+                    ->call('get')
+                        ->withArguments('/cart_items')->once()
+
+            ->if($cartItemRepository->findBy(['foo' => 'bar']))
+            ->then
+                ->mock($this->mockedRestClient)
+                    ->call('get')
+                        ->withArguments('/cart_items?foo=bar')->once()
+
+            ->given($cartItem = new \mock\Mapado\RestClientSdk\Tests\Model\CartItem)
+            ->if($cartItemRepository->persist($cartItem))
+            ->then
+                ->mock($this->mockedRestClient)
+                    ->call('post')
+                        ->withArguments('/cart_items')->once()
+        ;
+    }
 }

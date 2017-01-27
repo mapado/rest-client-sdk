@@ -81,7 +81,7 @@ class EntityRepository
         $mapping = $this->sdk->getMapping();
         $key = $mapping->getKeyFromModel($this->entityName);
         $prefix = $mapping->getIdPrefix();
-        $path = (null == $prefix) ? $key : $prefix . '/' . $key;
+        $path = empty($prefix) ? '/' . $key : $prefix . '/' . $key;
 
         $entityListFromCache = $this->fetchFromCache($path);
 
@@ -155,7 +155,7 @@ class EntityRepository
         $prefix = $mapping->getIdPrefix();
         $key = $mapping->getKeyFromModel($this->entityName);
 
-        $path = (null == $prefix) ? $key : $prefix . '/' . $key;
+        $path = empty($prefix) ? '/' . $key : $prefix . '/' . $key;
         $data = $this->restClient->post($path, $this->sdk->getSerializer()->serialize($model, $this->entityName, $serializationContext));
 
         $hydrator = $this->sdk->getModelHydrator();
@@ -197,7 +197,7 @@ class EntityRepository
         $mapping = $this->sdk->getMapping();
         $key = $mapping->getKeyFromModel($this->entityName);
         $prefix = $mapping->getIdPrefix();
-        $path = ((null == $prefix) ? $key : $prefix . '/' . $key);
+        $path = empty($prefix) ? '/' . $key : $prefix . '/' . $key;
 
         if (!empty($fieldName)) {
             $queryParams = [$fieldName => current($arguments)];
