@@ -4,12 +4,14 @@ namespace Mapado\RestClientSdk\Tests\Units\Model;
 
 use atoum;
 use DateTime;
-use libphonenumber\PhoneNumberUtil;
 use libphonenumber\PhoneNumberFormat;
+use libphonenumber\PhoneNumberUtil;
 use Mapado\RestClientSdk\Mapping;
 use Mapado\RestClientSdk\Mapping\Attribute;
 use Mapado\RestClientSdk\Mapping\ClassMetadata;
+use Mapado\RestClientSdk\Mapping\Driver\AnnotationDriver;
 use Mapado\RestClientSdk\Mapping\Relation;
+use Mapado\RestClientSdk\Tests\Model\Issue46;
 
 /**
  * Class Serializer
@@ -600,6 +602,67 @@ class Serializer extends atoum
         ;
     }
 
+    public function testSerializingIriManyToOne()
+    {
+        $annotationDriver = new AnnotationDriver(__DIR__ . '/../../cache/');
+        $mapping = new Mapping();
+        $mapping->setMapping($annotationDriver->loadDirectory(__DIR__ . '/../../Model/Issue46/'));
+
+        $section = new Issue46\Section();
+        $section->setId(46);
+        $section->setIri('/sections/46');
+        $section->setTitle('section title');
+
+        $article = new Issue46\Article();
+        $article->setSection($section);
+
+        $this->createNewInstance($mapping);
+
+        $this
+            ->then
+                ->array($this->testedInstance->serialize($article, 'Mapado\RestClientSdk\Tests\Model\Issue46\Article'))
+                    ->isIdenticalTo([
+                        'id' => null,
+                        'section' => '/sections/46',
+                    ])
+
+                ->if($article->setIri('/articles/44'))
+
+                ->array($this->testedInstance
+                    ->serialize(
+                        $section,
+                        'Mapado\RestClientSdk\Tests\Model\Issue46\Section'
+                    ))
+                ->isIdenticalTo([
+                    '@id' => '/sections/46',
+                    'id' => 46,
+                    'title' => 'section title',
+                    'articleList' => [
+                        '/articles/44',
+                    ],
+                ])
+
+                ->array($this->testedInstance
+                    ->serialize(
+                        $section,
+                        'Mapado\RestClientSdk\Tests\Model\Issue46\Section',
+                        [ 'serializeRelations' => ['articleList'] ]
+                    ))
+                ->isIdenticalTo([
+                    '@id' => '/sections/46',
+                    'id' => 46,
+                    'title' => 'section title',
+                    'articleList' => [
+                        [
+                            '@id' => '/articles/44',
+                            'id' => null,
+                            'section' => '/sections/46',
+                        ]
+                    ],
+                ])
+        ;
+    }
+
     /**
      * getMapping
      *
@@ -608,24 +671,56 @@ class Serializer extends atoum
      */
     private function getMapping($idKey = '@id')
     {
-        $cartMetadata = new ClassMetadata(
-            'carts',
-            'Mapado\RestClientSdk\Tests\Model\Cart',
-            ''
-        );
-        $cartMetadata->setAttributeList([
-            new Attribute($idKey, 'id', 'string', true),
-            new Attribute('status'),
-            new Attribute('clientPhoneNumber', 'clientPhoneNumber', 'phone_number'),
-            new Attribute('createdAt', 'createdAt', 'datetime'),
-            new Attribute('cart_items', 'cartItemList'),
-            new Attribute('order'),
-        ]);
-        $cartMetadata->setRelationList([
-            new Relation('cart_items', Relation::ONE_TO_MANY, 'Mapado\RestClientSdk\Tests\Model\CartItem'),
-            new Relation('order', Relation::MANY_TO_ONE, 'Mapado\RestClientSdk\Tests\Model\Order'),
+        $mapping = new Mapping('/v1');
+        $mapping->setMapping([
+            $this->getCartMetadata($idKey),
+            $this->getCartItemMetadata($idKey),
+            $this->getCartItemDetailMetadata($idKey),
+            $this->getProductMetadata($idKey),
         ]);
 
+        return $mapping;
+    }
+
+    private function getProductMetadata($idKey)
+    {
+        $productMetadata = new ClassMetadata(
+            'products',
+            'Mapado\RestClientSdk\Tests\Model\Product',
+            ''
+        );
+
+        $productMetadata->setAttributeList([
+            new Attribute($idKey, 'id', 'string', true),
+            new Attribute('product_value', 'value'),
+            new Attribute('currency'),
+        ]);
+
+        return $productMetadata;
+    }
+
+    private function getCartItemDetailMetadata($idKey)
+    {
+        $cartItemDetailMetadata = new ClassMetadata(
+            'cart_item_details',
+            'Mapado\RestClientSdk\Tests\Model\CartItemDetail',
+            ''
+        );
+
+        $cartItemDetailMetadata->setRelationList([
+            new Relation('cartItem', Relation::MANY_TO_ONE, 'Mapado\RestClientSdk\Tests\Model\CartItem'),
+        ]);
+        $cartItemDetailMetadata->setAttributeList([
+            new Attribute($idKey, 'id', 'string', true),
+            new Attribute('name'),
+            new Attribute('cartItem'),
+        ]);
+
+        return $cartItemDetailMetadata;
+    }
+
+    private function getCartItemMetadata($idKey)
+    {
         $cartItemMetadata = new ClassMetadata(
             'cart_items',
             'Mapado\RestClientSdk\Tests\Model\CartItem',
@@ -647,44 +742,30 @@ class Serializer extends atoum
             new Attribute('cartItemDetailList'),
         ]);
 
-        $productMetadata = new ClassMetadata(
-            'products',
-            'Mapado\RestClientSdk\Tests\Model\Product',
+        return $cartItemMetadata;
+    }
+
+    private function getCartMetadata($idKey)
+    {
+        $cartMetadata = new ClassMetadata(
+            'carts',
+            'Mapado\RestClientSdk\Tests\Model\Cart',
             ''
         );
-
-        $productMetadata->setAttributeList([
+        $cartMetadata->setAttributeList([
             new Attribute($idKey, 'id', 'string', true),
-            new Attribute('product_value', 'value'),
-            new Attribute('currency'),
+            new Attribute('status'),
+            new Attribute('clientPhoneNumber', 'clientPhoneNumber', 'phone_number'),
+            new Attribute('createdAt', 'createdAt', 'datetime'),
+            new Attribute('cart_items', 'cartItemList'),
+            new Attribute('order'),
+        ]);
+        $cartMetadata->setRelationList([
+            new Relation('cart_items', Relation::ONE_TO_MANY, 'Mapado\RestClientSdk\Tests\Model\CartItem'),
+            new Relation('order', Relation::MANY_TO_ONE, 'Mapado\RestClientSdk\Tests\Model\Order'),
         ]);
 
-
-        $cartItemDetailMetadata = new ClassMetadata(
-            'cart_item_details',
-            'Mapado\RestClientSdk\Tests\Model\CartItemDetail',
-            ''
-        );
-
-        $cartItemDetailMetadata->setRelationList([
-            new Relation('cartItem', Relation::MANY_TO_ONE, 'Mapado\RestClientSdk\Tests\Model\CartItem'),
-        ]);
-        $cartItemDetailMetadata->setAttributeList([
-            new Attribute($idKey, 'id', 'string', true),
-            new Attribute('name'),
-            new Attribute('cartItem'),
-        ]);
-
-
-        $mapping = new Mapping('/v1');
-        $mapping->setMapping([
-            $cartMetadata,
-            $cartItemMetadata,
-            $cartItemDetailMetadata,
-            $productMetadata,
-        ]);
-
-        return $mapping;
+        return $cartMetadata;
     }
 
     /**

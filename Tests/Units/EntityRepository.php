@@ -5,6 +5,7 @@ namespace Mapado\RestClientSdk\Tests\Units;
 use atoum;
 use Mapado\RestClientSdk\Mapping as RestMapping;
 use Mapado\RestClientSdk\Mapping\ClassMetadata;
+use Mapado\RestClientSdk\Mapping\Driver\AnnotationDriver;
 use Symfony\Component\Cache\Adapter\ArrayAdapter;
 
 /**
@@ -41,7 +42,7 @@ class EntityRepository extends atoum
                 'orders',
                 'Mapado\RestClientSdk\Tests\Model\Model',
                 'mock\Mapado\RestClientSdk\EntityRepository'
-            )
+            ),
         ]);
 
         $this->calling($this->mockedSdk)->getMapping = $mapping;
@@ -303,6 +304,78 @@ class EntityRepository extends atoum
             ->if($repository->remove($product1))
             ->then
                 ->boolean($arrayAdapter->hasItem('test_prefix__v12_products_1'))
+                    ->isFalse()
+        ;
+    }
+
+    public function testCacheWithIriAsId()
+    {
+        $annotationDriver = new AnnotationDriver(__DIR__ . '/../cache/');
+        $mapping = new RestMapping();
+        $mapping->setMapping($annotationDriver->loadDirectory(__DIR__ . '/../Model/Issue46/'));
+
+        $this->calling($this->mockedSdk)->getMapping = $mapping;
+        $this->calling($this->mockedSdk)->getSerializer = new \Mapado\RestClientSdk\Model\Serializer($mapping);
+
+        $section1 = new \Mapado\RestClientSdk\Tests\Model\Issue46\Section;
+        $section1->setIri('/sections/1');
+
+        $this->calling($this->mockedHydrator)->hydrate = $section1;
+        $this->calling($this->mockedHydrator)->hydrateList = [$section1];
+
+        $arrayAdapter = new ArrayAdapter(0, false);
+        $this->calling($this->mockedSdk)->getCacheItemPool = $arrayAdapter;
+        $this->calling($this->mockedSdk)->getCachePrefix = 'test_prefix_';
+
+        $this->calling($this->mockedRestClient)->get = $section1;
+        $this->calling($this->mockedRestClient)->put = $section1;
+        $this->calling($this->mockedRestClient)->delete = null;
+
+        $repository = new \mock\Mapado\RestClientSdk\EntityRepository(
+            $this->mockedSdk,
+            $this->mockedRestClient,
+            'Mapado\RestClientSdk\Tests\Model\Issue46\Section'
+        );
+
+        $this
+            ->if($repository->findBy(['section' => $section1]))
+            // ->then(ldd(iterator_to_array($arrayAdapter->getItems())))
+           ->then
+               ->mock($this->mockedRestClient)
+                   ->call('get')
+                       ->withArguments('/sections?section=%2Fsections%2F1')->once()
+
+            ->if($repository->findAll())
+            // ->then(ldd(iterator_to_array($arrayAdapter->getItems())))
+            ->then
+                ->boolean($arrayAdapter->hasItem('test_prefix__sections_1'))
+                    ->isTrue()
+
+           ->if($repository->find(1))
+           ->then
+               ->mock($this->mockedRestClient)
+                   ->call('get')
+                       ->withArguments('/sections/1')->never()
+
+            // after update
+            ->if($repository->update($section1))
+                ->boolean($arrayAdapter->hasItem('test_prefix__sections_1'))
+                    ->isFalse()
+            ->then
+                ->mock($this->mockedRestClient)
+                    ->call('put')
+                        ->withArguments('/sections/1')->once()
+
+            ->if($repository->find(1))
+            ->then
+                ->mock($this->mockedRestClient)
+                    ->call('get')
+                        ->withArguments('/sections/1')->once()
+
+            // after deletion
+            ->if($repository->remove($section1))
+            ->then
+                ->boolean($arrayAdapter->hasItem('test_prefix__sections_1'))
                     ->isFalse()
         ;
     }

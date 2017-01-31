@@ -148,11 +148,16 @@ class Serializer
      */
     private function recursiveSerialize($entity, $modelName, $level = 0, $context = [])
     {
-        if ($level > 0 && empty($context['serializeRelation']) && $entity->getId()) {
-            return $entity->getId();
-        }
-
         $classMetadata = $this->mapping->getClassMetadata($modelName);
+
+        if ($level > 0 && empty($context['serializeRelation'])) {
+            $idAttribute = $classMetadata->getIdentifierAttribute();
+            $getter = 'get' . ucfirst($idAttribute->getAttributeName());
+            $tmpId = $entity->{$getter}();
+            if ($tmpId) {
+                return $tmpId;
+            }
+        }
 
         $attributeList = $classMetadata->getAttributeList();
 
@@ -184,9 +189,18 @@ class Serializer
                         $data,
                         PhoneNumberFormat::INTERNATIONAL
                     );
-                } elseif (is_object($data) && $relation && $this->mapping->hasClassMetadata($relation->getTargetEntity())) {
-                    if ($data->getId()) {
-                        $data = $data->getId();
+                } elseif (is_object($data)
+                    && $relation
+                    && $this->mapping->hasClassMetadata($relation->getTargetEntity())
+                ) {
+                    $idAttribute = $this->mapping
+                        ->getClassMetadata($relation->getTargetEntity())
+                        ->getIdentifierAttribute()
+                        ->getAttributeName();
+                    $idGetter = 'get' . ucfirst($idAttribute);
+
+                    if (method_exists($data, $idGetter) && $data->{$idGetter}()) {
+                        $data = $data->{$idGetter}();
                     } elseif ($relation->isManyToOne()) {
                         if ($level > 0) {
                             continue;
