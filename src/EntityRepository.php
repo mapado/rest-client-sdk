@@ -27,6 +27,14 @@ class EntityRepository
     protected $entityName;
 
     /**
+     * classMetadataCache
+     *
+     * @var ClassMetadata
+     * @access private
+     */
+    private $classMetadataCache;
+
+    /**
      * EntityRepository constructor
      *
      * @param SdkClient  $sdkClient  The client to connect to the datasource with
@@ -79,7 +87,8 @@ class EntityRepository
     public function findAll()
     {
         $mapping = $this->sdk->getMapping();
-        $key = $mapping->getKeyFromModel($this->entityName);
+        $classMetadata = $this->getClassMetadata();
+        $key = $classMetadata->getKey();
         $prefix = $mapping->getIdPrefix();
         $path = empty($prefix) ? '/' . $key : $prefix . '/' . $key;
 
@@ -100,7 +109,7 @@ class EntityRepository
 
         // then cache each entity from list
         foreach ($entityList as $entity) {
-            $this->saveToCache($entity->getId(), $entity);
+            $this->saveToCache($this->getIdentifier($entity), $entity);
         }
 
         return $entityList;
@@ -117,9 +126,10 @@ class EntityRepository
      */
     public function remove($model)
     {
-        $this->removeFromCache($model->getId());
+        $identifier = $this->getIdentifier($model);
+        $this->removeFromCache($identifier);
 
-        return $this->restClient->delete($model->getId());
+        return $this->restClient->delete($identifier);
     }
 
     /**
@@ -132,11 +142,11 @@ class EntityRepository
     public function update($model, $serializationContext = [])
     {
         $data = $this->restClient->put(
-            $model->getId(),
+            $this->getIdentifier($model),
             $this->sdk->getSerializer()->serialize($model, $this->entityName, $serializationContext)
         );
 
-        $this->removeFromCache($model->getId());
+        $this->removeFromCache($this->getIdentifier($model));
 
         $hydrator = $this->sdk->getModelHydrator();
         return $hydrator->hydrate($data, $this->entityName);
@@ -222,7 +232,7 @@ class EntityRepository
                 $data = current($data['hydra:member']);
                 $hydratedData = $hydrator->hydrate($data, $this->entityName);
 
-                $this->saveToCache($hydratedData->getId(), $hydratedData);
+                $this->saveToCache($this->getIdentifier($hydratedData), $hydratedData);
             } else {
                 $hydratedData = null;
             }
@@ -231,7 +241,7 @@ class EntityRepository
 
             // then cache each entity from list
             foreach ($hydratedData as $entity) {
-                $this->saveToCache($entity->getId(), $entity);
+                $this->saveToCache($this->getIdentifier($entity), $entity);
             }
         }
 
@@ -249,12 +259,27 @@ class EntityRepository
      */
     private function convertQueryParameters($queryParameters)
     {
-        $sdk = $this->sdk;
+        $mapping = $this->sdk->getMapping();
 
         return array_map(
-            function ($item) use ($sdk) {
-                if (is_object($item) && method_exists($item, 'getId')) {
-                    return $item->getId();
+            function ($item) use ($mapping) {
+                if (is_object($item)) {
+                    $classname = get_class($item);
+
+                    if ($mapping->hasClassMetadata($classname)) {
+                        $idAttr = $mapping->getClassMetadata($classname)
+                            ->getIdentifierAttribute();
+
+                        if ($idAttr) {
+                            $idGetter = 'get' . ucfirst($idAttr->getAttributeName());
+
+                            return $item->{$idGetter}();
+                        }
+                    }
+
+                    if (method_exists($item, 'getId')) {
+                        return $item->getId();
+                    }
                 }
 
                 return $item;
@@ -355,5 +380,32 @@ class EntityRepository
         }
 
         return $path . '?' . http_build_query($params);
+    }
+
+    private function getClassMetadata()
+    {
+        if (!isset($this->classMetadata)) {
+            $this->classMetadataCache = $this->sdk
+                ->getMapping()
+                ->getClassMetadata($this->entityName);
+        }
+
+        return $this->classMetadataCache;
+    }
+
+    private function getIdentifier($entity)
+    {
+        $mapping = $this->sdk->getMapping();
+        $classMetadata = $this->getClassMetadata();
+
+        if ($classMetadata->getIdentifierAttribute()) {
+            $idAttr = $classMetadata->getIdentifierAttribute()
+                ->getAttributeName();
+            $idGetter = 'get' . ucfirst($idAttr);
+        } else {
+            $idGetter = 'getId';
+        }
+
+        return $entity->{$idGetter}();
     }
 }

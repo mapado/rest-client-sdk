@@ -38,9 +38,9 @@ use Mapado\RestClientSdk\Mapping\Annotations as Rest;
 class Cart {
     /**
      * @Rest\Id
-     * @Rest\Attribute(name="id", type="string")
+     * @Rest\Attribute(name="@id", type="string")
      */
-    private $id;
+    private $iri;
 
     /**
      * @Rest\Attribute(name="status", type="string")
@@ -66,9 +66,9 @@ class Cart {
 class CartItem {
     /**
      * @Rest\Id
-     * @Rest\Attribute(name="id", type="string")
+     * @Rest\Attribute(name="@id", type="string")
      */
-    private $id;
+    private $iri;
 
     /**
      * @Rest\Attribute(name="number", type="integer")
@@ -161,7 +161,7 @@ $cart->setStatus('payed');
 $repository->update($cart);
 ```
 
-The `update` operation will send a `PUT` request with the serialized object to the API endpoint (using the object `id`) and return the updated object.
+The `update` operation will send a `PUT` request with the serialized object to the API endpoint (using the object `Id`) and return the updated object.
 
 ### Deleting an instance
 ```php
@@ -169,10 +169,10 @@ $cart = $repository->find(13);
 $repository->remove($cart);
 ```
 
-The `remove` operation will send a `DELETE` request to the API endpoint using the object ID.
+The `remove` operation will send a `DELETE` request to the API endpoint using the object Id.
 
 ### Custom serialization
-By default, when serializing, the SDK return only the ID to existing relations (like one-to-many).
+By default, when serializing, the SDK return only the Id to existing relations (like one-to-many).
 
 You may want to serialize OneToMany relations though (imagine you have a `Cart` and you want to update linked `cartItems`)
 
