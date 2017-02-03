@@ -59,7 +59,7 @@ class ModelHydrator
     }
 
     /**
-     * hydrate
+     * convert data as array to entity
      *
      * @param array $data
      * @param string $modelName
@@ -76,7 +76,7 @@ class ModelHydrator
     }
 
     /**
-     * hydrateList
+     * convert API response to HydraCollection containing entities
      *
      * @param array $data
      * @param string $modelName
@@ -93,32 +93,32 @@ class ModelHydrator
     }
 
     /**
+     * convert list of data as array to HydraCollection containing entities
+     *
      * @param array  $data
      * @param string $modelName
+     *
+     * @access private
      * @return HydraCollection|HydraPaginatedCollection
      */
-    public function deserializeAll($data, $modelName)
+    private function deserializeAll($data, $modelName)
     {
-        $data['hydra:member'] = array_map(
+        $itemList = array_map(
             function ($member) use ($modelName) {
                 return $this->deserialize($member, $modelName);
             },
             $data['hydra:member']
         );
 
-        $hydratedList = new HydraCollection($data);
-
-        if (!empty($data['@type'])) {
-            if ($data['@type'] === 'hydra:PagedCollection') {
-                $hydratedList = new HydraPaginatedCollection($data);
-            }
+        if (!empty($data['@type']) && $data['@type'] === 'hydra:PagedCollection') {
+            return new HydraPaginatedCollection($itemList, $data);
         }
 
-        return $hydratedList;
+        return new HydraCollection($itemList);
     }
 
     /**
-     * deserialize
+     * convert array to entity
      *
      * @param array  $data
      * @param string $modelName

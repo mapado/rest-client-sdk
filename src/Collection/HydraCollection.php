@@ -21,13 +21,9 @@ class HydraCollection implements \IteratorAggregate, \Serializable, \Countable, 
     /**
      * @param array $response The Hydra data as an array.
      */
-    public function __construct($response = [])
+    public function __construct($elements = [])
     {
-        if (!empty($response['hydra:member'])) {
-            $this->elements = $response['hydra:member'];
-        } else {
-            $this->elements = [];
-        }
+        $this->elements = $elements;
     }
 
     /**

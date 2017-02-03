@@ -81,13 +81,19 @@ class Serializer
         $identifierAttribute = $classMetadata->getIdentifierAttribute();
         $identifierAttrKey = $identifierAttribute ? $identifierAttribute->getSerializedKey() : null;
 
+        $attributeList = $classMetadata->getAttributeList();
+
         $instance = new $className();
 
-        foreach ($data as $key => $value) {
-            $attribute = $classMetadata->getAttribute($key);
-            if (!$attribute) {
+        foreach ($attributeList as $attribute) {
+            $key = $attribute->getSerializedKey();
+
+            if (!$this->hasKeyInArray($data, $key)) {
                 continue;
             }
+
+            $value = $this->getDataInArray($data, $key);
+
 
             $setter = 'set' . ucfirst($attribute->getAttributeName());
 
@@ -254,5 +260,51 @@ class Serializer
         $key = $this->mapping->getKeyFromId($id);
         $classMetadata = $this->mapping->getClassMetadataByKey($key);
         return $classMetadata;
+    }
+
+    /**
+     * hasKeyInArray
+     *
+     * @param array $data
+     * @param string $key
+     * @access private
+     * @return bool
+     */
+    private function hasKeyInArray(array $data, $key)
+    {
+        $explodedKey = explode('.', $key);
+
+        foreach ($explodedKey as $tmpKey) {
+            if (!array_key_exists($tmpKey, $data)) {
+                return false;
+            }
+
+            $data = $data[$tmpKey];
+        }
+
+        return true;
+    }
+
+    /**
+     * getDataInArray
+     *
+     * @param array $data
+     * @param string $key
+     * @access private
+     * @return mixed
+     */
+    private function getDataInArray(array $data, $key)
+    {
+        $explodedKey = explode('.', $key);
+
+        foreach ($explodedKey as $tmpKey) {
+            if (!array_key_exists($tmpKey, $data)) {
+                return null;
+            }
+
+            $data = $data[$tmpKey];
+        }
+
+        return $data;
     }
 }

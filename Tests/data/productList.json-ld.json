@@ -1,0 +1,21 @@
+{
+    "@context": "/v1/contexts/Product",
+    "@id": "/products",
+    "@type": "hydra:PagedCollection",
+    "hydra:totalItems": 2,
+    "hydra:itemsPerPage": 50,
+    "hydra:firstPage": "/v1/products?page=1",
+    "hydra:lastPage": "/v1/products?page=5",
+    "hydra:member": [
+        {
+            "@id": "/products/1",
+            "value": "My product",
+            "currency": "EUR"
+        },
+        {
+            "@id": "/products/2",
+            "value": "Another product",
+            "currency": "USD"
+        }
+    ]
+}

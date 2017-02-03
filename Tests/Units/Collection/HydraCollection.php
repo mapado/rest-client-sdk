@@ -23,7 +23,7 @@ class HydraCollection extends atoum
         $json = json_decode(file_get_contents(__DIR__ . '/../../data/ticketing.list.json'), true);
 
         $this
-            ->given($collection = new \Mapado\RestClientSdk\Collection\HydraCollection($json))
+            ->given($collection = new \Mapado\RestClientSdk\Collection\HydraCollection($json['hydra:member']))
 
             ->then
             ->object($collection)

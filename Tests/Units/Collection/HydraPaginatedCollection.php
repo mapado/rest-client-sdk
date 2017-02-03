@@ -24,7 +24,7 @@ class HydraPaginatedCollection extends atoum
         $json = json_decode(file_get_contents(__DIR__ . '/../../data/ticketing.list.paginated.json'), true);
 
         $this
-            ->given($collection = new \Mapado\RestClientSdk\Collection\HydraPaginatedCollection($json))
+            ->given($collection = new \Mapado\RestClientSdk\Collection\HydraPaginatedCollection($json['hydra:member'], $json))
 
             ->then
             ->object($collection)

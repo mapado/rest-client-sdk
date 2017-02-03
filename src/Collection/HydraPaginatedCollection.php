@@ -40,9 +40,9 @@ class HydraPaginatedCollection extends HydraCollection
     /**
      * @param array $response The Hydra data as an array
      */
-    public function __construct($response)
+    public function __construct($elements, $response)
     {
-        parent::__construct($response);
+        parent::__construct($elements);
 
         if (!empty($response['hydra:firstPage'])) {
             $this->firstPage = $response['hydra:firstPage'];
