@@ -2,3 +2,7 @@ checks:
     php:
         excluded_dependencies:
             - atoum/atoum
+            
+tools:
+    php_cs_fixer:
+        config: { level: psr2 } 

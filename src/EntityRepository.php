@@ -3,7 +3,6 @@
 namespace Mapado\RestClientSdk;
 
 use Mapado\RestClientSdk\Exception\SdkException;
-use Symfony\Component\Cache\CacheItem;
 
 class EntityRepository
 {
