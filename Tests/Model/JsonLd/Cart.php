@@ -1,6 +1,6 @@
 <?php
 
-namespace Mapado\RestClientSdk\Tests\Model;
+namespace Mapado\RestClientSdk\Tests\Model\JsonLd;
 
 use DateTime;
 use Mapado\RestClientSdk\Mapping\Annotations as Rest;

@@ -40,7 +40,7 @@ class EntityRepository extends atoum
         $mapping->setMapping([
             new ClassMetadata(
                 'orders',
-                'Mapado\RestClientSdk\Tests\Model\Model',
+                'Mapado\RestClientSdk\Tests\Model\JsonLd\Model',
                 'mock\Mapado\RestClientSdk\EntityRepository'
             ),
         ]);
@@ -50,7 +50,7 @@ class EntityRepository extends atoum
         $this->repository = new \mock\Mapado\RestClientSdk\EntityRepository(
             $this->mockedSdk,
             $this->mockedRestClient,
-            'Mapado\RestClientSdk\Tests\Model\Model'
+            'Mapado\RestClientSdk\Tests\Model\JsonLd\Model'
         );
     }
 
@@ -243,7 +243,7 @@ class EntityRepository extends atoum
         $mapping->setMapping([
             new ClassMetadata(
                 'products',
-                'Mapado\RestClientSdk\Tests\Model\Product',
+                'Mapado\RestClientSdk\Tests\Model\JsonLd\Product',
                 'mock\Mapado\RestClientSdk\EntityRepository'
             ),
         ]);
@@ -252,9 +252,9 @@ class EntityRepository extends atoum
         $this->calling($this->mockedSdk)->getSerializer = new \Mapado\RestClientSdk\Model\Serializer($mapping);
 
 
-        $product1 = new \Mapado\RestClientSdk\Tests\Model\Product;
-        $product2 = new \Mapado\RestClientSdk\Tests\Model\Product;
-        $product3 = new \Mapado\RestClientSdk\Tests\Model\Product;
+        $product1 = new \Mapado\RestClientSdk\Tests\Model\JsonLd\Product;
+        $product2 = new \Mapado\RestClientSdk\Tests\Model\JsonLd\Product;
+        $product3 = new \Mapado\RestClientSdk\Tests\Model\JsonLd\Product;
         $product1->setId('/v12/products/1');
         $product2->setId('/v12/products/2');
         $product3->setId('/v12/products/3');
@@ -273,7 +273,7 @@ class EntityRepository extends atoum
         $repository = new \mock\Mapado\RestClientSdk\EntityRepository(
             $this->mockedSdk,
             $this->mockedRestClient,
-            'Mapado\RestClientSdk\Tests\Model\Product'
+            'Mapado\RestClientSdk\Tests\Model\JsonLd\Product'
         );
 
         $this
@@ -338,14 +338,12 @@ class EntityRepository extends atoum
 
         $this
             ->if($repository->findBy(['section' => $section1]))
-            // ->then(ldd(iterator_to_array($arrayAdapter->getItems())))
            ->then
                ->mock($this->mockedRestClient)
                    ->call('get')
                        ->withArguments('/sections?section=%2Fsections%2F1')->once()
 
             ->if($repository->findAll())
-            // ->then(ldd(iterator_to_array($arrayAdapter->getItems())))
             ->then
                 ->boolean($arrayAdapter->hasItem('test_prefix__sections_1'))
                     ->isTrue()
@@ -401,12 +399,12 @@ class EntityRepository extends atoum
         $mapping->setMapping([
             new ClassMetadata(
                 'carts',
-                'Mapado\RestClientSdk\Tests\Model\Cart',
+                'Mapado\RestClientSdk\Tests\Model\JsonLd\Cart',
                 'mock\Mapado\RestClientSdk\EntityRepository'
             ),
             new ClassMetadata(
                 'cart_items',
-                'Mapado\RestClientSdk\Tests\Model\CartItem',
+                'Mapado\RestClientSdk\Tests\Model\JsonLd\CartItem',
                 'mock\Mapado\RestClientSdk\EntityRepository'
             ),
         ]);
@@ -418,15 +416,15 @@ class EntityRepository extends atoum
         $cartItemRepository = new \mock\Mapado\RestClientSdk\EntityRepository(
             $this->mockedSdk,
             $this->mockedRestClient,
-            'Mapado\RestClientSdk\Tests\Model\CartItem'
+            'Mapado\RestClientSdk\Tests\Model\JsonLd\CartItem'
         );
 
 
-        $cart = new \Mapado\RestClientSdk\Tests\Model\Cart;
+        $cart = new \Mapado\RestClientSdk\Tests\Model\JsonLd\Cart;
         $cart->setId(1);
 
         $this
-            ->given($cart = new \Mapado\RestClientSdk\Tests\Model\Cart)
+            ->given($cart = new \Mapado\RestClientSdk\Tests\Model\JsonLd\Cart)
                 ->and($cart->setId(1))
             ->if($cartItemRepository->findOneByCart($cart))
             ->then
@@ -451,12 +449,12 @@ class EntityRepository extends atoum
         $mapping->setMapping([
             new ClassMetadata(
                 'carts',
-                'Mapado\RestClientSdk\Tests\Model\Cart',
+                'Mapado\RestClientSdk\Tests\Model\JsonLd\Cart',
                 'mock\Mapado\RestClientSdk\EntityRepository'
             ),
             new ClassMetadata(
                 'cart_items',
-                'Mapado\RestClientSdk\Tests\Model\CartItem',
+                'Mapado\RestClientSdk\Tests\Model\JsonLd\CartItem',
                 'mock\Mapado\RestClientSdk\EntityRepository'
             ),
         ]);
@@ -470,11 +468,11 @@ class EntityRepository extends atoum
         $cartItemRepository = new \mock\Mapado\RestClientSdk\EntityRepository(
             $this->mockedSdk,
             $this->mockedRestClient,
-            'Mapado\RestClientSdk\Tests\Model\CartItem'
+            'Mapado\RestClientSdk\Tests\Model\JsonLd\CartItem'
         );
 
 
-        $cart = new \Mapado\RestClientSdk\Tests\Model\Cart;
+        $cart = new \Mapado\RestClientSdk\Tests\Model\JsonLd\Cart;
         $cart->setId(1);
 
         $this
@@ -496,7 +494,7 @@ class EntityRepository extends atoum
                     ->call('get')
                         ->withArguments('/cart_items?foo=bar')->once()
 
-            ->given($cartItem = new \mock\Mapado\RestClientSdk\Tests\Model\CartItem)
+            ->given($cartItem = new \mock\Mapado\RestClientSdk\Tests\Model\JsonLd\CartItem)
             ->if($cartItemRepository->persist($cartItem))
             ->then
                 ->mock($this->mockedRestClient)

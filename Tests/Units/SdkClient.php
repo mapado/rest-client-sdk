@@ -32,8 +32,8 @@ class SdkClient extends atoum
         $mapping->setMapping([
             new ClassMetadata(
                 'orders',
-                'Mapado\RestClientSdk\Tests\Model\Model',
-                'Mapado\RestClientSdk\Tests\Model\ModelRepository'
+                'Mapado\RestClientSdk\Tests\Model\JsonLd\Model',
+                'Mapado\RestClientSdk\Tests\Model\JsonLd\ModelRepository'
             )
         ]);
 
@@ -54,11 +54,11 @@ class SdkClient extends atoum
                     ->isIdenticalTo($serializer)
 
             ->then
-                ->object($testedInstance->getRepository('Mapado\RestClientSdk\Tests\Model\Model'))
-                    ->isInstanceOf('Mapado\RestClientSdk\Tests\Model\ModelRepository')
+                ->object($testedInstance->getRepository('Mapado\RestClientSdk\Tests\Model\JsonLd\Model'))
+                    ->isInstanceOf('Mapado\RestClientSdk\Tests\Model\JsonLd\ModelRepository')
 
                 ->object($testedInstance->getRepository('orders'))
-                    ->isInstanceOf('Mapado\RestClientSdk\Tests\Model\ModelRepository')
+                    ->isInstanceOf('Mapado\RestClientSdk\Tests\Model\JsonLd\ModelRepository')
 
                 ->exception(function () use ($testedInstance) {
                     $testedInstance->getRepository('foo');

@@ -22,7 +22,7 @@ class AnnotationDriver extends atoum
         $this
             ->given($this->newTestedInstance($this->getCacheDir(), true))
             ->then
-                ->if($mapping = $this->testedInstance->loadClassname('Mapado\RestClientSdk\Tests\Model\Client'))
+                ->if($mapping = $this->testedInstance->loadClassname('Mapado\RestClientSdk\Tests\Model\JsonLd\Client'))
                 ->array($mapping)
                     ->isEmpty()
         ;
@@ -39,7 +39,7 @@ class AnnotationDriver extends atoum
         $this
             ->given($this->newTestedInstance($this->getCacheDir(), true))
             ->then
-                ->if($mapping = $this->testedInstance->loadClassname('Mapado\RestClientSdk\Tests\Model\Product'))
+                ->if($mapping = $this->testedInstance->loadClassname('Mapado\RestClientSdk\Tests\Model\JsonLd\Product'))
                 ->array($mapping)
                     ->size->isEqualTo(1)
                 ->object($classMetadata = current($mapping))
@@ -48,7 +48,7 @@ class AnnotationDriver extends atoum
                     ->isEqualTo('product')
 
                 ->string($classMetadata->getModelName())
-                    ->isEqualTo('Mapado\RestClientSdk\Tests\Model\Product')
+                    ->isEqualTo('Mapado\RestClientSdk\Tests\Model\JsonLd\Product')
 
                 ->string($classMetadata->getRepositoryName())
                     ->isEqualTo('Mapado\RestClientSdk\Test\Model\ModelRepository')
@@ -75,7 +75,7 @@ class AnnotationDriver extends atoum
         $this
             ->given($this->newTestedInstance($this->getCacheDir(), true))
             ->then
-                ->if($mapping = $this->testedInstance->loadClassname('Mapado\RestClientSdk\Tests\Model\Cart'))
+                ->if($mapping = $this->testedInstance->loadClassname('Mapado\RestClientSdk\Tests\Model\JsonLd\Cart'))
                 ->array($mapping)
                     ->size->isEqualTo(1)
                 ->object($classMetadata = current($mapping))
@@ -93,7 +93,7 @@ class AnnotationDriver extends atoum
                     ->isEqualTo(Relation::ONE_TO_MANY)
 
             ->then
-                ->if($mapping = $this->testedInstance->loadClassname('Mapado\RestClientSdk\Tests\Model\CartItem'))
+                ->if($mapping = $this->testedInstance->loadClassname('Mapado\RestClientSdk\Tests\Model\JsonLd\CartItem'))
                 ->array($mapping)
                     ->size->isEqualTo(1)
                 ->object($classMetadata = current($mapping))
@@ -112,7 +112,7 @@ class AnnotationDriver extends atoum
                     ->isEqualTo(Relation::MANY_TO_ONE)
 
                 ->string($relation->getTargetEntity())
-                    ->isEqualTo('Mapado\RestClientSdk\Tests\Model\Cart')
+                    ->isEqualTo('Mapado\RestClientSdk\Tests\Model\JsonLd\Cart')
         ;
     }
 
@@ -121,9 +121,9 @@ class AnnotationDriver extends atoum
         $this
             ->given($this->newTestedInstance($this->getCacheDir(), true))
             ->then
-                ->if($mapping = $this->testedInstance->loadDirectory(__DIR__ . '/../../../Model'))
+                ->if($mapping = $this->testedInstance->loadDirectory(__DIR__ . '/../../../Model/JsonLd'))
                 ->array($mapping)
-                    ->size->isEqualTo(5)
+                    ->size->isEqualTo(3)
         ;
     }
 
