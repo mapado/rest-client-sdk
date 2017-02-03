@@ -126,7 +126,6 @@ class EntityRepository extends atoum
     /**
      * testFindWithCache
      *
-     * @param mixed $method
      * @access public
      * @return void
      */

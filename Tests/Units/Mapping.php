@@ -209,7 +209,7 @@ class Mapping extends atoum
      * getMappingArray
      *
      * @access private
-     * @return void
+     * @return ClassMetadata[]
      */
     private function getMappingArray()
     {

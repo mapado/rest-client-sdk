@@ -682,6 +682,9 @@ class Serializer extends atoum
         return $mapping;
     }
 
+    /**
+     * @param string $idKey
+     */
     private function getProductMetadata($idKey)
     {
         $productMetadata = new ClassMetadata(
@@ -699,6 +702,9 @@ class Serializer extends atoum
         return $productMetadata;
     }
 
+    /**
+     * @param string $idKey
+     */
     private function getCartItemDetailMetadata($idKey)
     {
         $cartItemDetailMetadata = new ClassMetadata(
@@ -719,6 +725,9 @@ class Serializer extends atoum
         return $cartItemDetailMetadata;
     }
 
+    /**
+     * @param string $idKey
+     */
     private function getCartItemMetadata($idKey)
     {
         $cartItemMetadata = new ClassMetadata(
@@ -745,6 +754,9 @@ class Serializer extends atoum
         return $cartItemMetadata;
     }
 
+    /**
+     * @param string $idKey
+     */
     private function getCartMetadata($idKey)
     {
         $cartMetadata = new ClassMetadata(
@@ -772,7 +784,7 @@ class Serializer extends atoum
      * createNewCart
      *
      * @access private
-     * @return AbstractModel
+     * @return \Mapado\RestClientSdk\Tests\Model\Cart
      */
     private function createNewCart()
     {
@@ -791,7 +803,7 @@ class Serializer extends atoum
      * createCart
      *
      * @access private
-     * @return void
+     * @return \Mapado\RestClientSdk\Tests\Model\Cart
      */
     private function createCart()
     {
@@ -805,7 +817,7 @@ class Serializer extends atoum
      * createKnownCartItem
      *
      * @access private
-     * @return AbstractModel
+     * @return \Mapado\RestClientSdk\Tests\Model\CartItem
      */
     private function createKnownCartItem()
     {
@@ -826,7 +838,7 @@ class Serializer extends atoum
      * createNewCartItem
      *
      * @access private
-     * @return AbstractModel
+     * @return \Mapado\RestClientSdk\Tests\Model\CartItem
      */
     private function createNewCartItem($addKnownedProduct = true)
     {
@@ -849,7 +861,7 @@ class Serializer extends atoum
      * createNewProduct
      *
      * @access private
-     * @return AbstractModel
+     * @return \Mapado\RestClientSdk\Tests\Model\Product
      */
     private function createNewProduct()
     {
@@ -866,7 +878,7 @@ class Serializer extends atoum
      * createKnownedProduct
      *
      * @access private
-     * @return AbstractModel
+     * @return \Mapado\RestClientSdk\Tests\Model\Product
      */
     private function createKnownedProduct()
     {
@@ -889,6 +901,7 @@ class Serializer extends atoum
      * createNewInstance
      *
      * @access private
+     * @param Mapping $mapping
      * @return void
      */
     private function createNewInstance($mapping = null)
@@ -917,6 +930,9 @@ class Serializer extends atoum
         $this->testedInstance->setSdk($sdk);
     }
 
+    /**
+     * @param string $modelName
+     */
     private function getCartRepositoryMock($sdk, $restClient, $modelName)
     {
         $repository = new \mock\Mapado\RestClientSdk\EntityRepository(
