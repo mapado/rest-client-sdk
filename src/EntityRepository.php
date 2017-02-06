@@ -3,6 +3,8 @@
 namespace Mapado\RestClientSdk;
 
 use Mapado\RestClientSdk\Exception\SdkException;
+use Mapado\RestClientSdk\Helper\ArrayHelper;
+use Symfony\Component\Cache\CacheItem;
 
 class EntityRepository
 {
@@ -227,8 +229,9 @@ class EntityRepository
 
         if ($methodName == 'findOneBy') {
             // If more results are found but one is requested return the first hit.
-            if (!empty($data['hydra:member'])) {
-                $data = current($data['hydra:member']);
+            $collectionKey = $mapping->getConfig()['collectionKey'];
+            if (ArrayHelper::arrayHas($data, $collectionKey)) {
+                $data = current(ArrayHelper::arrayGet($data, $collectionKey));
                 $hydratedData = $hydrator->hydrate($data, $this->entityName);
 
                 $this->saveToCache($this->getIdentifier($hydratedData), $hydratedData);
