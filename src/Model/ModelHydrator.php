@@ -4,6 +4,7 @@ namespace Mapado\RestClientSdk\Model;
 
 use Mapado\RestClientSdk\Collection\HydraCollection;
 use Mapado\RestClientSdk\Collection\HydraPaginatedCollection;
+use Mapado\RestClientSdk\Helper\ArrayHelper;
 use Mapado\RestClientSdk\SdkClient;
 
 /**
@@ -85,7 +86,10 @@ class ModelHydrator
      */
     public function hydrateList($data, $modelName)
     {
-        if (is_array($data) && !empty($data['hydra:member'])) {
+        $collectionKey = $this->sdk->getMapping()
+            ->getConfig()['collectionKey'];
+
+        if (is_array($data) && ArrayHelper::arrayHas($data, $collectionKey)) {
             return $this->deserializeAll($data, $modelName);
         }
 
@@ -103,11 +107,14 @@ class ModelHydrator
      */
     private function deserializeAll($data, $modelName)
     {
+        $collectionKey = $this->sdk->getMapping()
+            ->getConfig()['collectionKey'];
+
         $itemList = array_map(
-            function ($member) use ($modelName) {
+            function ($member) use ($modelName, $collectionKey) {
                 return $this->deserialize($member, $modelName);
             },
-            $data['hydra:member']
+            ArrayHelper::arrayGet($data, $collectionKey)
         );
 
         if (!empty($data['@type']) && $data['@type'] === 'hydra:PagedCollection') {

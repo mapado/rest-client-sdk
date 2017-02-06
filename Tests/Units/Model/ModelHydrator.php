@@ -154,6 +154,9 @@ class ModelHydrator extends atoum
         ]);
 
         $mapping = new Mapping();
+        $mapping->setConfig([
+            'collectionKey' => '_embedded.ea:order',
+        ]);
         $mapping->setMapping([ $orderMetadata ]);
 
         $this->mockGenerator->orphanize('__construct');
@@ -174,20 +177,20 @@ class ModelHydrator extends atoum
                 ->string($order->getId())
                     ->isEqualTo('/orders/123')
 
-            // // test a json-ld list
-            // ->and($orderListArray = json_decode(file_get_contents(__DIR__ . '/../../data/orderList.json-ld.json'), true))
-            // ->then
-            //     ->object($orderList = $this->testedInstance->hydrateList($orderListArray, 'Mapado\RestClientSdk\Tests\Model\JsonLd\order'))
-            //         ->isInstanceOf('Mapado\RestClientSdk\Collection\HydraPaginatedCollection')
-            //     ->integer($orderList->getTotalItems())
-            //         ->isEqualTo(2)
+            // test a json-ld list
+            ->and($orderListArray = json_decode(file_get_contents(__DIR__ . '/../../data/orderList.hal.json'), true))
+            ->then
+                ->object($orderList = $this->testedInstance->hydrateList($orderListArray, 'Mapado\RestClientSdk\Tests\Model\Hal\Order'))
+                    // ->isInstanceOf('Mapado\RestClientSdk\Collection\HydraPaginatedCollection')
+                ->integer($orderList->getTotalItems())
+                    ->isEqualTo(2)
 
-            //     ->object($order = $orderList[0])
-            //         ->isInstanceOf('Mapado\RestClientSdk\Tests\Model\JsonLd\order')
-            //     ->string($order->getId())
-            //         ->isEqualTo('/orders/1')
-            //     ->string($orderList[1]->getId())
-            //         ->isEqualTo('/orders/2')
+                ->object($order = $orderList[0])
+                    ->isInstanceOf('Mapado\RestClientSdk\Tests\Model\Hal\Order')
+                ->string($order->getId())
+                    ->isEqualTo('/orders/123')
+                ->string($orderList[1]->getId())
+                    ->isEqualTo('/orders/124')
         ;
     }
 }

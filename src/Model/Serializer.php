@@ -3,6 +3,7 @@
 namespace Mapado\RestClientSdk\Model;
 
 use Mapado\RestClientSdk\Exception\SdkException;
+use Mapado\RestClientSdk\Helper\ArrayHelper;
 use Mapado\RestClientSdk\Mapping;
 use Mapado\RestClientSdk\Mapping\ClassMetadata;
 use Mapado\RestClientSdk\SdkClient;
@@ -88,11 +89,11 @@ class Serializer
         foreach ($attributeList as $attribute) {
             $key = $attribute->getSerializedKey();
 
-            if (!$this->hasKeyInArray($data, $key)) {
+            if (!ArrayHelper::arrayHas($data, $key)) {
                 continue;
             }
 
-            $value = $this->getDataInArray($data, $key);
+            $value = ArrayHelper::arrayGet($data, $key);
 
 
             $setter = 'set' . ucfirst($attribute->getAttributeName());
@@ -260,51 +261,5 @@ class Serializer
         $key = $this->mapping->getKeyFromId($id);
         $classMetadata = $this->mapping->getClassMetadataByKey($key);
         return $classMetadata;
-    }
-
-    /**
-     * hasKeyInArray
-     *
-     * @param array $data
-     * @param string $key
-     * @access private
-     * @return bool
-     */
-    private function hasKeyInArray(array $data, $key)
-    {
-        $explodedKey = explode('.', $key);
-
-        foreach ($explodedKey as $tmpKey) {
-            if (!array_key_exists($tmpKey, $data)) {
-                return false;
-            }
-
-            $data = $data[$tmpKey];
-        }
-
-        return true;
-    }
-
-    /**
-     * getDataInArray
-     *
-     * @param array $data
-     * @param string $key
-     * @access private
-     * @return mixed
-     */
-    private function getDataInArray(array $data, $key)
-    {
-        $explodedKey = explode('.', $key);
-
-        foreach ($explodedKey as $tmpKey) {
-            if (!array_key_exists($tmpKey, $data)) {
-                return null;
-            }
-
-            $data = $data[$tmpKey];
-        }
-
-        return $data;
     }
 }

@@ -205,6 +205,28 @@ class Mapping extends atoum
         ;
     }
 
+    public function testMappingConfiguration()
+    {
+        $this
+            // default configuration
+            ->given($this->newTestedInstance())
+            ->then
+                ->array($this->testedInstance->getConfig())
+                    ->isEqualTo([
+                        'collectionKey' => 'hydra:member',
+                    ])
+
+            // custom configuration
+            ->given($config = [
+                'collectionKey' => 'collection',
+            ])
+                ->and($this->newTestedInstance('', $config))
+            ->then
+                ->array($this->testedInstance->getConfig())
+                    ->isEqualTo($config)
+        ;
+    }
+
     /**
      * getMappingArray
      *

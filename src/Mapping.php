@@ -11,6 +11,10 @@ use Mapado\RestClientSdk\Mapping\ClassMetadata;
  */
 class Mapping
 {
+    const DEFAULT_CONFIG = [
+        'collectionKey' => 'hydra:member',
+    ];
+
     /**
      * @var string
      */
@@ -27,15 +31,24 @@ class Mapping
     private $mapping = [];
 
     /**
+     * config
+     *
+     * @var array
+     * @access private
+     */
+    private $config;
+
+    /**
      * Constructor.
      *
      * @param string $idPrefix
      * @access public
      */
-    public function __construct($idPrefix = '')
+    public function __construct($idPrefix = '', $config = [])
     {
         $this->idPrefix = $idPrefix;
         $this->idPrefixLength = strlen($idPrefix);
+        $this->setConfig($config);
     }
 
     /**
@@ -47,6 +60,32 @@ class Mapping
     public function getIdPrefix()
     {
         return $this->idPrefix;
+    }
+
+    /**
+     * Getter for config
+     *
+     * @return array
+     */
+    public function getConfig()
+    {
+        return $this->config;
+    }
+
+    /**
+     * Setter for config
+     *
+     * @param array $config
+     * @return Mapping
+     */
+    public function setConfig(array $config)
+    {
+        $this->config = array_merge(
+            self::DEFAULT_CONFIG,
+            $config
+        );
+
+        return $this;
     }
 
     /**
