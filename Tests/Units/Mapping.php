@@ -25,7 +25,7 @@ class Mapping extends atoum
                 ->and($this->testedInstance->setMapping([new ClassMetadata('foo', null, null)]))
             ->then($testedInstance = $this->testedInstance)
             ->exception(function () use ($testedInstance) {
-                @$testedInstance->getModelName();
+                $testedInstance->getModelName('');
             })
                 ->isInstanceOf('Mapado\RestClientSdk\Exception\MappingException')
                 ->hasMessage('key is not set')
