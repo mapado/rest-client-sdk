@@ -199,3 +199,21 @@ class CartRepository extends EntityRepository
     }
 }
 ```
+
+## Handling exceptions
+The SDK will throw an Exception if your API return something different than a 2xx or a 404 status code.
+
+You can see all the exceptions in [this folder](https://github.com/mapado/rest-client-sdk/tree/master/src/Exception).
+
+If you need to access the body of the response from your API you can do something like this:
+```php
+use Mapado\RestClientSdk\Exception\RestClientException;
+
+try {
+    // do something that will fail
+} catch (\RestClientException $e) {
+    $response = $e->getResponse(); // $response should be a Psr\Http\Message\ResponseInterface
+    $body = $response->getBody();
+    var_dump($body); // will dump your response body
+}
+```
