@@ -250,44 +250,6 @@ class EntityRepository
     }
 
     /**
-     * convertQueryParameters
-     *
-     * @param array $queryParameters
-     * @access private
-     * @return array
-     */
-    private function convertQueryParameters($queryParameters)
-    {
-        $mapping = $this->sdk->getMapping();
-
-        return array_map(
-            function ($item) use ($mapping) {
-                if (is_object($item)) {
-                    $classname = get_class($item);
-
-                    if ($mapping->hasClassMetadata($classname)) {
-                        $idAttr = $mapping->getClassMetadata($classname)
-                            ->getIdentifierAttribute();
-
-                        if ($idAttr) {
-                            $idGetter = 'get' . ucfirst($idAttr->getAttributeName());
-
-                            return $item->{$idGetter}();
-                        }
-                    }
-
-                    if (method_exists($item, 'getId')) {
-                        return $item->getId();
-                    }
-                }
-
-                return $item;
-            },
-            $queryParameters
-        );
-    }
-
-    /**
      * fetchFromCache
      *
      * @access protected
@@ -332,17 +294,6 @@ class EntityRepository
     }
 
     /**
-     * normalizeCacheKey
-     *
-     * @access private
-     * @return string
-     */
-    private function normalizeCacheKey($key)
-    {
-        return preg_replace('~[\\/\{\}@:\(\)]~', '_', $key);
-    }
-
-    /**
      * removeFromCache
      *
      * @param string $key
@@ -379,6 +330,55 @@ class EntityRepository
         }
 
         return $path . '?' . http_build_query($params);
+    }
+
+    /**
+     * convertQueryParameters
+     *
+     * @param array $queryParameters
+     * @access private
+     * @return array
+     */
+    private function convertQueryParameters($queryParameters)
+    {
+        $mapping = $this->sdk->getMapping();
+
+        return array_map(
+            function ($item) use ($mapping) {
+                if (is_object($item)) {
+                    $classname = get_class($item);
+
+                    if ($mapping->hasClassMetadata($classname)) {
+                        $idAttr = $mapping->getClassMetadata($classname)
+                            ->getIdentifierAttribute();
+
+                        if ($idAttr) {
+                            $idGetter = 'get' . ucfirst($idAttr->getAttributeName());
+
+                            return $item->{$idGetter}();
+                        }
+                    }
+
+                    if (method_exists($item, 'getId')) {
+                        return $item->getId();
+                    }
+                }
+
+                return $item;
+            },
+            $queryParameters
+        );
+    }
+
+    /**
+     * normalizeCacheKey
+     *
+     * @access private
+     * @return string
+     */
+    private function normalizeCacheKey($key)
+    {
+        return preg_replace('~[\\/\{\}@:\(\)]~', '_', $key);
     }
 
     private function getClassMetadata()
