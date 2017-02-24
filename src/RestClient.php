@@ -106,7 +106,7 @@ class RestClient
             if ($e->getResponse()->getStatusCode() === 404) {
                 return null;
             }
-            throw new RestException('Error while getting resource', $path, [], 7, $e);
+            throw new RestClientException('Error while getting resource', $path, [], 7, $e);
         } catch (TransferException $e) {
             throw new RestException('Error while getting resource', $path, [], 1, $e);
         }
