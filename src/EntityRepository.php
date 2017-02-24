@@ -290,11 +290,11 @@ class EntityRepository
     /**
      * fetchFromCache
      *
-     * @access private
+     * @access protected
      * @param string $key
      * @return object|false
      */
-    private function fetchFromCache($key)
+    protected function fetchFromCache($key)
     {
         $key = $this->normalizeCacheKey($key);
         $cacheItemPool = $this->sdk->getCacheItemPool();
@@ -313,10 +313,10 @@ class EntityRepository
     /**
      * saveToCache
      *
-     * @access private
+     * @access protected
      * @return object
      */
-    private function saveToCache($key, $value)
+    protected function saveToCache($key, $value)
     {
         $key = $this->normalizeCacheKey($key);
         $cacheItemPool = $this->sdk->getCacheItemPool();
@@ -349,7 +349,7 @@ class EntityRepository
      * @access private
      * @return boolean true if no cache or cache successfully cleared, false otherwise
      */
-    private function removeFromCache($key)
+    protected function removeFromCache($key)
     {
         $key = $this->normalizeCacheKey($key);
         $cacheItemPool = $this->sdk->getCacheItemPool();
@@ -372,7 +372,7 @@ class EntityRepository
      * @access private
      * @return string
      */
-    private function addQueryParameter($path, $params = [])
+    protected function addQueryParameter($path, $params = [])
     {
         if (empty($params)) {
             return $path;
