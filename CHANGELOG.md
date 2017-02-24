@@ -1,6 +1,18 @@
 Changelog
 ======================
 
+## 0.19.0
+### Breaking change
+  * When calling a GET query (mainly with `find` / `findBy` or `findAll`), every 4xx response status code except 404 will now throw a `Mapado\RestClientSdk\Exception\RestClientException` (404 will still return `null` value). See [#35](https://github.com/mapado/rest-client-sdk/pull/35/files) and [c9066a8](https://github.com/mapado/rest-client-sdk/commit/c9066a8c18ff1b2bbce3e230a6517ce5d9c5dd19)
+
+### Features
+  * Change method visibility from private to protected:
+    * `fetchFromCache`
+    * `saveToCache`
+    * `removeFromCache`
+    * `addQueryParameter`
+
+
 ## 0.18.0
 ### Breaking change
   * `@id` key is not automatically serialized when the attribute name is `id`, you must set `@Attribute(name="@id")` in your relation (or `new Attribute('@id', 'id')`)
