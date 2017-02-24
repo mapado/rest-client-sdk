@@ -15,7 +15,7 @@
         "psr/cache": "^1.0"
     },
     "require-dev": {
-        "atoum/atoum": "@stable",
+        "atoum/atoum": "^3.0.0",
         "raulfraile/ladybug": "^1.0",
         "symfony/cache": "^3.1"
     },

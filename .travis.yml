@@ -2,6 +2,7 @@ sudo: false
 
 language: php
 php:
+    - 7.1
     - 7.0
     - 5.6
 
@@ -9,6 +10,6 @@ before_script:
     - composer install
 
 script:
-    - vendor/bin/atoum -bf vendor/autoload.php -d Tests/Units/
+    - vendor/bin/atoum -d Tests/Units/
 
 
