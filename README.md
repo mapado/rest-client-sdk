@@ -1,7 +1,7 @@
 Rest Client Sdk [![Build Status](https://travis-ci.org/mapado/rest-client-sdk.svg?branch=v0.19.0)](https://travis-ci.org/mapado/rest-client-sdk) [![StyleCI](https://styleci.io/repos/43553136/shield)](https://styleci.io/repos/43553136) [![Scrutinizer](https://scrutinizer-ci.com/g/mapado/rest-client-sdk/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/mapado/rest-client-sdk/)
 ===========
 
-Rest Client SDK for hydra API.
+PHP Rest Client SDK for JSON API.
 
 This client tries to avoid the complexity of implementing a custom SDK for every API you have.
 You just have to implements your model and a little configuration and it will hide the complexity for you.
