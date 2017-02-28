@@ -2,7 +2,8 @@
 
 namespace Mapado\RestClientSdk\Model;
 
-use Mapado\RestClientSdk\Collection\HydraCollection;
+use Mapado\RestClientSdk\Collection\Collection;
+use Mapado\RestClientSdk\Collection\HalCollection;
 use Mapado\RestClientSdk\Collection\HydraPaginatedCollection;
 use Mapado\RestClientSdk\Helper\ArrayHelper;
 use Mapado\RestClientSdk\SdkClient;
@@ -77,7 +78,7 @@ class ModelHydrator
     }
 
     /**
-     * convert API response to HydraCollection containing entities
+     * convert API response to Collection containing entities
      *
      * @param array $data
      * @param string $modelName
@@ -93,17 +94,17 @@ class ModelHydrator
             return $this->deserializeAll($data, $modelName);
         }
 
-        return new HydraCollection();
+        return new Collection();
     }
 
     /**
-     * convert list of data as array to HydraCollection containing entities
+     * convert list of data as array to Collection containing entities
      *
      * @param array  $data
      * @param string $modelName
      *
      * @access private
-     * @return HydraCollection|HydraPaginatedCollection
+     * @return Collection
      */
     private function deserializeAll($data, $modelName)
     {
@@ -117,11 +118,18 @@ class ModelHydrator
             ArrayHelper::arrayGet($data, $collectionKey)
         );
 
-        if (!empty($data['@type']) && $data['@type'] === 'hydra:PagedCollection') {
-            return new HydraPaginatedCollection($itemList, $data);
-        }
 
-        return new HydraCollection($itemList);
+        $extraProperties = array_filter(
+            $data,
+            function ($key) use ($collectionKey) {
+                return $key !== $collectionKey;
+            },
+            ARRAY_FILTER_USE_KEY
+        );
+
+        $collectionClassName = $this->guessCollectionClassname($data);
+
+        return new $collectionClassName($itemList, $extraProperties);
     }
 
     /**
@@ -143,5 +151,26 @@ class ModelHydrator
         }
 
         return $this->sdk->getSerializer()->deserialize($data, $modelName);
+    }
+
+    /**
+     * guess collection classname according to response data
+     *
+     * @param array $data
+     * @access private
+     * @return string
+     */
+    private function guessCollectionClassname($data)
+    {
+        switch (true) {
+            case (!empty($data['@type']) && $data['@type'] === 'hydra:PagedCollection'):
+                return HydraPaginatedCollection::class;
+
+            case (array_key_exists('_embedded', $data)):
+                return HalCollection::class;
+
+            default:
+                return Collection::class;
+        }
     }
 }

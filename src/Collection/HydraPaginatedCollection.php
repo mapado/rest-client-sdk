@@ -7,60 +7,8 @@ namespace Mapado\RestClientSdk\Collection;
  *
  * @author Florent Clerc <florent.clerc@mapado.com>
  */
-class HydraPaginatedCollection extends HydraCollection
+class HydraPaginatedCollection extends Collection
 {
-    /**
-     * URI of the first page.
-     *
-     * @var string|null
-     */
-    private $firstPage = null;
-
-    /**
-     * URI of the last page.
-     *
-     * @var string|null
-     */
-    private $lastPage = null;
-
-    /**
-     * URI of the next page.
-     *
-     * @var string|null
-     */
-    private $nextPage = null;
-
-    /**
-     * The total number of elements regardless of the pagination.
-     *
-     * @var integer
-     */
-    private $totalItems = 0;
-
-    /**
-     * @param array $response The Hydra data as an array
-     */
-    public function __construct($elements, $response)
-    {
-        parent::__construct($elements);
-
-        if (!empty($response['hydra:firstPage'])) {
-            $this->firstPage = $response['hydra:firstPage'];
-        }
-
-        if (!empty($response['hydra:lastPage'])) {
-            $this->lastPage = $response['hydra:lastPage'];
-        }
-
-        if (!empty($response['hydra:nextPage'])) {
-            $this->nextPage = $response['hydra:nextPage'];
-        }
-
-        if (!empty($response['hydra:totalItems'])) {
-            $this->totalItems = $response['hydra:totalItems'];
-        }
-    }
-
     /**
      * Returns first page URI.
      *
@@ -68,7 +16,7 @@ class HydraPaginatedCollection extends HydraCollection
      */
     public function getFirstPage()
     {
-        return $this->firstPage;
+        return $this->getExtraProperty('hydra:firstPage');
     }
 
     /**
@@ -78,7 +26,7 @@ class HydraPaginatedCollection extends HydraCollection
      */
     public function getLastPage()
     {
-        return $this->lastPage;
+        return $this->getExtraProperty('hydra:lastPage');
     }
 
     /**
@@ -88,7 +36,7 @@ class HydraPaginatedCollection extends HydraCollection
      */
     public function getNextPage()
     {
-        return $this->nextPage;
+        return $this->getExtraProperty('hydra:nextPage');
     }
 
     /**
@@ -98,6 +46,6 @@ class HydraPaginatedCollection extends HydraCollection
      */
     public function getTotalItems()
     {
-        return $this->totalItems;
+        return $this->getExtraProperty('hydra:totalItems') ?: 0;
     }
 }

@@ -5,11 +5,11 @@ namespace Mapado\RestClientSdk\Collection;
 use \ArrayIterator;
 
 /**
- * Class HydraCollection
+ * Class Collection
  *
  * @author Florent Clerc <florent.clerc@mapado.com>
  */
-class HydraCollection implements \IteratorAggregate, \Serializable, \Countable, \ArrayAccess
+class Collection implements \IteratorAggregate, \Serializable, \Countable, \ArrayAccess
 {
     /**
      * The elements of the collection.
@@ -19,11 +19,24 @@ class HydraCollection implements \IteratorAggregate, \Serializable, \Countable, 
     private $elements;
 
     /**
-     * @param array $response The Hydra data as an array.
+     * extra properties that are not the main list but linked data
+     * It can be "_embed" or "_links" for HAL response
+     * or "hydra:totalItems" for JSON-LD
+     * or anything you want to really ("foo" is OK for exemple)
+     *
+     * @var array
+     * @access private
      */
-    public function __construct($elements = [])
+    private $extraProperties;
+
+    /**
+     * @param array $elements The data elements as an array.
+     * @param array $extraProperties The extra properties.
+     */
+    public function __construct(array $elements = [], array $extraProperties = [])
     {
         $this->elements = $elements;
+        $this->extraProperties = $extraProperties;
     }
 
     /**
@@ -112,5 +125,30 @@ class HydraCollection implements \IteratorAggregate, \Serializable, \Countable, 
     public function getIterator()
     {
         return new ArrayIterator($this->elements);
+    }
+
+    /**
+     * getExtraProperties
+     *
+     * @access public
+     * @return array
+     */
+    public function getExtraProperties()
+    {
+        return $this->extraProperties;
+    }
+
+    /**
+     * return the value of an extra property
+     *
+     * @param string $key
+     * @access public
+     * @return mixed
+     */
+    public function getExtraProperty($key)
+    {
+        if (isset($this->extraProperties[$key])) {
+            return $this->extraProperties[$key];
+        }
     }
 }

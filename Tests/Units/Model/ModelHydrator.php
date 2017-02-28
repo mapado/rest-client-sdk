@@ -181,7 +181,7 @@ class ModelHydrator extends atoum
             ->and($orderListArray = json_decode(file_get_contents(__DIR__ . '/../../data/orderList.hal.json'), true))
             ->then
                 ->object($orderList = $this->testedInstance->hydrateList($orderListArray, 'Mapado\RestClientSdk\Tests\Model\Hal\Order'))
-                    // ->isInstanceOf('Mapado\RestClientSdk\Collection\HydraPaginatedCollection')
+                    ->isInstanceOf('Mapado\RestClientSdk\Collection\HalCollection')
                 ->integer($orderList->getTotalItems())
                     ->isEqualTo(2)
 

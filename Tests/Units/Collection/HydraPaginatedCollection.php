@@ -5,7 +5,7 @@ namespace Mapado\RestClientSdk\Tests\Units\Collection;
 use atoum;
 
 /**
- * SdkClient
+ * HydraPaginatedCollection
  *
  * @uses   atoum
  * @author Florent Clerc <florent.clerc@mapado.com>
