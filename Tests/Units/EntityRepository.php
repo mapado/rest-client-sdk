@@ -540,7 +540,6 @@ class EntityRepository extends atoum
         $this->calling($this->mockedSdk)->getSerializer = new \Mapado\RestClientSdk\Model\Serializer($mapping);
 
         $this
-            // ->given($this->newTestedInstance($this->mockedSdk, $this->mockedRestClient, 'Mapado\RestClientSdk\Tests\Model\JsonLd\Order'))
             ->then
                 ->object($order = $this->repository->findOneBy(['a' => 'a']))
                     ->isInstanceOf('Mapado\RestClientSdk\Tests\Model\JsonLd\Order')
