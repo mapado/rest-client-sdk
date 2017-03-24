@@ -8,10 +8,12 @@ Changelog
 
   * Some internal breaking changes that might affect you:
     * `Mapado\RestClientSdk\Collection\Collection` constructor forbid using anything else than an array as a first argument
+    * `Model\ModelHydrator::deserializeAll` is now private
 
 ### Features
   * `Collection` objects now accept an `extraProperties` parameter as second argument
   * HAL JSON response should now be supported
+  * Mapping now accept a configuration array. This array can take a 'collectionKey' key to set the list default JSON key (default `hydra:member`). The key can contain dots for sublevel.
 
 ## 0.19.0
 ### Breaking change
