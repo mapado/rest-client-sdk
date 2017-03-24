@@ -230,8 +230,9 @@ class EntityRepository
         if ($methodName == 'findOneBy') {
             // If more results are found but one is requested return the first hit.
             $collectionKey = $mapping->getConfig()['collectionKey'];
-            if (ArrayHelper::arrayHas($data, $collectionKey)) {
-                $data = current(ArrayHelper::arrayGet($data, $collectionKey));
+            $entityList = ArrayHelper::arrayGet($data, $collectionKey);
+            if (!empty($entityList)) {
+                $data = current($entityList);
                 $hydratedData = $hydrator->hydrate($data, $this->entityName);
 
                 $this->saveToCache($this->getIdentifier($hydratedData), $hydratedData);

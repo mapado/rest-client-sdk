@@ -547,4 +547,47 @@ class EntityRepository extends atoum
                     ->isEqualTo('/orders/2')
         ;
     }
+
+    /**
+     * testFindOneByWithoutResult
+     *
+     * @access public
+     * @return void
+     */
+    public function testFindOneByWithoutResult()
+    {
+        $mapping = new RestMapping('v12');
+        $classMetadata = new ClassMetadata(
+            'orders',
+            'Mapado\RestClientSdk\Tests\Model\JsonLd\Order',
+            'mock\Mapado\RestClientSdk\EntityRepository'
+        );
+        $classMetadata->setAttributeList([
+            new Attribute('@id', 'id', 'string', true),
+        ]);
+        $mapping->setMapping([$classMetadata]);
+
+        $this->calling($this->mockedSdk)->getMapping = $mapping;
+
+        $this->repository = new \mock\Mapado\RestClientSdk\EntityRepository(
+            $this->mockedSdk,
+            $this->mockedRestClient,
+            'Mapado\RestClientSdk\Tests\Model\JsonLd\Order'
+        );
+
+        $mapping->setConfig([
+            'collectionKey' => 'fooList',
+        ]);
+        $this->calling($this->mockedRestClient)->get = [
+            'fooList' => [
+            ],
+        ];
+        $this->calling($this->mockedSdk)->getSerializer = new \Mapado\RestClientSdk\Model\Serializer($mapping);
+
+        $this
+            ->then
+                ->variable($order = $this->repository->findOneBy(['a' => 'a']))
+                    ->isNull()
+        ;
+    }
 }
