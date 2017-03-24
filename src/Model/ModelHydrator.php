@@ -2,8 +2,10 @@
 
 namespace Mapado\RestClientSdk\Model;
 
-use Mapado\RestClientSdk\Collection\HydraCollection;
+use Mapado\RestClientSdk\Collection\Collection;
+use Mapado\RestClientSdk\Collection\HalCollection;
 use Mapado\RestClientSdk\Collection\HydraPaginatedCollection;
+use Mapado\RestClientSdk\Helper\ArrayHelper;
 use Mapado\RestClientSdk\SdkClient;
 
 /**
@@ -59,7 +61,7 @@ class ModelHydrator
     }
 
     /**
-     * hydrate
+     * convert data as array to entity
      *
      * @param array $data
      * @param string $modelName
@@ -76,7 +78,7 @@ class ModelHydrator
     }
 
     /**
-     * hydrateList
+     * convert API response to Collection containing entities
      *
      * @param array $data
      * @param string $modelName
@@ -85,40 +87,53 @@ class ModelHydrator
      */
     public function hydrateList($data, $modelName)
     {
-        if (is_array($data) && !empty($data['hydra:member'])) {
+        $collectionKey = $this->sdk->getMapping()
+            ->getConfig()['collectionKey'];
+
+        if (is_array($data) && ArrayHelper::arrayHas($data, $collectionKey)) {
             return $this->deserializeAll($data, $modelName);
         }
 
-        return new HydraCollection();
+        return new Collection();
     }
 
     /**
+     * convert list of data as array to Collection containing entities
+     *
      * @param array  $data
      * @param string $modelName
-     * @return HydraCollection|HydraPaginatedCollection
+     *
+     * @access private
+     * @return Collection
      */
-    public function deserializeAll($data, $modelName)
+    private function deserializeAll($data, $modelName)
     {
-        $data['hydra:member'] = array_map(
-            function ($member) use ($modelName) {
+        $collectionKey = $this->sdk->getMapping()
+            ->getConfig()['collectionKey'];
+
+        $itemList = array_map(
+            function ($member) use ($modelName, $collectionKey) {
                 return $this->deserialize($member, $modelName);
             },
-            $data['hydra:member']
+            ArrayHelper::arrayGet($data, $collectionKey)
         );
 
-        $hydratedList = new HydraCollection($data);
 
-        if (!empty($data['@type'])) {
-            if ($data['@type'] === 'hydra:PagedCollection') {
-                $hydratedList = new HydraPaginatedCollection($data);
-            }
-        }
+        $extraProperties = array_filter(
+            $data,
+            function ($key) use ($collectionKey) {
+                return $key !== $collectionKey;
+            },
+            ARRAY_FILTER_USE_KEY
+        );
 
-        return $hydratedList;
+        $collectionClassName = $this->guessCollectionClassname($data);
+
+        return new $collectionClassName($itemList, $extraProperties);
     }
 
     /**
-     * deserialize
+     * convert array to entity
      *
      * @param array  $data
      * @param string $modelName
@@ -136,5 +151,26 @@ class ModelHydrator
         }
 
         return $this->sdk->getSerializer()->deserialize($data, $modelName);
+    }
+
+    /**
+     * guess collection classname according to response data
+     *
+     * @param array $data
+     * @access private
+     * @return string
+     */
+    private function guessCollectionClassname($data)
+    {
+        switch (true) {
+            case (!empty($data['@type']) && $data['@type'] === 'hydra:PagedCollection'):
+                return HydraPaginatedCollection::class;
+
+            case (array_key_exists('_embedded', $data)):
+                return HalCollection::class;
+
+            default:
+                return Collection::class;
+        }
     }
 }

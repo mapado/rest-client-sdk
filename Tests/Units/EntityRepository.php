@@ -4,6 +4,7 @@ namespace Mapado\RestClientSdk\Tests\Units;
 
 use atoum;
 use Mapado\RestClientSdk\Mapping as RestMapping;
+use Mapado\RestClientSdk\Mapping\Attribute;
 use Mapado\RestClientSdk\Mapping\ClassMetadata;
 use Mapado\RestClientSdk\Mapping\Driver\AnnotationDriver;
 use Symfony\Component\Cache\Adapter\ArrayAdapter;
@@ -22,6 +23,8 @@ class EntityRepository extends atoum
 
     private $repository;
 
+    private $mapping;
+
     public function beforeTestMethod($method)
     {
         $this->mockGenerator->orphanize('__construct');
@@ -36,8 +39,8 @@ class EntityRepository extends atoum
         $this->mockedHydrator = new \mock\Mapado\RestClientSdk\Model\ModelHydrator($this->mockedSdk);
         $this->calling($this->mockedSdk)->getModelHydrator = $this->mockedHydrator;
 
-        $mapping = new RestMapping('v12');
-        $mapping->setMapping([
+        $this->mapping = new RestMapping('v12');
+        $this->mapping->setMapping([
             new ClassMetadata(
                 'orders',
                 'Mapado\RestClientSdk\Tests\Model\JsonLd\Model',
@@ -45,7 +48,7 @@ class EntityRepository extends atoum
             ),
         ]);
 
-        $this->calling($this->mockedSdk)->getMapping = $mapping;
+        $this->calling($this->mockedSdk)->getMapping = $this->mapping;
 
         $this->repository = new \mock\Mapado\RestClientSdk\EntityRepository(
             $this->mockedSdk,
@@ -500,6 +503,48 @@ class EntityRepository extends atoum
                 ->mock($this->mockedRestClient)
                     ->call('post')
                         ->withArguments('/cart_items')->once()
+        ;
+    }
+
+    public function testFindOneByWithHal()
+    {
+        $mapping = new RestMapping('v12');
+        $classMetadata = new ClassMetadata(
+            'orders',
+            'Mapado\RestClientSdk\Tests\Model\JsonLd\Order',
+            'mock\Mapado\RestClientSdk\EntityRepository'
+        );
+        $classMetadata->setAttributeList([
+            new Attribute('@id', 'id', 'string', true),
+        ]);
+        $mapping->setMapping([$classMetadata]);
+
+        $this->calling($this->mockedSdk)->getMapping = $mapping;
+
+        $this->repository = new \mock\Mapado\RestClientSdk\EntityRepository(
+            $this->mockedSdk,
+            $this->mockedRestClient,
+            'Mapado\RestClientSdk\Tests\Model\JsonLd\Order'
+        );
+
+        $mapping->setConfig([
+            'collectionKey' => 'fooList',
+        ]);
+        $this->calling($this->mockedRestClient)->get = [
+            'fooList' => [
+                [
+                    '@id' => '/orders/2',
+                ]
+            ],
+        ];
+        $this->calling($this->mockedSdk)->getSerializer = new \Mapado\RestClientSdk\Model\Serializer($mapping);
+
+        $this
+            ->then
+                ->object($order = $this->repository->findOneBy(['a' => 'a']))
+                    ->isInstanceOf('Mapado\RestClientSdk\Tests\Model\JsonLd\Order')
+                ->string($order->getId())
+                    ->isEqualTo('/orders/2')
         ;
     }
 }

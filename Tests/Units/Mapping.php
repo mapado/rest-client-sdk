@@ -25,7 +25,7 @@ class Mapping extends atoum
                 ->and($this->testedInstance->setMapping([new ClassMetadata('foo', null, null)]))
             ->then($testedInstance = $this->testedInstance)
             ->exception(function () use ($testedInstance) {
-                @$testedInstance->getModelName();
+                $testedInstance->getModelName('');
             })
                 ->isInstanceOf('Mapado\RestClientSdk\Exception\MappingException')
                 ->hasMessage('key is not set')
@@ -202,6 +202,28 @@ class Mapping extends atoum
             ->then
                 ->boolean($testedInstance->hasClassMetadata('Foo\Bar'))
                     ->isFalse()
+        ;
+    }
+
+    public function testMappingConfiguration()
+    {
+        $this
+            // default configuration
+            ->given($this->newTestedInstance())
+            ->then
+                ->array($this->testedInstance->getConfig())
+                    ->isEqualTo([
+                        'collectionKey' => 'hydra:member',
+                    ])
+
+            // custom configuration
+            ->given($config = [
+                'collectionKey' => 'collection',
+            ])
+                ->and($this->newTestedInstance('', $config))
+            ->then
+                ->array($this->testedInstance->getConfig())
+                    ->isEqualTo($config)
         ;
     }
 

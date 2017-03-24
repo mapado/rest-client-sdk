@@ -3,6 +3,7 @@
 namespace Mapado\RestClientSdk\Model;
 
 use Mapado\RestClientSdk\Exception\SdkException;
+use Mapado\RestClientSdk\Helper\ArrayHelper;
 use Mapado\RestClientSdk\Mapping;
 use Mapado\RestClientSdk\Mapping\ClassMetadata;
 use Mapado\RestClientSdk\SdkClient;
@@ -81,13 +82,19 @@ class Serializer
         $identifierAttribute = $classMetadata->getIdentifierAttribute();
         $identifierAttrKey = $identifierAttribute ? $identifierAttribute->getSerializedKey() : null;
 
+        $attributeList = $classMetadata->getAttributeList();
+
         $instance = new $className();
 
-        foreach ($data as $key => $value) {
-            $attribute = $classMetadata->getAttribute($key);
-            if (!$attribute) {
+        foreach ($attributeList as $attribute) {
+            $key = $attribute->getSerializedKey();
+
+            if (!ArrayHelper::arrayHas($data, $key)) {
                 continue;
             }
+
+            $value = ArrayHelper::arrayGet($data, $key);
+
 
             $setter = 'set' . ucfirst($attribute->getAttributeName());
 

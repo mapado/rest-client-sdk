@@ -1,0 +1,10 @@
+{
+    "_links": {
+        "self": { "href": "/orders/123" },
+        "ea:basket": { "href": "/baskets/98712" },
+        "ea:customer": { "href": "/customers/7809" }
+    },
+    "total": 30.00,
+    "currency": "USD",
+    "status": "shipped"
+}
