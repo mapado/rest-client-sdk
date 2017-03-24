@@ -9,7 +9,7 @@ namespace Mapado\RestClientSdk\Mapping;
 class ClassMetadata
 {
     /**
-     * modelName
+     * Model name (entity class with full namespace, ie: "Foo\Entity\Article").
      *
      * @var string
      * @access private
@@ -17,7 +17,15 @@ class ClassMetadata
     private $modelName;
 
     /**
-     * key
+     * Model short name (entity class without namespace, ie: "Article").
+     *
+     * @var string
+     * @access private
+     */
+    private $modelShortName;
+
+    /**
+     * Model key, used as path prefix for API calls.
      *
      * @var string
      * @access private
@@ -25,7 +33,7 @@ class ClassMetadata
     private $key;
 
     /**
-     * repositoryName
+     * Repository name (repository class with full namespace, ie: "Foo\Repository\ArticleRepository").
      *
      * @var string
      * @access private
@@ -67,7 +75,7 @@ class ClassMetadata
     public function __construct($key, $modelName, $repositoryName)
     {
         $this->key = $key;
-        $this->modelName = $modelName;
+        $this->setModelName($modelName);
         $this->repositoryName = $repositoryName;
     }
 
@@ -82,6 +90,16 @@ class ClassMetadata
     }
 
     /**
+     * Getter for modelShortName
+     *
+     * @return string
+     */
+    public function getModelShortName()
+    {
+        return $this->modelShortName;
+    }
+
+    /**
      * Setter for modelName
      *
      * @param string $modelName
@@ -90,6 +108,8 @@ class ClassMetadata
     public function setModelName($modelName)
     {
         $this->modelName = $modelName;
+        $classParts = explode('\\', $modelName);
+        $this->modelShortName = array_pop($classParts);
         return $this;
     }
 

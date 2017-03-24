@@ -77,7 +77,8 @@ class Serializer
      */
     public function deserialize(array $data, $className)
     {
-        // classname may be detected for hydra api with @type key
+        $className = $this->resolveRealClassName($data, $className);
+
         $classMetadata = $this->mapping->getClassMetadata($className);
         $identifierAttribute = $classMetadata->getIdentifierAttribute();
         $identifierAttrKey = $identifierAttribute ? $identifierAttribute->getSerializedKey() : null;
@@ -141,6 +142,30 @@ class Serializer
         }
 
         return $instance;
+    }
+
+    /**
+     * If provided class name is abstract (a base class), the real class name (child class)
+     * may be available in some data fields.
+     *
+     * @param array  $data
+     * @param string $className
+     * @access private
+     * @return string
+     */
+    private function resolveRealClassName(array $data, $className)
+    {
+        if (!empty($data['@type'])) {
+            $classMetadata = $this->mapping->tryGetClassMetadataByShortName($data['@type']);
+
+            if ($classMetadata) {
+                return $classMetadata->getModelName();
+            }
+        }
+
+        // @todo Try to resolve model key from IRI if available.
+
+        return $className;
     }
 
     /**

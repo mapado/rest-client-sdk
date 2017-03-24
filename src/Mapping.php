@@ -26,9 +26,9 @@ class Mapping
     private $idPrefixLength;
 
     /**
-     * @var array
+     * @var ClassMetadata[]
      */
-    private $mapping = [];
+    private $classMetadatas = [];
 
     /**
      * config
@@ -91,13 +91,13 @@ class Mapping
     /**
      * setMapping
      *
-     * @param array $mapping
+     * @param ClassMetadata[] $classMetadatas
      * @access public
      * @return Mapping
      */
-    public function setMapping(array $mapping)
+    public function setMapping(array $classMetadatas)
     {
-        $this->mapping = $mapping;
+        $this->classMetadatas = $classMetadatas;
 
         return $this;
     }
@@ -120,15 +120,15 @@ class Mapping
      * return the list of mapping keys
      *
      * @access public
-     * @return array
+     * @return string[]
      */
     public function getMappingKeys()
     {
         return array_map(
-            function ($mapping) {
-                return $mapping->getKey();
+            function (ClassMetadata $classMetadata) {
+                return $classMetadata->getKey();
             },
-            $this->mapping
+            $this->classMetadatas
         );
     }
 
@@ -163,9 +163,9 @@ class Mapping
      */
     public function getKeyFromModel($modelName)
     {
-        foreach ($this->mapping as $mapping) {
-            if ($modelName === $mapping->getModelName()) {
-                return $mapping->getKey();
+        foreach ($this->classMetadatas as $classMetadata) {
+            if ($modelName === $classMetadata->getModelName()) {
+                return $classMetadata->getKey();
             }
         }
 
@@ -178,16 +178,33 @@ class Mapping
      * @param string $modelName
      * @access public
      * @return ClassMetadata
+     * @throws MappingException
      */
     public function getClassMetadata($modelName)
     {
-        foreach ($this->mapping as $mapping) {
-            if ($modelName === $mapping->getModelName()) {
-                return $mapping;
+        foreach ($this->classMetadatas as $classMetadata) {
+            if ($modelName === $classMetadata->getModelName()) {
+                return $classMetadata;
             }
         }
 
         throw new MappingException($modelName . ' model is not mapped');
+    }
+
+    /**
+     * getClassMetadata for model short name
+     *
+     * @param string $modelShortName
+     * @access public
+     * @return ClassMetadata|null
+     */
+    public function tryGetClassMetadataByShortName($modelShortName)
+    {
+        foreach ($this->classMetadatas as $classMetadata) {
+            if ($modelShortName === $classMetadata->getModelShortName()) {
+                return $classMetadata;
+            }
+        }
     }
 
     /**
@@ -199,8 +216,8 @@ class Mapping
      */
     public function hasClassMetadata($modelName)
     {
-        foreach ($this->mapping as $mapping) {
-            if ($modelName === $mapping->getModelName()) {
+        foreach ($this->classMetadatas as $classMetadata) {
+            if ($modelName === $classMetadata->getModelName()) {
                 return true;
             }
         }
@@ -217,9 +234,9 @@ class Mapping
      */
     public function getClassMetadataByKey($key)
     {
-        foreach ($this->mapping as $mapping) {
-            if ($key === $mapping->getKey()) {
-                return $mapping;
+        foreach ($this->classMetadatas as $classMetadata) {
+            if ($key === $classMetadata->getKey()) {
+                return $classMetadata;
             }
         }
     }
