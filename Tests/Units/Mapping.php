@@ -59,12 +59,12 @@ class Mapping extends atoum
     }
 
     /**
-     * testTryGetClassMetadataByShortName
+     * testTryGetClassMetadataById
      *
      * @access public
      * @return void
      */
-    public function testTryGetClassMetadataByShortName()
+    public function testTryGetClassMetadataById()
     {
         $this
             // no mapping found
@@ -80,13 +80,13 @@ class Mapping extends atoum
                         ]
                     )
                 )
-            ->when($result = $this->testedInstance->tryGetClassMetadataByShortName('Unknown'))
+            ->when($result = $this->testedInstance->tryGetClassMetadataById('unknown'))
             ->then
                 ->variable($result)
                     ->isNull()
 
             // model found
-            ->when($result = $this->testedInstance->tryGetClassMetadataByShortName('Bar'))
+            ->when($result = $this->testedInstance->tryGetClassMetadataById('/bars/1234'))
             ->then
                 ->variable($result)
                     ->isIdenticalTo($classMetadata)

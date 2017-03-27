@@ -17,14 +17,6 @@ class ClassMetadata
     private $modelName;
 
     /**
-     * Model short name (entity class without namespace, ie: "Article").
-     *
-     * @var string
-     * @access private
-     */
-    private $modelShortName;
-
-    /**
      * Model key, used as path prefix for API calls.
      *
      * @var string
@@ -75,7 +67,7 @@ class ClassMetadata
     public function __construct($key, $modelName, $repositoryName)
     {
         $this->key = $key;
-        $this->setModelName($modelName);
+        $this->modelName = $modelName;
         $this->repositoryName = $repositoryName;
     }
 
@@ -90,16 +82,6 @@ class ClassMetadata
     }
 
     /**
-     * Getter for modelShortName
-     *
-     * @return string
-     */
-    public function getModelShortName()
-    {
-        return $this->modelShortName;
-    }
-
-    /**
      * Setter for modelName
      *
      * @param string $modelName
@@ -108,8 +90,6 @@ class ClassMetadata
     public function setModelName($modelName)
     {
         $this->modelName = $modelName;
-        $classParts = explode('\\', $modelName);
-        $this->modelShortName = array_pop($classParts);
         return $this;
     }
 

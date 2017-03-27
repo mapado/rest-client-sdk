@@ -96,7 +96,6 @@ class Serializer
 
             $value = ArrayHelper::arrayGet($data, $key);
 
-
             $setter = 'set' . ucfirst($attribute->getAttributeName());
 
             if (method_exists($instance, $setter)) {
@@ -155,15 +154,15 @@ class Serializer
      */
     private function resolveRealClassName(array $data, $className)
     {
-        if (!empty($data['@type'])) {
-            $classMetadata = $this->mapping->tryGetClassMetadataByShortName($data['@type']);
+        if (!empty($data['@id'])) {
+            $classMetadata = $this->mapping->tryGetClassMetadataById($data['@id']);
 
             if ($classMetadata) {
                 return $classMetadata->getModelName();
             }
         }
 
-        // @todo Try to resolve model key from IRI if available.
+        // Real class name could also be retrieved from @type property.
 
         return $className;
     }
