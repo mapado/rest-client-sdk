@@ -1,6 +1,11 @@
 Changelog
 ======================
 
+## 0.21.0
+### Features
+  * Added support for abstract entities [#56](https://github.com/mapado/rest-client-sdk/pull/56)
+
+
 ## 0.20.0
 ### Breaking change
   * `Mapado\RestClientSdk\Collection\HydraCollection` does not exists anymore and is replaced by `Mapado\RestClientSdk\Collection\Collection`
