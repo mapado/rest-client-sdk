@@ -59,6 +59,41 @@ class Mapping extends atoum
     }
 
     /**
+     * testTryGetClassMetadataById
+     *
+     * @access public
+     * @return void
+     */
+    public function testTryGetClassMetadataById()
+    {
+        $this
+            // no mapping found
+            ->given($this->newTestedInstance)
+                ->and(
+                    $this->testedInstance->setMapping(
+                        [
+                            $classMetadata = new ClassMetadata(
+                                'bars',
+                                'Foo\Entity\Bar',
+                                'Foo\Repository\BarRepository'
+                            )
+                        ]
+                    )
+                )
+            ->when($result = $this->testedInstance->tryGetClassMetadataById('unknown'))
+            ->then
+                ->variable($result)
+                    ->isNull()
+
+            // model found
+            ->when($result = $this->testedInstance->tryGetClassMetadataById('/bars/1234'))
+            ->then
+                ->variable($result)
+                    ->isIdenticalTo($classMetadata)
+        ;
+    }
+
+    /**
      * testGetMappingKeys
      *
      * @access public

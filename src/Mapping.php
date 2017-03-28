@@ -26,9 +26,9 @@ class Mapping
     private $idPrefixLength;
 
     /**
-     * @var array
+     * @var ClassMetadata[]
      */
-    private $mapping = [];
+    private $classMetadataList = [];
 
     /**
      * config
@@ -91,13 +91,13 @@ class Mapping
     /**
      * setMapping
      *
-     * @param array $mapping
+     * @param ClassMetadata[] $classMetadataList
      * @access public
      * @return Mapping
      */
-    public function setMapping(array $mapping)
+    public function setMapping(array $classMetadataList)
     {
-        $this->mapping = $mapping;
+        $this->classMetadataList = $classMetadataList;
 
         return $this;
     }
@@ -120,15 +120,15 @@ class Mapping
      * return the list of mapping keys
      *
      * @access public
-     * @return array
+     * @return string[]
      */
     public function getMappingKeys()
     {
         return array_map(
-            function ($mapping) {
-                return $mapping->getKey();
+            function (ClassMetadata $classMetadata) {
+                return $classMetadata->getKey();
             },
-            $this->mapping
+            $this->classMetadataList
         );
     }
 
@@ -141,16 +141,27 @@ class Mapping
      */
     public function getKeyFromId($id)
     {
-        $id = $this->removePrefix($id);
-
-        $lastSeparator = strrpos($id, '/');
-        $secondLast = strrpos($id, '/', $lastSeparator - strlen($id) - 1) + 1;
-
-        $keyLength = abs($secondLast - $lastSeparator);
-        $key = substr($id, $secondLast, $keyLength);
+        $key = $this->parseKeyFromId($id);
         $this->checkMappingExistence($key);
 
         return $key;
+    }
+
+    /**
+     * Parse the key from an id (path)
+     *
+     * @param string $id
+     * @access private
+     * @return string|null
+     */
+    private function parseKeyFromId($id)
+    {
+        $id = $this->removePrefix($id);
+
+        $matches = [];
+        if (1 === preg_match('|/([^/]+)/[^/]+$|', $id, $matches)) {
+            return $matches[1];
+        }
     }
 
     /**
@@ -163,9 +174,9 @@ class Mapping
      */
     public function getKeyFromModel($modelName)
     {
-        foreach ($this->mapping as $mapping) {
-            if ($modelName === $mapping->getModelName()) {
-                return $mapping->getKey();
+        foreach ($this->classMetadataList as $classMetadata) {
+            if ($modelName === $classMetadata->getModelName()) {
+                return $classMetadata->getKey();
             }
         }
 
@@ -178,16 +189,35 @@ class Mapping
      * @param string $modelName
      * @access public
      * @return ClassMetadata
+     * @throws MappingException
      */
     public function getClassMetadata($modelName)
     {
-        foreach ($this->mapping as $mapping) {
-            if ($modelName === $mapping->getModelName()) {
-                return $mapping;
+        foreach ($this->classMetadataList as $classMetadata) {
+            if ($modelName === $classMetadata->getModelName()) {
+                return $classMetadata;
             }
         }
 
         throw new MappingException($modelName . ' model is not mapped');
+    }
+
+    /**
+     * getClassMetadata for id
+     *
+     * @param string $id
+     * @access public
+     * @return ClassMetadata|null
+     */
+    public function tryGetClassMetadataById($id)
+    {
+        $key = $this->parseKeyFromId($id);
+
+        foreach ($this->classMetadataList as $classMetadata) {
+            if ($key === $classMetadata->getKey()) {
+                return $classMetadata;
+            }
+        }
     }
 
     /**
@@ -199,8 +229,8 @@ class Mapping
      */
     public function hasClassMetadata($modelName)
     {
-        foreach ($this->mapping as $mapping) {
-            if ($modelName === $mapping->getModelName()) {
+        foreach ($this->classMetadataList as $classMetadata) {
+            if ($modelName === $classMetadata->getModelName()) {
                 return true;
             }
         }
@@ -217,9 +247,9 @@ class Mapping
      */
     public function getClassMetadataByKey($key)
     {
-        foreach ($this->mapping as $mapping) {
-            if ($key === $mapping->getKey()) {
-                return $mapping;
+        foreach ($this->classMetadataList as $classMetadata) {
+            if ($key === $classMetadata->getKey()) {
+                return $classMetadata;
             }
         }
     }
@@ -260,7 +290,7 @@ class Mapping
      */
     private function removePrefix($value)
     {
-        if ($this->idPrefix && strpos($value, $this->idPrefix) !== false) {
+        if (($this->idPrefixLength > 0) && (0 === strpos($value, $this->idPrefix))) {
             return substr($value, $this->idPrefixLength);
         }
 

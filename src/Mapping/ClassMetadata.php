@@ -9,7 +9,7 @@ namespace Mapado\RestClientSdk\Mapping;
 class ClassMetadata
 {
     /**
-     * modelName
+     * Model name (entity class with full namespace, ie: "Foo\Entity\Article").
      *
      * @var string
      * @access private
@@ -17,7 +17,7 @@ class ClassMetadata
     private $modelName;
 
     /**
-     * key
+     * Model key, used as path prefix for API calls.
      *
      * @var string
      * @access private
@@ -25,7 +25,7 @@ class ClassMetadata
     private $key;
 
     /**
-     * repositoryName
+     * Repository name (repository class with full namespace, ie: "Foo\Repository\ArticleRepository").
      *
      * @var string
      * @access private
