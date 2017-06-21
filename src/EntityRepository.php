@@ -5,6 +5,7 @@ namespace Mapado\RestClientSdk;
 use Mapado\RestClientSdk\Exception\SdkException;
 use Mapado\RestClientSdk\Helper\ArrayHelper;
 use Symfony\Component\Cache\CacheItem;
+use Mapado\RestClientSdk\UnitOfWork;
 
 class EntityRepository
 {
@@ -36,17 +37,26 @@ class EntityRepository
     private $classMetadataCache;
 
     /**
+     * unitOfWork
+     *
+     * @var UnitOfWork
+     * @access private
+     */
+    private $unitOfWork;
+
+    /**
      * EntityRepository constructor
      *
      * @param SdkClient  $sdkClient  The client to connect to the datasource with
      * @param RestClient $restClient The client to process the http requests
      * @param string     $entityName The entity to work with
      */
-    public function __construct(SdkClient $sdkClient, RestClient $restClient, $entityName)
+    public function __construct(SdkClient $sdkClient, RestClient $restClient, UnitOfWork $unitOfWork, $entityName)
     {
         $this->sdk        = $sdkClient;
         $this->restClient = $restClient;
         $this->entityName = $entityName;
+        $this->unitOfWork = $unitOfWork;
     }
 
     /**
@@ -75,6 +85,7 @@ class EntityRepository
 
         // cache entity
         $this->saveToCache($id, $entity);
+        $this->unitOfWork->registerClean($id, $entity);
 
         return $entity;
     }
@@ -110,6 +121,7 @@ class EntityRepository
 
         // then cache each entity from list
         foreach ($entityList as $entity) {
+            $this->unitOfWork->registerClean($this->getIdentifier($entity), $entity);
             $this->saveToCache($this->getIdentifier($entity), $entity);
         }
 
@@ -129,6 +141,7 @@ class EntityRepository
     {
         $identifier = $this->getIdentifier($model);
         $this->removeFromCache($identifier);
+        $this->unitOfWork->clear($identifier);
 
         return $this->restClient->delete($identifier);
     }
@@ -140,11 +153,15 @@ class EntityRepository
      * @access public
      * @return void
      */
-    public function update($model, $serializationContext = [])
+    public function update($model, $serializationContext = [], $queryParams = [])
     {
+        $serializer = $this->sdk->getSerializer();
+        $newModel = $serializer->serialize($model, $this->entityName, $serializationContext);
+        $oldModel = $serializer->serialize($this->unitOfWork->getDirtyEntity($this->getIdentifier($model)), $this->entityName, $serializationContext);
+
         $data = $this->restClient->put(
-            $this->getIdentifier($model),
-            $this->sdk->getSerializer()->serialize($model, $this->entityName, $serializationContext)
+            $this->addQueryParameter($this->getIdentifier($model), $queryParams),
+            $this->unitOfWork->getDirtyData($newModel, $oldModel)
         );
 
         $this->removeFromCache($this->getIdentifier($model));
@@ -160,14 +177,17 @@ class EntityRepository
      * @access public
      * @return void
      */
-    public function persist($model, $serializationContext = [])
+    public function persist($model, $serializationContext = [], $queryParams = [])
     {
         $mapping = $this->sdk->getMapping();
         $prefix = $mapping->getIdPrefix();
         $key = $mapping->getKeyFromModel($this->entityName);
 
         $path = empty($prefix) ? '/' . $key : $prefix . '/' . $key;
-        $data = $this->restClient->post($path, $this->sdk->getSerializer()->serialize($model, $this->entityName, $serializationContext));
+        $data = $this->restClient->post(
+            $this->addQueryParameter($path, $queryParams),
+            $this->sdk->getSerializer()->serialize($model, $this->entityName, $serializationContext)
+        );
 
         $hydrator = $this->sdk->getModelHydrator();
         return $hydrator->hydrate($data, $this->entityName);
@@ -235,6 +255,7 @@ class EntityRepository
                 $data = current($entityList);
                 $hydratedData = $hydrator->hydrate($data, $this->entityName);
 
+                $this->unitOfWork->registerClean($this->getIdentifier($hydratedData), $hydratedData);
                 $this->saveToCache($this->getIdentifier($hydratedData), $hydratedData);
             } else {
                 $hydratedData = null;

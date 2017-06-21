@@ -7,6 +7,7 @@ use Mapado\RestClientSdk\Helper\ArrayHelper;
 use Mapado\RestClientSdk\Mapping;
 use Mapado\RestClientSdk\Mapping\ClassMetadata;
 use Mapado\RestClientSdk\SdkClient;
+use Mapado\RestClientSdk\UnitOfWork;
 use libphonenumber\PhoneNumberFormat;
 use libphonenumber\PhoneNumberUtil;
 
@@ -28,16 +29,16 @@ class Serializer
      * @var SdkClient|null
      */
     private $sdk;
-
     /**
      * Constructor.
      *
      * @param Mapping $mapping
      * @access public
      */
-    public function __construct(Mapping $mapping)
+    public function __construct(Mapping $mapping, UnitOfWork $unitOfWork)
     {
         $this->mapping = $mapping;
+        $this->unitOfWork = $unitOfWork;
     }
 
     /**
@@ -138,6 +139,10 @@ class Serializer
                     $instance->$setter($value);
                 }
             }
+        }
+
+        if ($instance->getId()) {
+            $this->unitOfWork->registerClean($instance->getId(), $instance);
         }
 
         return $instance;

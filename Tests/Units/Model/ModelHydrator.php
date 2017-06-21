@@ -9,6 +9,7 @@ use Mapado\RestClientSdk\Mapping\Attribute;
 use Mapado\RestClientSdk\Mapping\ClassMetadata;
 use Mapado\RestClientSdk\Mapping\Relation;
 use Mapado\RestClientSdk\Model\Serializer;
+use Mapado\RestClientSdk\UnitOfWork;
 
 /**
  * Class ModelHydrator
@@ -17,6 +18,8 @@ use Mapado\RestClientSdk\Model\Serializer;
 class ModelHydrator extends atoum
 {
     private $sdk;
+
+    private $unitOfWork;
 
     public function beforeTestMethod($method)
     {
@@ -30,6 +33,8 @@ class ModelHydrator extends atoum
         $mapping->setMapping([
             $fooMetadata,
         ]);
+
+        $this->unitOfWork = new UnitOfWork();
 
         $this->mockGenerator->orphanize('__construct');
         $this->mockGenerator->shuntParentClassCalls();
@@ -110,7 +115,7 @@ class ModelHydrator extends atoum
         $this->mockGenerator->shuntParentClassCalls();
         $sdk = new \mock\Mapado\RestClientSdk\SdkClient;
         $this->calling($sdk)->getMapping = $mapping;
-        $this->calling($sdk)->getSerializer = new Serializer($mapping);
+        $this->calling($sdk)->getSerializer = new Serializer($mapping, $this->unitOfWork);
 
         $this
             ->given($this->newTestedInstance($sdk))
@@ -163,7 +168,7 @@ class ModelHydrator extends atoum
         $this->mockGenerator->shuntParentClassCalls();
         $sdk = new \mock\Mapado\RestClientSdk\SdkClient;
         $this->calling($sdk)->getMapping = $mapping;
-        $this->calling($sdk)->getSerializer = new Serializer($mapping);
+        $this->calling($sdk)->getSerializer = new Serializer($mapping, $this->unitOfWork);
 
         $this
             ->given($this->newTestedInstance($sdk))

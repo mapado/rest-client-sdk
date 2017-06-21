@@ -6,6 +6,7 @@ use atoum;
 use Mapado\RestClientSdk\Mapping as RestMapping;
 use Mapado\RestClientSdk\Mapping\ClassMetadata;
 use Mapado\RestClientSdk\Model\Serializer;
+use Mapado\RestClientSdk\UnitOfWork;
 
 /**
  * SdkClient
@@ -28,6 +29,7 @@ class SdkClient extends atoum
         $restClient = new \mock\Mapado\RestClientSdk\RestClient();
         $this->mockGenerator->unshuntParentClassCalls();
 
+        $unitOfWork = new UnitOfWork();
         $mapping = new RestMapping();
         $mapping->setMapping([
             new ClassMetadata(
@@ -37,10 +39,10 @@ class SdkClient extends atoum
             )
         ]);
 
-        $serializer = new Serializer($mapping);
+        $serializer = new Serializer($mapping, $unitOfWork);
 
         $this
-            ->given($testedInstance = $this->newTestedInstance($restClient, $mapping, $serializer))
+            ->given($testedInstance = $this->newTestedInstance($restClient, $mapping, $unitOfWork, $serializer))
             ->then
                 ->object($testedInstance->getRestClient())
                     ->isIdenticalTo($restClient)
