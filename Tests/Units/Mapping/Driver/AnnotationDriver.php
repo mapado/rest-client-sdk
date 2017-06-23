@@ -81,7 +81,7 @@ class AnnotationDriver extends atoum
                 ->object($classMetadata = current($mapping))
                     ->isInstanceOf('Mapado\RestClientSdk\Mapping\ClassMetadata')
                 ->string($classMetadata->getKey())
-                    ->isEqualTo('carts')
+                    ->isEqualTo('cart')
 
                 ->array($classMetadata->getAttributeList())
                     ->size->isEqualTo(6)
@@ -99,7 +99,7 @@ class AnnotationDriver extends atoum
                 ->object($classMetadata = current($mapping))
                     ->isInstanceOf('Mapado\RestClientSdk\Mapping\ClassMetadata')
                 ->string($classMetadata->getKey())
-                    ->isEqualTo('cart_items')
+                    ->isEqualTo('cart_item')
 
                 ->array($classMetadata->getAttributeList())
                     ->size->isEqualTo(5)

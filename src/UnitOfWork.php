@@ -37,8 +37,11 @@ class UnitOfWork
     /**
      * getDirtyData
      *
+     * return the new serialized model with only needed fields to update
+     *
      * @param array $newSerializedModel
      * @param array $oldSerializedModel
+     * @param ClassMetadata $classMetadata
      * @access public
      * @return array
      */
@@ -96,6 +99,8 @@ class UnitOfWork
     /**
      * getDirtyFields
      *
+     * compares serialize object and returns only modified fields
+     *
      * @param array $newArrayModel
      * @param array $oldSerializedModel
      * @access private
@@ -115,14 +120,14 @@ class UnitOfWork
                         $dirtyFields[$key] = $recursiveDiff;
                         $dirtyFields[$key] = $this->addIdentifiers($value, $dirtyFields[$key], $idSerializedKey);
 
-                        //if theres only ids not objects, keep them
+                        // if theres only ids not objects, keep them
                         foreach ($value as $valueKey => $valueId) {
                             if (is_string($valueId) && is_int($valueKey)) {
                                 $dirtyFields[$key][$valueKey] = $valueId;
                             }
                         }
                     } elseif (count($value) != count($oldSerializedModel[$key])) {
-                        //get all objects ids of new array
+                        // get all objects ids of new array
                         $dirtyFields[$key] = [];
                         $dirtyFields[$key] = $this->addIdentifiers($value, $dirtyFields[$key], $idSerializedKey);
                     }
@@ -141,6 +146,8 @@ class UnitOfWork
 
     /**
      * addIdentifiers
+     *
+     * add defined identifiers to given model
      *
      * @param array $newSerializedModel
      * @param array $dirtyFields

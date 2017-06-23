@@ -12,6 +12,15 @@ use Mapado\RestClientSdk\Mapping\Annotations as Rest;
  */
 class CartItemDetail
 {
+    /**
+     * id
+     *
+     * @var mixed
+     * @access private
+     *
+     * @Rest\Id
+     * @Rest\Attribute(name="id", type="string")
+     */
     private $id;
 
     private $name;
@@ -21,8 +30,6 @@ class CartItemDetail
     /**
      * Getter for id
      *
-     * @Rest\Id
-     * @Rest\Attribute(name="@id", type="string")
      * @return string
      */
     public function getId()

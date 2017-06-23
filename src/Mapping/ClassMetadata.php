@@ -230,31 +230,9 @@ class ClassMetadata
         return $this;
     }
 
-    private function getClassMetadata()
-    {
-        if (!isset($this->classMetadata)) {
-            $this->classMetadataCache = $this->sdk
-                ->getMapping()
-                ->getClassMetadata($this->entityName);
-        }
-
-        return $this->classMetadataCache;
-    }
-
     public function getIdGetter()
     {
         return 'get' . ucfirst($this->getIdKey());
-    }
-
-    public function getIdKey()
-    {
-        if ($this->getIdentifierAttribute()) {
-            $idAttr = $this->getIdentifierAttribute()
-                ->getAttributeName();
-            return $idAttr;
-        } else {
-            return 'id';
-        }
     }
 
     public function getIdSerializeKey()
@@ -264,7 +242,18 @@ class ClassMetadata
                 ->getSerializedKey();
             return $idAttr;
         } else {
-            return '@id';
+            return 'id';
+        }
+    }
+
+    private function getIdKey()
+    {
+        if ($this->getIdentifierAttribute()) {
+            $idAttr = $this->getIdentifierAttribute()
+                ->getAttributeName();
+            return $idAttr;
+        } else {
+            return 'id';
         }
     }
 }
