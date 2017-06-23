@@ -9,7 +9,7 @@ use Mapado\RestClientSdk\Mapping\Annotations as Rest;
  * Class CartItem
  * @author Julien Deniau <julien.deniau@mapado.com>
  *
- * @Rest\Entity(key="cart_item")
+ * @Rest\Entity(key="cart_items")
  */
 class CartItem
 {
@@ -20,7 +20,7 @@ class CartItem
      * @access private
      *
      * @Rest\Id
-     * @Rest\Attribute(name="id", type="string")
+     * @Rest\Attribute(name="@id", type="string")
      */
     private $id;
 

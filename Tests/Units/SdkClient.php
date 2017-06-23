@@ -29,7 +29,6 @@ class SdkClient extends atoum
         $restClient = new \mock\Mapado\RestClientSdk\RestClient();
         $this->mockGenerator->unshuntParentClassCalls();
 
-        $unitOfWork = new UnitOfWork();
         $mapping = new RestMapping();
         $mapping->setMapping([
             new ClassMetadata(
@@ -39,6 +38,7 @@ class SdkClient extends atoum
             )
         ]);
 
+        $unitOfWork = new UnitOfWork($mapping);
         $serializer = new Serializer($mapping, $unitOfWork);
 
         $this

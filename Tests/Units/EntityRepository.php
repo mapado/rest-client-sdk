@@ -42,7 +42,6 @@ class EntityRepository extends atoum
         $this->mockedHydrator = new \mock\Mapado\RestClientSdk\Model\ModelHydrator($this->mockedSdk);
         $this->calling($this->mockedSdk)->getModelHydrator = $this->mockedHydrator;
 
-        $this->unitOfWork = new UnitOfWork();
 
         $this->mapping = new RestMapping('v12');
         $this->mapping->setMapping([
@@ -52,6 +51,7 @@ class EntityRepository extends atoum
                 'mock\Mapado\RestClientSdk\EntityRepository'
             ),
         ]);
+        $this->unitOfWork = new UnitOfWork($this->mapping);
 
         $this->calling($this->mockedSdk)->getMapping = $this->mapping;
 
@@ -323,8 +323,10 @@ class EntityRepository extends atoum
         $mapping = new RestMapping();
         $mapping->setMapping($annotationDriver->loadDirectory(__DIR__ . '/../Model/Issue46/'));
 
+        $unitOfWork = new UnitOfWork($mapping);
+
         $this->calling($this->mockedSdk)->getMapping = $mapping;
-        $this->calling($this->mockedSdk)->getSerializer = new \Mapado\RestClientSdk\Model\Serializer($mapping, $this->unitOfWork);
+        $this->calling($this->mockedSdk)->getSerializer = new \Mapado\RestClientSdk\Model\Serializer($mapping, $unitOfWork);
 
         $section1 = new \Mapado\RestClientSdk\Tests\Model\Issue46\Section;
         $section1->setIri('/sections/1');
@@ -343,7 +345,7 @@ class EntityRepository extends atoum
         $repository = new \mock\Mapado\RestClientSdk\EntityRepository(
             $this->mockedSdk,
             $this->mockedRestClient,
-            $this->unitOfWork,
+            $unitOfWork,
             'Mapado\RestClientSdk\Tests\Model\Issue46\Section'
         );
 
@@ -600,219 +602,6 @@ class EntityRepository extends atoum
             ->then
                 ->variable($order = $this->repository->findOneBy(['a' => 'a']))
                     ->isNull()
-        ;
-    }
-
-    public function testUnitOfWork()
-    {
-        $ticket = (object) [
-            'firstname' => 'foo',
-            'lastname' => 'bar',
-            'email' => 'foo.bar@gmail.com',
-        ];
-        $this->unitOfWork->registerClean('@id1', $ticket);
-        $this
-            ->then
-                ->variable($this->unitOfWork->getDirtyEntity('@id1'))
-                    ->isEqualTo($ticket)
-            ->then
-                ->variable($this->unitOfWork->getDirtyData(
-                    [
-                        'ticketList' => [
-                            [
-                                '@id' => '/v12/tickets/1',
-                                'firstname' => 'foo',
-                                'lastname' => 'bar',
-                                'email' => 'foo1.bar@gmail.com',
-                                'order' => [
-                                    'event' => [
-                                        'contract' => [
-                                            '@id' => '/v12/contracts/1',
-                                            'name' => null,
-                                        ],
-                                    ],
-                                ],
-                            ],
-                            [
-                                '@id' => '/v12/tickets/2',
-                                'firstname' => 'foo2',
-                                'lastname' => 'bar2',
-                                'email' => 'foo2.bar@gmail.com',
-                            ],
-                            [
-                                '@id' => '/v12/tickets/3',
-                                'firstname' => 'foo',
-                                'lastname' => 'bar1',
-                                'email' => 'foo.bar@gmail.com',
-                            ],
-                        ],
-                        'customerList' => [
-                            '/v12/customers/1',
-                            '/v12/customers/2',
-                            '/v12/customers/3',
-                        ],
-                        'eventDateList' => [
-                            [
-                                '@id' => '/v12/event_dates/1',
-                                'title' => 'foo',
-                                'description' => 'bar',
-                            ],
-                            [
-                                '@id' => '/v12/event_dates/2',
-                                'title' => 'foo',
-                                'description' => 'bar',
-                            ],
-                        ],
-                        'tagList' => [
-                            [
-                                '@id' => '/v12/tags/1',
-                                'title' => 'foo1',
-                                'description' => 'bar',
-                            ],
-                            [
-                                '@id' => '/v12/tags/2',
-                                'title' => 'foo',
-                                'description' => 'bar',
-                            ],
-                            [
-                                '@id' => '/v12/tags/3',
-                                'title' => 'foo',
-                                'description' => 'bars',
-                            ],
-                        ],
-                        'orderList' => [
-                            [
-                                '@id' => '/v12/orders/1',
-                                'name' => 'order1',
-                            ],
-                        ],
-                        'name' => 'foo',
-                        'email' => 'foo1.bar@gmail.com',
-                    ],
-                    [
-                        'ticketList' => [
-                            [
-                                '@id' => '/v12/tickets/1',
-                                'firstname' => 'foo',
-                                'lastname' => 'bar',
-                                'email' => 'foo.bar@gmail.com',
-                                'order' => [
-                                    'event' => [
-                                        'contract' => [
-                                            '@id' => '/v12/contracts/1',
-                                            'name' => '/foo',
-                                        ],
-                                    ],
-                                ],
-                            ],
-                            [
-                                '@id' => '/v12/tickets/3',
-                                'firstname' => 'foo',
-                                'lastname' => 'bar',
-                                'email' => 'foo.bar@gmail.com',
-                            ],
-                        ],
-                        'customerList' => [
-                            '/v12/customers/1',
-                            '/v12/customers/2',
-                        ],
-                        'eventDateList' => [
-                            [
-                                '@id' => '/v12/event_dates/1',
-                                'title' => 'foo',
-                                'description' => 'bar',
-                            ],
-                            [
-                                '@id' => '/v12/event_dates/2',
-                                'title' => 'foo',
-                                'description' => 'bar',
-                            ],
-                        ],
-                        'tagList' => [
-                            [
-                                '@id' => '/v12/tags/1',
-                                'title' => 'foo',
-                                'description' => 'bar',
-                            ],
-                            [
-                                '@id' => '/v12/tags/2',
-                                'title' => 'foo',
-                                'description' => 'bar',
-                            ],
-                            [
-                                '@id' => '/v12/tags/3',
-                                'title' => 'foo',
-                                'description' => 'bar',
-                            ],
-                        ],
-                        'orderList' => [
-                            [
-                                '@id' => '/v12/orders/1',
-                                'name' => 'order1',
-                            ],
-                            [
-                                '@id' => '/v12/orders/2',
-                                'name' => 'order2',
-                            ],
-                        ],
-                        'name' => 'foo',
-                        'email' => 'foo.bar@gmail.com',
-                    ]
-                ))
-                ->isEqualTo(
-                    [
-                        'ticketList' => [
-                            [
-                                'email' => 'foo1.bar@gmail.com',
-                                'order' => [
-                                    'event' => [
-                                        'contract' => [
-                                            'name' => null,
-                                            '@id' => '/v12/contracts/1',
-                                        ],
-                                    ],
-                                ],
-                                '@id' => '/v12/tickets/1',
-                            ],
-                            [
-                                '@id' => '/v12/tickets/2',
-                                'firstname' => 'foo2',
-                                'lastname' => 'bar2',
-                                'email' => 'foo2.bar@gmail.com',
-                            ],
-                            [
-                                '@id' => '/v12/tickets/3',
-                                'firstname' => 'foo',
-                                'lastname' => 'bar1',
-                                'email' => 'foo.bar@gmail.com',
-                            ],
-                        ],
-                        'customerList' => [
-                            '/v12/customers/1',
-                            '/v12/customers/2',
-                            '/v12/customers/3',
-                        ],
-                        'tagList' => [
-                            [
-                                'title' => 'foo1',
-                                '@id' => '/v12/tags/1',
-                            ],
-                            [
-                                '@id' => '/v12/tags/2',
-                            ],
-                            [
-                                'description' => 'bars',
-                                '@id' => '/v12/tags/3',
-                            ],
-                        ],
-                        'orderList' => [
-                            [
-                                '@id' => '/v12/orders/1',
-                            ],
-                        ],
-                        'email' => 'foo1.bar@gmail.com',
-                    ]
-                )
         ;
     }
 }

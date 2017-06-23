@@ -81,7 +81,7 @@ class AnnotationDriver extends atoum
                 ->object($classMetadata = current($mapping))
                     ->isInstanceOf('Mapado\RestClientSdk\Mapping\ClassMetadata')
                 ->string($classMetadata->getKey())
-                    ->isEqualTo('cart')
+                    ->isEqualTo('carts')
 
                 ->array($classMetadata->getAttributeList())
                     ->size->isEqualTo(6)
@@ -99,7 +99,7 @@ class AnnotationDriver extends atoum
                 ->object($classMetadata = current($mapping))
                     ->isInstanceOf('Mapado\RestClientSdk\Mapping\ClassMetadata')
                 ->string($classMetadata->getKey())
-                    ->isEqualTo('cart_item')
+                    ->isEqualTo('cart_items')
 
                 ->array($classMetadata->getAttributeList())
                     ->size->isEqualTo(5)
@@ -123,7 +123,7 @@ class AnnotationDriver extends atoum
             ->then
                 ->if($mapping = $this->testedInstance->loadDirectory(__DIR__ . '/../../../Model/JsonLd'))
                 ->array($mapping)
-                    ->size->isEqualTo(3)
+                    ->size->isEqualTo(4)
         ;
     }
 

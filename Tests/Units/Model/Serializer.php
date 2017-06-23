@@ -505,8 +505,9 @@ class Serializer extends atoum
 
     public function testWeirdIdentifier()
     {
-        $unitOfWork = new UnitOfWork();
-        $this->createNewInstance($this->getMapping('weirdId'), $unitOfWork);
+        $mapping = $this->getMapping('weirdId');
+        $unitOfWork = new UnitOfWork($mapping);
+        $this->createNewInstance($mapping, $unitOfWork);
 
         $this
             ->given($cart = $this->createCart())
@@ -909,12 +910,12 @@ class Serializer extends atoum
     private function createNewInstance($mapping = null, $unitOfWork = null)
     {
         $mapping = $mapping ?: $this->getMapping();
-        $this->newTestedInstance($mapping, new UnitOfWork());
+        $unitOfWork = new UnitOfWork($mapping);
+        $this->newTestedInstance($mapping, $unitOfWork);
 
         $this->mockGenerator->orphanize('__construct');
         $this->mockGenerator->shuntParentClassCalls();
         $restClient = new \mock\Mapado\RestClientSdk\RestClient();
-        $unitOfWork = new \mock\Mapado\RestClientSdk\UnitOfWork();
         $this->mockGenerator->unshuntParentClassCalls();
         $sdk = new \mock\Mapado\RestClientSdk\SdkClient($restClient, $mapping, $unitOfWork, $this->testedInstance);
         $sdk->setFileCachePath(__DIR__ . '/../../cache/');

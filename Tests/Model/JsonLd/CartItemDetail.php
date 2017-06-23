@@ -2,9 +2,13 @@
 
 namespace Mapado\RestClientSdk\Tests\Model\JsonLd;
 
+use Mapado\RestClientSdk\Mapping\Annotations as Rest;
+
 /**
- * Class CartItemDetail
+ * Class CartItem
  * @author Julien Deniau <julien.deniau@mapado.com>
+ *
+ * @Rest\Entity(key="cart_item_details")
  */
 class CartItemDetail
 {
@@ -17,6 +21,8 @@ class CartItemDetail
     /**
      * Getter for id
      *
+     * @Rest\Id
+     * @Rest\Attribute(name="@id", type="string")
      * @return string
      */
     public function getId()

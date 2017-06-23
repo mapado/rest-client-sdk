@@ -141,8 +141,9 @@ class Serializer
             }
         }
 
-        if ($instance->getId()) {
-            $this->unitOfWork->registerClean($instance->getId(), $instance);
+        $identifier = $instance->{$this->getClassMetadata($instance)->getIdGetter()}();
+        if ($identifier) {
+            $this->unitOfWork->registerClean($identifier, $instance);
         }
 
         return $instance;
@@ -290,5 +291,11 @@ class Serializer
         $key = $this->mapping->getKeyFromId($id);
         $classMetadata = $this->mapping->getClassMetadataByKey($key);
         return $classMetadata;
+    }
+
+    private function getClassMetadata($entity)
+    {
+        return $this->mapping
+            ->getClassMetadata(get_class($entity));
     }
 }

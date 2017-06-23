@@ -2,82 +2,62 @@
 
 namespace Mapado\RestClientSdk;
 
+use Mapado\RestClientSdk\Mapping\ClassMetadata;
+use Mapado\RestClientSdk\Mapping;
+
+/**
+ * UnitOfWork
+ */
 class UnitOfWork
 {
+    /**
+     * mapping
+     *
+     * @var Mapping
+     * @access private
+     */
+    private $mapping;
+
+    /**
+     * storage for every entity retrieved
+     *
+     * @var array
+     */
     private $storage;
 
-    public function __construct()
+    /**
+     * Constructor.
+     */
+    public function __construct(Mapping $mapping)
     {
+        $this->mapping = $mapping;
         $this->storage = [];
     }
 
-    private function arrayRecursiveDiff($newModel, $oldModel, $isInDepth = false)
+    /**
+     * getDirtyData
+     *
+     * @param array $newSerializedModel
+     * @param array $oldSerializedModel
+     * @access public
+     * @return array
+     */
+    public function getDirtyData(array $newSerializedModel, array $oldSerializedModel, ClassMetadata $classMetadata)
     {
-        $diff = [];
-        $hasDiff = false;
-
-        foreach ($newModel as $key => $value) {
-            if (array_key_exists($key, $oldModel)) {
-                if (is_array($value)) {
-                    $recursiveDiff = $this->arrayRecursiveDiff($value, $oldModel[$key], true);
-                    if (count($recursiveDiff)) {
-                        $hasDiff = true;
-                        $diff[$key] = $recursiveDiff;
-
-                        //if theres only ids, keep them
-                        foreach ($value as $valueKey => $valueId) {
-                            if (is_string($valueId) && is_int($valueKey)) {
-                                $diff[$key][$valueKey] = $valueId;
-                            }
-                        }
-                    } elseif (count($value) != count($oldModel[$key])) {
-                        $hasDiff = true;
-                        //get all objects ids of new array
-                        $diff[$key] = [];
-                        $diff[$key] = $this->addIds($value, $diff[$key]);
-                    }
-                } else {
-                    if ($value != $oldModel[$key]) {
-                        $diff[$key] = $value;
-                    }
-                }
-            } else {
-                $diff[$key] = $value;
-            }
-        }
-
-        if ($isInDepth && $hasDiff) {
-            // in depth add ids of modified objects
-            $diff = $this->addIds($newModel, $diff);
-        }
-
-        return $diff;
+        return $this->getDirtyFields($newSerializedModel, $oldSerializedModel, $classMetadata);
     }
 
-    private function addIds($newModel, $diff)
-    {
-        foreach ($newModel as $key => $value) {
-            if (isset($value['@id'])) {
-                $diff[$key]['@id'] = $value['@id'];
-            }
-        }
-
-        return $diff;
-    }
-
-    public function getObjectStorage()
-    {
-        return $this->storage;
-    }
-
-    public function getDirtyData($newModel, $oldModel)
-    {
-        return $this->arrayRecursiveDiff($newModel, $oldModel);
-    }
-
+    /**
+     * registerClean
+     *
+     * @param string $id
+     * @param object $entity
+     * @access public
+     * @return UnitOfWork
+     */
     public function registerClean($id, $entity)
     {
-        if ($entity) {
+        if (is_object($entity)) {
             $entityStored = clone $entity;
             $this->storage[$id] = $entityStored;
         }
@@ -85,6 +65,13 @@ class UnitOfWork
         return $this;
     }
 
+    /**
+     * getDirtyEntity
+     *
+     * @param string $id
+     * @access public
+     * @return mixed
+     */
     public function getDirtyEntity($id)
     {
         if (isset($this->storage[$id])) {
@@ -93,9 +80,83 @@ class UnitOfWork
         return null;
     }
 
+    /**
+     * clear
+     *
+     * @param string $id
+     * @access public
+     * @return UnitOfWork
+     */
     public function clear($id)
     {
         unset($this->storage[$id]);
         return $this;
+    }
+
+    /**
+     * getDirtyFields
+     *
+     * @param array $newArrayModel
+     * @param array $oldSerializedModel
+     * @access private
+     * @return array
+     */
+    private function getDirtyFields(array $newSerializedModel, array $oldSerializedModel, ClassMetadata $classMetadata = null)
+    {
+        $dirtyFields = [];
+
+        foreach ($newSerializedModel as $key => $value) {
+            if (array_key_exists($key, $oldSerializedModel)) {
+                if (is_array($value)) {
+                    $currentClassMetadata = $classMetadata->getRelation($key) ? $this->mapping->getClassMetadata($classMetadata->getRelation($key)->getTargetEntity()) : null;
+                    $idSerializedKey = $currentClassMetadata ? $currentClassMetadata->getIdSerializeKey() : null;
+                    $recursiveDiff = $this->getDirtyFields($value, $oldSerializedModel[$key], $currentClassMetadata);
+                    if (count($recursiveDiff)) {
+                        $dirtyFields[$key] = $recursiveDiff;
+                        $dirtyFields[$key] = $this->addIdentifiers($value, $dirtyFields[$key], $idSerializedKey);
+
+                        //if theres only ids not objects, keep them
+                        foreach ($value as $valueKey => $valueId) {
+                            if (is_string($valueId) && is_int($valueKey)) {
+                                $dirtyFields[$key][$valueKey] = $valueId;
+                            }
+                        }
+                    } elseif (count($value) != count($oldSerializedModel[$key])) {
+                        //get all objects ids of new array
+                        $dirtyFields[$key] = [];
+                        $dirtyFields[$key] = $this->addIdentifiers($value, $dirtyFields[$key], $idSerializedKey);
+                    }
+                } else {
+                    if ($value != $oldSerializedModel[$key]) {
+                        $dirtyFields[$key] = $value;
+                    }
+                }
+            } else {
+                $dirtyFields[$key] = $value;
+            }
+        }
+
+        return $dirtyFields;
+    }
+
+    /**
+     * addIdentifiers
+     *
+     * @param array $newSerializedModel
+     * @param array $dirtyFields
+     * @access private
+     * @return array
+     */
+    private function addIdentifiers($newSerializedModel, $dirtyFields, $idSerializedKey = null)
+    {
+        foreach ($newSerializedModel as $key => $value) {
+            if ($idSerializedKey && isset($value[$idSerializedKey])) {
+                $dirtyFields[$key][$idSerializedKey] = $value[$idSerializedKey];
+            } elseif (is_string($value) && is_int($key)) {
+                $dirtyFields[$key] = $value;
+            }
+        }
+
+        return $dirtyFields;
     }
 }

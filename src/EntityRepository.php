@@ -55,8 +55,8 @@ class EntityRepository
     {
         $this->sdk        = $sdkClient;
         $this->restClient = $restClient;
-        $this->entityName = $entityName;
         $this->unitOfWork = $unitOfWork;
+        $this->entityName = $entityName;
     }
 
     /**
@@ -99,8 +99,7 @@ class EntityRepository
     public function findAll()
     {
         $mapping = $this->sdk->getMapping();
-        $classMetadata = $this->getClassMetadata();
-        $key = $classMetadata->getKey();
+        $key = $this->getClassMetadata()->getKey();
         $prefix = $mapping->getIdPrefix();
         $path = empty($prefix) ? '/' . $key : $prefix . '/' . $key;
 
@@ -121,8 +120,9 @@ class EntityRepository
 
         // then cache each entity from list
         foreach ($entityList as $entity) {
-            $this->unitOfWork->registerClean($this->getIdentifier($entity), $entity);
-            $this->saveToCache($this->getIdentifier($entity), $entity);
+            $identifier = $entity->{$this->getClassMetadata()->getIdGetter()}();
+            $this->unitOfWork->registerClean($identifier, $entity);
+            $this->saveToCache($identifier, $entity);
         }
 
         return $entityList;
@@ -139,7 +139,7 @@ class EntityRepository
      */
     public function remove($model)
     {
-        $identifier = $this->getIdentifier($model);
+        $identifier = $model->{$this->getClassMetadata()->getIdGetter()}();
         $this->removeFromCache($identifier);
         $this->unitOfWork->clear($identifier);
 
@@ -155,16 +155,18 @@ class EntityRepository
      */
     public function update($model, $serializationContext = [], $queryParams = [])
     {
+        $identifier = $model->{$this->getClassMetadata()->getIdGetter()}();
         $serializer = $this->sdk->getSerializer();
-        $newModel = $serializer->serialize($model, $this->entityName, $serializationContext);
-        $oldModel = $serializer->serialize($this->unitOfWork->getDirtyEntity($this->getIdentifier($model)), $this->entityName, $serializationContext);
+        $newSerializedModel = $serializer->serialize($model, $this->entityName, $serializationContext);
+        $oldSerializedModel = $serializer->serialize($this->unitOfWork->getDirtyEntity($identifier), $this->entityName, $serializationContext);
 
         $data = $this->restClient->put(
-            $this->addQueryParameter($this->getIdentifier($model), $queryParams),
-            $this->unitOfWork->getDirtyData($newModel, $oldModel)
+            $this->addQueryParameter($identifier, $queryParams),
+            $this->unitOfWork->getDirtyData($newSerializedModel, $oldSerializedModel, $this->getClassMetadata())
         );
 
-        $this->removeFromCache($this->getIdentifier($model));
+        $this->removeFromCache($identifier);
+        $this->unitOfWork->registerClean($identifier, $newSerializedModel);
 
         $hydrator = $this->sdk->getModelHydrator();
         return $hydrator->hydrate($data, $this->entityName);
@@ -255,8 +257,9 @@ class EntityRepository
                 $data = current($entityList);
                 $hydratedData = $hydrator->hydrate($data, $this->entityName);
 
-                $this->unitOfWork->registerClean($this->getIdentifier($hydratedData), $hydratedData);
-                $this->saveToCache($this->getIdentifier($hydratedData), $hydratedData);
+                $identifier = $hydratedData->{$this->getClassMetadata()->getIdGetter()}();
+                $this->unitOfWork->registerClean($identifier, $hydratedData);
+                $this->saveToCache($identifier, $hydratedData);
             } else {
                 $hydratedData = null;
             }
@@ -265,7 +268,9 @@ class EntityRepository
 
             // then cache each entity from list
             foreach ($hydratedData as $entity) {
-                $this->saveToCache($this->getIdentifier($entity), $entity);
+                $identifier = $entity->{$this->getClassMetadata()->getIdGetter()}();
+                $this->saveToCache($identifier, $entity);
+                $this->unitOfWork->registerClean($identifier, $entity);
             }
         }
 
@@ -415,21 +420,5 @@ class EntityRepository
         }
 
         return $this->classMetadataCache;
-    }
-
-    private function getIdentifier($entity)
-    {
-        $mapping = $this->sdk->getMapping();
-        $classMetadata = $this->getClassMetadata();
-
-        if ($classMetadata->getIdentifierAttribute()) {
-            $idAttr = $classMetadata->getIdentifierAttribute()
-                ->getAttributeName();
-            $idGetter = 'get' . ucfirst($idAttr);
-        } else {
-            $idGetter = 'getId';
-        }
-
-        return $entity->{$idGetter}();
     }
 }

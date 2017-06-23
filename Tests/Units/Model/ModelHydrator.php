@@ -34,7 +34,7 @@ class ModelHydrator extends atoum
             $fooMetadata,
         ]);
 
-        $this->unitOfWork = new UnitOfWork();
+        $this->unitOfWork = new UnitOfWork($mapping);
 
         $this->mockGenerator->orphanize('__construct');
         $this->mockGenerator->shuntParentClassCalls();
