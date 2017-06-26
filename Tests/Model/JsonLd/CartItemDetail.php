@@ -5,22 +5,11 @@ namespace Mapado\RestClientSdk\Tests\Model\JsonLd;
 use Mapado\RestClientSdk\Mapping\Annotations as Rest;
 
 /**
- * Class CartItem
+ * Class CartItemDetail
  * @author Julien Deniau <julien.deniau@mapado.com>
- *
- * @Rest\Entity(key="cart_item_details")
  */
 class CartItemDetail
 {
-    /**
-     * id
-     *
-     * @var mixed
-     * @access private
-     *
-     * @Rest\Id
-     * @Rest\Attribute(name="id", type="string")
-     */
     private $id;
 
     private $name;

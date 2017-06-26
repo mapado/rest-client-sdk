@@ -103,6 +103,7 @@ class UnitOfWork
      *
      * @param array $newArrayModel
      * @param array $oldSerializedModel
+     * @param ClassMetadata $classMetadata
      * @access private
      * @return array
      */

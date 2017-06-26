@@ -123,7 +123,7 @@ class AnnotationDriver extends atoum
             ->then
                 ->if($mapping = $this->testedInstance->loadDirectory(__DIR__ . '/../../../Model/JsonLd'))
                 ->array($mapping)
-                    ->size->isEqualTo(4)
+                    ->size->isEqualTo(3)
         ;
     }
 
