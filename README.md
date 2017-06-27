@@ -94,6 +94,10 @@ Relations definition:
   * `name` the name of the key in the API return format
   * `targetEntity` class name of the target entity
 
+### UnitOfWork
+[EntityRepository](https://github.com/mapado/rest-client-sdk/blob/master/src/EntityRepository.php) has a UnitofWork used only for PUT requests.
+It sends only changed data not the full model by comparing with the entity stored on GET request.
+
 ## Configuration
 ### Using Symfony ?
 There is a bundle to easily integrate this component: [mapado/rest-client-sdk-bundle](https://github.com/mapado/rest-client-sdk-bundle).

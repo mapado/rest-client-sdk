@@ -506,8 +506,7 @@ class Serializer extends atoum
     public function testWeirdIdentifier()
     {
         $mapping = $this->getMapping('weirdId');
-        $unitOfWork = new UnitOfWork($mapping);
-        $this->createNewInstance($mapping, $unitOfWork);
+        $this->createNewInstance($mapping);
 
         $this
             ->given($cart = $this->createCart())
@@ -907,7 +906,7 @@ class Serializer extends atoum
      * @param Mapping $mapping
      * @return void
      */
-    private function createNewInstance($mapping = null, $unitOfWork = null)
+    private function createNewInstance($mapping = null)
     {
         $mapping = $mapping ?: $this->getMapping();
         $unitOfWork = new UnitOfWork($mapping);

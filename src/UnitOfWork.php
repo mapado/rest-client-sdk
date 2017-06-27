@@ -118,8 +118,7 @@ class UnitOfWork
                     $idSerializedKey = $currentClassMetadata ? $currentClassMetadata->getIdSerializeKey() : null;
                     $recursiveDiff = $this->getDirtyFields($value, $oldSerializedModel[$key], $currentClassMetadata);
                     if (count($recursiveDiff)) {
-                        $dirtyFields[$key] = $recursiveDiff;
-                        $dirtyFields[$key] = $this->addIdentifiers($value, $dirtyFields[$key], $idSerializedKey);
+                        $dirtyFields[$key] = $this->addIdentifiers($value, $recursiveDiff, $idSerializedKey);
 
                         // if theres only ids not objects, keep them
                         foreach ($value as $valueKey => $valueId) {
@@ -129,8 +128,7 @@ class UnitOfWork
                         }
                     } elseif (count($value) != count($oldSerializedModel[$key])) {
                         // get all objects ids of new array
-                        $dirtyFields[$key] = [];
-                        $dirtyFields[$key] = $this->addIdentifiers($value, $dirtyFields[$key], $idSerializedKey);
+                        $dirtyFields[$key] = $this->addIdentifiers($value, [], $idSerializedKey);
                     }
                 } else {
                     if ($value != $oldSerializedModel[$key]) {

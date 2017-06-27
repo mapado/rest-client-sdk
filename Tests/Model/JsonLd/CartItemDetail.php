@@ -2,8 +2,6 @@
 
 namespace Mapado\RestClientSdk\Tests\Model\JsonLd;
 
-use Mapado\RestClientSdk\Mapping\Annotations as Rest;
-
 /**
  * Class CartItemDetail
  * @author Julien Deniau <julien.deniau@mapado.com>
