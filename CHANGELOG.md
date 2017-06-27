@@ -1,6 +1,13 @@
 Changelog
 ======================
 
+## 0.22.0
+### Features
+  * Add current request uri as referer [#56](https://github.com/mapado/rest-client-sdk/pull/59)
+
+### May be breaking
+  * This package requires `symfony/http-foundation: ^2.7||^3.0`
+
 ## 0.21.0
 ### Features
   * Added support for abstract entities [#56](https://github.com/mapado/rest-client-sdk/pull/56)
