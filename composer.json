@@ -17,7 +17,6 @@
     },
     "require-dev": {
         "atoum/atoum": "^3.0.0",
-        "raulfraile/ladybug": "^1.0",
         "symfony/cache": "^3.1"
     },
     "license": "MIT",
