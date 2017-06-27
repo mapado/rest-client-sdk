@@ -8,6 +8,7 @@ use GuzzleHttp\Exception\TransferException;
 use Mapado\RestClientSdk\Exception\RestClientException;
 use Mapado\RestClientSdk\Exception\RestException;
 use Psr\Http\Message\ResponseInterface;
+use Symfony\Component\HttpFoundation\Request;
 
 /**
  * Class RestClient
@@ -48,6 +49,14 @@ class RestClient
     private $requestHistory;
 
     /**
+     * currentRequest
+     *
+     * @var Request
+     * @access private
+     */
+    private $currentRequest;
+
+    /**
      * @param ClientInterface $httpClient
      * @param string|null     $baseUrl
      */
@@ -65,6 +74,20 @@ class RestClient
     public function isHistoryLogged()
     {
         return $this->logHistory;
+    }
+
+    /**
+     * setCurrentRequest
+     *
+     * @param Request $currentRequest
+     * @access public
+     * @return RestClient
+     */
+    public function setCurrentRequest(Request $currentRequest)
+    {
+        $this->currentRequest = $currentRequest;
+
+        return $this;
     }
 
     /**
@@ -181,11 +204,34 @@ class RestClient
      */
     protected function mergeDefaultParameters(array $parameters)
     {
-        if (empty($parameters['version'])) {
-            $parameters['version'] = '1.0';
+        $request = $this->getCurrentRequest();
+
+        $defaultParameters = [
+            'version' => '1.0',
+        ];
+
+        if ($request) {
+            $defaultParameters['headers'] = [
+                'referer' => $request->getUri(),
+            ];
         }
 
-        return $parameters;
+        return array_replace_recursive($defaultParameters, $parameters);
+    }
+
+    /**
+     * getCurrentRequest
+     *
+     * @access private
+     * @return Request
+     */
+    protected function getCurrentRequest()
+    {
+        if (!$this->currentRequest) {
+            $this->currentRequest = Request::createFromGlobals();
+        }
+
+        return $this->currentRequest;
     }
 
     /**

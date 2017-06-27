@@ -12,6 +12,7 @@
         "ocramius/proxy-manager": "^1.0",
         "doctrine/annotations": "^1.2",
         "misd/phone-number-bundle": "^1.1",
+        "symfony/http-foundation": "^2.7 || ^3.0",
         "psr/cache": "^1.0"
     },
     "require-dev": {
