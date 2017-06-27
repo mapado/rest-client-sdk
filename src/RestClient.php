@@ -212,7 +212,7 @@ class RestClient
 
         if ($request) {
             $defaultParameters['headers'] = [
-                'referer' => $request->getUri(),
+                'Referer' => $request->getUri(),
             ];
         }
 
