@@ -5,6 +5,7 @@ namespace Mapado\RestClientSdk\Tests\Units;
 use atoum;
 use Mapado\RestClientSdk\Mapping as RestMapping;
 use Mapado\RestClientSdk\Mapping\Attribute;
+use Mapado\RestClientSdk\UnitOfWork;
 use Mapado\RestClientSdk\Mapping\ClassMetadata;
 use Mapado\RestClientSdk\Mapping\Driver\AnnotationDriver;
 use Symfony\Component\Cache\Adapter\ArrayAdapter;
@@ -25,6 +26,8 @@ class EntityRepository extends atoum
 
     private $mapping;
 
+    private $unitOfWork;
+
     public function beforeTestMethod($method)
     {
         $this->mockGenerator->orphanize('__construct');
@@ -39,6 +42,7 @@ class EntityRepository extends atoum
         $this->mockedHydrator = new \mock\Mapado\RestClientSdk\Model\ModelHydrator($this->mockedSdk);
         $this->calling($this->mockedSdk)->getModelHydrator = $this->mockedHydrator;
 
+
         $this->mapping = new RestMapping('v12');
         $this->mapping->setMapping([
             new ClassMetadata(
@@ -47,12 +51,14 @@ class EntityRepository extends atoum
                 'mock\Mapado\RestClientSdk\EntityRepository'
             ),
         ]);
+        $this->unitOfWork = new UnitOfWork($this->mapping);
 
         $this->calling($this->mockedSdk)->getMapping = $this->mapping;
 
         $this->repository = new \mock\Mapado\RestClientSdk\EntityRepository(
             $this->mockedSdk,
             $this->mockedRestClient,
+            $this->unitOfWork,
             'Mapado\RestClientSdk\Tests\Model\JsonLd\Model'
         );
     }
@@ -252,7 +258,7 @@ class EntityRepository extends atoum
         ]);
 
         $this->calling($this->mockedSdk)->getMapping = $mapping;
-        $this->calling($this->mockedSdk)->getSerializer = new \Mapado\RestClientSdk\Model\Serializer($mapping);
+        $this->calling($this->mockedSdk)->getSerializer = new \Mapado\RestClientSdk\Model\Serializer($mapping, $this->unitOfWork);
 
 
         $product1 = new \Mapado\RestClientSdk\Tests\Model\JsonLd\Product;
@@ -276,6 +282,7 @@ class EntityRepository extends atoum
         $repository = new \mock\Mapado\RestClientSdk\EntityRepository(
             $this->mockedSdk,
             $this->mockedRestClient,
+            $this->unitOfWork,
             'Mapado\RestClientSdk\Tests\Model\JsonLd\Product'
         );
 
@@ -316,8 +323,10 @@ class EntityRepository extends atoum
         $mapping = new RestMapping();
         $mapping->setMapping($annotationDriver->loadDirectory(__DIR__ . '/../Model/Issue46/'));
 
+        $unitOfWork = new UnitOfWork($mapping);
+
         $this->calling($this->mockedSdk)->getMapping = $mapping;
-        $this->calling($this->mockedSdk)->getSerializer = new \Mapado\RestClientSdk\Model\Serializer($mapping);
+        $this->calling($this->mockedSdk)->getSerializer = new \Mapado\RestClientSdk\Model\Serializer($mapping, $unitOfWork);
 
         $section1 = new \Mapado\RestClientSdk\Tests\Model\Issue46\Section;
         $section1->setIri('/sections/1');
@@ -336,6 +345,7 @@ class EntityRepository extends atoum
         $repository = new \mock\Mapado\RestClientSdk\EntityRepository(
             $this->mockedSdk,
             $this->mockedRestClient,
+            $unitOfWork,
             'Mapado\RestClientSdk\Tests\Model\Issue46\Section'
         );
 
@@ -419,6 +429,7 @@ class EntityRepository extends atoum
         $cartItemRepository = new \mock\Mapado\RestClientSdk\EntityRepository(
             $this->mockedSdk,
             $this->mockedRestClient,
+            $this->unitOfWork,
             'Mapado\RestClientSdk\Tests\Model\JsonLd\CartItem'
         );
 
@@ -462,7 +473,7 @@ class EntityRepository extends atoum
             ),
         ]);
 
-        $this->calling($this->mockedSdk)->getSerializer = new \Mapado\RestClientSdk\Model\Serializer($mapping);
+        $this->calling($this->mockedSdk)->getSerializer = new \Mapado\RestClientSdk\Model\Serializer($mapping, $this->unitOfWork);
         $this->calling($this->mockedSdk)->getMapping = $mapping;
 
         $this->calling($this->mockedRestClient)->get = [];
@@ -471,6 +482,7 @@ class EntityRepository extends atoum
         $cartItemRepository = new \mock\Mapado\RestClientSdk\EntityRepository(
             $this->mockedSdk,
             $this->mockedRestClient,
+            $this->unitOfWork,
             'Mapado\RestClientSdk\Tests\Model\JsonLd\CartItem'
         );
 
@@ -524,6 +536,7 @@ class EntityRepository extends atoum
         $this->repository = new \mock\Mapado\RestClientSdk\EntityRepository(
             $this->mockedSdk,
             $this->mockedRestClient,
+            $this->unitOfWork,
             'Mapado\RestClientSdk\Tests\Model\JsonLd\Order'
         );
 
@@ -537,7 +550,7 @@ class EntityRepository extends atoum
                 ]
             ],
         ];
-        $this->calling($this->mockedSdk)->getSerializer = new \Mapado\RestClientSdk\Model\Serializer($mapping);
+        $this->calling($this->mockedSdk)->getSerializer = new \Mapado\RestClientSdk\Model\Serializer($mapping, $this->unitOfWork);
 
         $this
             ->then
@@ -572,6 +585,7 @@ class EntityRepository extends atoum
         $this->repository = new \mock\Mapado\RestClientSdk\EntityRepository(
             $this->mockedSdk,
             $this->mockedRestClient,
+            $this->unitOfWork,
             'Mapado\RestClientSdk\Tests\Model\JsonLd\Order'
         );
 
@@ -582,7 +596,7 @@ class EntityRepository extends atoum
             'fooList' => [
             ],
         ];
-        $this->calling($this->mockedSdk)->getSerializer = new \Mapado\RestClientSdk\Model\Serializer($mapping);
+        $this->calling($this->mockedSdk)->getSerializer = new \Mapado\RestClientSdk\Model\Serializer($mapping, $this->unitOfWork);
 
         $this
             ->then

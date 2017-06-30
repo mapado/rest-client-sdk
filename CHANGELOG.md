@@ -1,6 +1,10 @@
 Changelog
 ======================
 
+## 0.23.0
+### Breaking change
+  * add Mapado\RestClientSdk\UnitOfWork in constructor of Mapado\RestClientSdk\EntityRepository
+
 ## 0.22.0
 ### Features
   * Add current request uri as referer [#56](https://github.com/mapado/rest-client-sdk/pull/59)

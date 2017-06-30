@@ -229,4 +229,31 @@ class ClassMetadata
         $this->repositoryName = $repositoryName;
         return $this;
     }
+
+    public function getIdGetter()
+    {
+        return 'get' . ucfirst($this->getIdKey());
+    }
+
+    public function getIdSerializeKey()
+    {
+        if ($this->getIdentifierAttribute()) {
+            $idAttr = $this->getIdentifierAttribute()
+                ->getSerializedKey();
+            return $idAttr;
+        } else {
+            return 'id';
+        }
+    }
+
+    private function getIdKey()
+    {
+        if ($this->getIdentifierAttribute()) {
+            $idAttr = $this->getIdentifierAttribute()
+                ->getAttributeName();
+            return $idAttr;
+        } else {
+            return 'id';
+        }
+    }
 }

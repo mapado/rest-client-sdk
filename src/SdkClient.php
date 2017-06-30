@@ -4,6 +4,7 @@ namespace Mapado\RestClientSdk;
 
 use Mapado\RestClientSdk\Model\ModelHydrator;
 use Mapado\RestClientSdk\Model\Serializer;
+use Mapado\RestClientSdk\UnitOfWork;
 use ProxyManager\Configuration;
 use ProxyManager\Factory\LazyLoadingGhostFactory;
 use ProxyManager\Proxy\LazyLoadingInterface;
@@ -64,21 +65,31 @@ class SdkClient
     protected $cachePrefix;
 
     /**
+     * unitOfWork
+     *
+     * @var UnitOfWork
+     * @access private
+     */
+    private $unitOfWork;
+
+    /**
      * Constructor.
      *
      * @param RestClient      $restClient
      * @param Mapping         $mapping
      * @param Serializer|null $serializer
      */
-    public function __construct(RestClient $restClient, Mapping $mapping, Serializer $serializer = null)
+    public function __construct(RestClient $restClient, Mapping $mapping, UnitOfWork $unitOfWork, Serializer $serializer = null)
     {
         $this->restClient = $restClient;
         $this->mapping = $mapping;
+        $this->unitOfWork = $unitOfWork;
         if (!$serializer) {
-            $serializer = new Serializer($this->mapping);
+            $serializer = new Serializer($this->mapping, $this->unitOfWork);
         }
         $this->serializer = $serializer;
         $this->serializer->setSdk($this);
+
 
         $this->modelHydrator = new ModelHydrator($this);
     }
@@ -140,7 +151,7 @@ class SdkClient
 
         if (!isset($this->repositoryList[$modelName])) {
             $repositoryName = $metadata->getRepositoryName() ?: '\Mapado\RestClientSdk\EntityRepository';
-            $this->repositoryList[$modelName] = new $repositoryName($this, $this->restClient, $modelName);
+            $this->repositoryList[$modelName] = new $repositoryName($this, $this->restClient, $this->unitOfWork, $modelName);
         }
         return $this->repositoryList[$modelName];
     }

@@ -12,6 +12,7 @@ use Mapado\RestClientSdk\Mapping\ClassMetadata;
 use Mapado\RestClientSdk\Mapping\Driver\AnnotationDriver;
 use Mapado\RestClientSdk\Mapping\Relation;
 use Mapado\RestClientSdk\Tests\Model\Issue46;
+use Mapado\RestClientSdk\UnitOfWork;
 
 /**
  * Class Serializer
@@ -504,7 +505,8 @@ class Serializer extends atoum
 
     public function testWeirdIdentifier()
     {
-        $this->createNewInstance($this->getMapping('weirdId'));
+        $mapping = $this->getMapping('weirdId');
+        $this->createNewInstance($mapping);
 
         $this
             ->given($cart = $this->createCart())
@@ -907,16 +909,17 @@ class Serializer extends atoum
     private function createNewInstance($mapping = null)
     {
         $mapping = $mapping ?: $this->getMapping();
-        $this->newTestedInstance($mapping);
+        $unitOfWork = new UnitOfWork($mapping);
+        $this->newTestedInstance($mapping, $unitOfWork);
 
         $this->mockGenerator->orphanize('__construct');
         $this->mockGenerator->shuntParentClassCalls();
         $restClient = new \mock\Mapado\RestClientSdk\RestClient();
         $this->mockGenerator->unshuntParentClassCalls();
-        $sdk = new \mock\Mapado\RestClientSdk\SdkClient($restClient, $mapping, $this->testedInstance);
+        $sdk = new \mock\Mapado\RestClientSdk\SdkClient($restClient, $mapping, $unitOfWork, $this->testedInstance);
         $sdk->setFileCachePath(__DIR__ . '/../../cache/');
 
-        $cartRepositoryMock = $this->getCartRepositoryMock($sdk, $restClient, 'Mapado\RestClientSdk\Tests\Model\JsonLd\Cart');
+        $cartRepositoryMock = $this->getCartRepositoryMock($sdk, $restClient, $unitOfWork, 'Mapado\RestClientSdk\Tests\Model\JsonLd\Cart');
 
         $this->calling($sdk)->getRepository = function ($modelName) use ($cartRepositoryMock) {
             switch ($modelName) {
@@ -933,11 +936,12 @@ class Serializer extends atoum
     /**
      * @param string $modelName
      */
-    private function getCartRepositoryMock($sdk, $restClient, $modelName)
+    private function getCartRepositoryMock($sdk, $restClient, $unitOfWork, $modelName)
     {
         $repository = new \mock\Mapado\RestClientSdk\EntityRepository(
             $sdk,
             $restClient,
+            $unitOfWork,
             $modelName
         );
 
