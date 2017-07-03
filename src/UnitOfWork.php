@@ -114,7 +114,7 @@ class UnitOfWork
         foreach ($newSerializedModel as $key => $value) {
             if (array_key_exists($key, $oldSerializedModel)) {
                 if (is_array($value)) {
-                    $currentClassMetadata = $classMetadata->getRelation($key) ? $this->mapping->getClassMetadata($classMetadata->getRelation($key)->getTargetEntity()) : null;
+                    $currentClassMetadata = $classMetadata && $classMetadata->getRelation($key) ? $this->mapping->getClassMetadata($classMetadata->getRelation($key)->getTargetEntity()) : null;
                     $idSerializedKey = $currentClassMetadata ? $currentClassMetadata->getIdSerializeKey() : null;
                     $recursiveDiff = $this->getDirtyFields($value, $oldSerializedModel[$key], $currentClassMetadata);
                     if (count($recursiveDiff)) {

@@ -104,6 +104,76 @@ class UnitOfWork extends atoum
         ;
     }
 
+    public function testNoMetadata()
+    {
+        $mapping = $this->getMapping();
+        $unitOfWork = $this->newTestedInstance($mapping);
+
+        $this
+            ->given($newSerializedModel = [
+                '@id' => '/v12/carts/1',
+                'cartInfo' => [
+                    [
+                        'firstname' => 'john',
+                        'lastname' => 'doe',
+                    ],
+                ],
+            ])
+            ->then
+                ->variable($unitOfWork->getDirtyData(
+                    $newSerializedModel,
+                    [
+                        '@id' => '/v12/carts/1',
+                        'cartInfo' => [
+                            [
+                                'firstname' => 'john',
+                                'lastname' => 'doe',
+                            ],
+                        ],
+                    ],
+                    $this->getCartMetadata()
+                ))
+                ->isEqualTo(
+                    [
+                    ]
+                )
+            ->then
+                ->variable($unitOfWork->getDirtyData(
+                    [
+                        '@id' => '/v12/carts/1',
+                        'cartItemList' => [
+                            [
+                                '@id' => '/v12/cart_items/1',
+                                'amount' => 1,
+                            ],
+                            [
+                                '@id' => '/v12/cart_items/2',
+                                'amount' => 1,
+                            ],
+                        ],
+                    ],
+                    [
+                        '@id' => '/v12/carts/1',
+                        'cartItemList' => [
+                            [
+                                '@id' => '/v12/cart_items/1',
+                                'amount' => 1,
+                            ],
+                            [
+                                '@id' => '/v12/cart_items/2',
+                                'amount' => 1,
+                            ],
+                        ],
+                    ],
+                    $this->getCartMetadata()
+                ))
+                ->isEqualTo(
+                    [
+                    ]
+                )
+        ;
+    }
+
     public function testRemoveItem()
     {
         $mapping = $this->getMapping();
