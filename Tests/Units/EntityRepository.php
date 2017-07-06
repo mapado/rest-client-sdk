@@ -317,6 +317,55 @@ class EntityRepository extends atoum
         ;
     }
 
+    public function testPutWithoutStore()
+    {
+        $mapping = new RestMapping('/v12');
+        $mapping->setMapping([
+            new ClassMetadata(
+                'products',
+                'Mapado\RestClientSdk\Tests\Model\JsonLd\Product',
+                'mock\Mapado\RestClientSdk\EntityRepository'
+            ),
+        ]);
+
+        $this->calling($this->mockedSdk)->getMapping = $mapping;
+        $this->calling($this->mockedSdk)->getSerializer = new \Mapado\RestClientSdk\Model\Serializer($mapping, $this->unitOfWork);
+
+
+        $product1 = new \Mapado\RestClientSdk\Tests\Model\JsonLd\Product;
+        $product1->setId('/v12/products/1');
+
+        $this->calling($this->mockedHydrator)->hydrate = $product1;
+        $this->calling($this->mockedHydrator)->hydrateList = [$product1];
+
+        $arrayAdapter = new ArrayAdapter(0, false);
+        $this->calling($this->mockedSdk)->getCacheItemPool = $arrayAdapter;
+        $this->calling($this->mockedSdk)->getCachePrefix = 'test_prefix_';
+
+        $this->calling($this->mockedRestClient)->get = $product1;
+        $this->calling($this->mockedRestClient)->put = $product1;
+        $this->calling($this->mockedRestClient)->delete = null;
+
+        $repository = new \mock\Mapado\RestClientSdk\EntityRepository(
+            $this->mockedSdk,
+            $this->mockedRestClient,
+            $this->unitOfWork,
+            'Mapado\RestClientSdk\Tests\Model\JsonLd\Product'
+        );
+
+        $this
+            ->if($repository->find(1))
+            ->then
+                ->mock($this->mockedRestClient)
+                    ->call('get')
+                        ->withArguments('/v12/products/1')->once();
+
+        $this->unitOfWork->clear('/v12/products/1');
+        $this
+            // after update
+            ->if($repository->update($product1));
+    }
+
     public function testCacheWithIriAsId()
     {
         $annotationDriver = new AnnotationDriver(__DIR__ . '/../cache/');
