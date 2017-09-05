@@ -158,11 +158,16 @@ class EntityRepository
         $identifier = $model->{$this->getClassMetadata()->getIdGetter()}();
         $serializer = $this->sdk->getSerializer();
         $newSerializedModel = $serializer->serialize($model, $this->entityName, $serializationContext);
-        $oldSerializedModel = $serializer->serialize($this->unitOfWork->getDirtyEntity($identifier), $this->entityName, $serializationContext);
+
+        $oldModel = $this->unitOfWork->getDirtyEntity($identifier);
+        if ($oldModel) {
+            $oldSerializedModel = $serializer->serialize($oldModel, $this->entityName, $serializationContext);
+            $newSerializedModel = $this->unitOfWork->getDirtyData($newSerializedModel, $oldSerializedModel, $this->getClassMetadata());
+        }
 
         $data = $this->restClient->put(
             $this->addQueryParameter($identifier, $queryParams),
-            $this->unitOfWork->getDirtyData($newSerializedModel, $oldSerializedModel, $this->getClassMetadata())
+            $newSerializedModel
         );
 
         $this->removeFromCache($identifier);

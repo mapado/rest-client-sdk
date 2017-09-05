@@ -317,6 +317,24 @@ class EntityRepository extends atoum
         ;
     }
 
+    public function testPutWithoutStore()
+    {
+        $product1 = new \Mapado\RestClientSdk\Tests\Model\JsonLd\Order;
+        $product1->setId('/v12/orders/1');
+
+        $this->calling($this->mockedHydrator)->hydrate = $product1;
+        $this->calling($this->mockedHydrator)->hydrateList = [$product1];
+
+        $this->calling($this->mockedRestClient)->put = [$product1];
+        $this->calling($this->mockedSdk)->getSerializer = new \Mapado\RestClientSdk\Model\Serializer($this->mapping, $this->unitOfWork);
+
+        $this
+            ->given($updatedProduct = $this->repository->update($product1))
+            ->then
+                ->object($updatedProduct)
+                    ->isIdenticalTo($product1);
+    }
+
     public function testCacheWithIriAsId()
     {
         $annotationDriver = new AnnotationDriver(__DIR__ . '/../cache/');
