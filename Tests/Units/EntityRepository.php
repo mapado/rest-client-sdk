@@ -325,7 +325,6 @@ class EntityRepository extends atoum
         $this->calling($this->mockedHydrator)->hydrate = $product1;
         $this->calling($this->mockedHydrator)->hydrateList = [$product1];
 
-        $this->calling($this->mockedRestClient)->get = [$product1];
         $this->calling($this->mockedRestClient)->put = [$product1];
         $this->calling($this->mockedSdk)->getSerializer = new \Mapado\RestClientSdk\Model\Serializer($this->mapping, $this->unitOfWork);
 
