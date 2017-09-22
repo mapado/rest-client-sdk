@@ -4,8 +4,8 @@ namespace Mapado\RestClientSdk\Tests\Units;
 
 use atoum;
 use Mapado\RestClientSdk\Mapping as RestMapping;
-use Mapado\RestClientSdk\Mapping\ClassMetadata;
 use Mapado\RestClientSdk\Mapping\Attribute;
+use Mapado\RestClientSdk\Mapping\ClassMetadata;
 use Mapado\RestClientSdk\Mapping\Relation;
 
 /**
@@ -461,7 +461,7 @@ class UnitOfWork extends atoum
                                 'amount' => 1,
                                 'cartItemDetailList' => [
                                     [
-                                        '@id' => '/v12/cart_item_detail/1',
+                                        '@id' => '/v12/cart_item_details/1',
                                         'name' => '',
                                     ],
                                 ],
@@ -475,7 +475,7 @@ class UnitOfWork extends atoum
                                 'amount' => 1,
                                 'cartItemDetailList' => [
                                     [
-                                        '@id' => '/v12/cart_item_detail/2',
+                                        '@id' => '/v12/cart_item_details/2',
                                         'name' => '',
                                     ],
                                 ],
@@ -488,7 +488,7 @@ class UnitOfWork extends atoum
                                 '@id' => '/v12/cart_items/1',
                                 'amount' => 2,
                                 'cartItemDetailList' => [
-                                    '@id' => '/v12/cart_item_detail/1',
+                                    '@id' => '/v12/cart_item_details/1',
                                     'name' => 'foo',
                                 ],
                             ],
@@ -507,7 +507,7 @@ class UnitOfWork extends atoum
                                 'amount' => 1,
                                 'cartItemDetailList' => [
                                     [
-                                        '@id' => '/v12/cart_item_detail/1',
+                                        '@id' => '/v12/cart_item_details/1',
                                         'name' => '',
                                     ],
                                 ],
@@ -521,7 +521,7 @@ class UnitOfWork extends atoum
                                 'amount' => 1,
                                 'cartItemDetailList' => [
                                     [
-                                        '@id' => '/v12/cart_item_detail/2',
+                                        '@id' => '/v12/cart_item_details/2',
                                         'name' => '',
                                     ]
                                 ],
@@ -536,12 +536,33 @@ class UnitOfWork extends atoum
     {
         $mapping = $mapping = new RestMapping();
         $mapping->setMapping([
+            $this->getOrderMetadata(),
             $this->getCartMetadata(),
             $this->getCartItemMetadata(),
             $this->getCartItemDetailMetadata(),
         ]);
 
         return $mapping;
+    }
+
+    private function getOrderMetadata()
+    {
+        $orderMetadata = new ClassMetadata(
+            'orders',
+            'Mapado\RestClientSdk\Tests\Model\JsonLd\Order',
+            ''
+        );
+
+        $orderMetadata->setAttributeList([
+            new Attribute('@id', 'id', 'string', true),
+            new Attribute('customerPaidAmount', 'customerPaidAmount', 'int'),
+            new Attribute('status'),
+        ]);
+
+        $orderMetadata->setRelationList([
+        ]);
+
+        return $orderMetadata;
     }
 
     private function getCartMetadata()
@@ -563,6 +584,7 @@ class UnitOfWork extends atoum
 
         $cartMetadata->setRelationList([
             new Relation('cartItemList', Relation::ONE_TO_MANY, 'Mapado\RestClientSdk\Tests\Model\JsonLd\CartItem'),
+            new Relation('order', Relation::MANY_TO_ONE, 'Mapado\RestClientSdk\Tests\Model\JsonLd\Order'),
         ]);
 
         return $cartMetadata;
@@ -579,7 +601,7 @@ class UnitOfWork extends atoum
         $cartItemMetadata->setAttributeList([
             new Attribute('@id', 'id', 'string', true),
             new Attribute('amount'),
-            new Attribute('cart_item_details', 'cartItemDetailList'),
+            new Attribute('cartItemDetailList'),
         ]);
 
         $cartItemMetadata->setRelationList([

@@ -2,8 +2,9 @@
 
 namespace Mapado\RestClientSdk;
 
-use Mapado\RestClientSdk\Mapping\ClassMetadata;
+use Mapado\RestClientSdk\Helper\ArrayHelper;
 use Mapado\RestClientSdk\Mapping;
+use Mapado\RestClientSdk\Mapping\ClassMetadata;
 
 /**
  * UnitOfWork
@@ -112,31 +113,61 @@ class UnitOfWork
         $dirtyFields = [];
 
         foreach ($newSerializedModel as $key => $value) {
-            if (array_key_exists($key, $oldSerializedModel)) {
-                if (is_array($value)) {
-                    $currentClassMetadata = $classMetadata && $classMetadata->getRelation($key) ? $this->mapping->getClassMetadata($classMetadata->getRelation($key)->getTargetEntity()) : null;
-                    $idSerializedKey = $currentClassMetadata ? $currentClassMetadata->getIdSerializeKey() : null;
-                    $recursiveDiff = $this->getDirtyFields($value, $oldSerializedModel[$key], $currentClassMetadata);
-                    if (count($recursiveDiff)) {
-                        $dirtyFields[$key] = $this->addIdentifiers($value, $recursiveDiff, $idSerializedKey);
+            if (!array_key_exists($key, $oldSerializedModel)) {
+                // a new key has been found, add it to the dirtyFields
+                $dirtyFields[$key] = $value;
+                continue;
+            }
 
-                        // if theres only ids not objects, keep them
-                        foreach ($value as $valueKey => $valueId) {
-                            if (is_string($valueId) && is_int($valueKey)) {
-                                $dirtyFields[$key][$valueKey] = $valueId;
-                            }
-                        }
-                    } elseif (count($value) != count($oldSerializedModel[$key])) {
-                        // get all objects ids of new array
-                        $dirtyFields[$key] = $this->addIdentifiers($value, [], $idSerializedKey);
-                    }
-                } else {
-                    if ($value != $oldSerializedModel[$key]) {
-                        $dirtyFields[$key] = $value;
+            $oldValue = $oldSerializedModel[$key];
+
+            if (!is_array($value)) {
+                // not an array, mean that the value is not a relation
+                if ($value != $oldValue) {
+                    // the value did change, an update is needed
+                    $dirtyFields[$key] = $value;
+                }
+                continue;
+            }
+
+            $currentClassMetadata = $classMetadata && $classMetadata->getRelation($key)
+                ? $this->mapping->getClassMetadata($classMetadata->getRelation($key)->getTargetEntity())
+                : null
+            ;
+
+            // if (false && !$classMetadata) {
+            //     // it mean that we are on a "real" array, not a relation,
+            //     // so we need to check array equality
+
+            //     $isMap = count(array_filter(array_keys($value), function ($key) {
+            //         return !is_int($key);
+            //     })) > 0;
+
+            //     if ($isMap) {
+            //         if (!ArrayHelper::arraySame($value, $oldValue)) {
+            //             // the new array is not the same as the old array
+            //             $dirtyFields[$key] = $value;
+            //         }
+
+            //         continue;
+            //     }
+            // }
+
+            $idSerializedKey = $currentClassMetadata ? $currentClassMetadata->getIdSerializeKey() : null;
+            $recursiveDiff = $this->getDirtyFields($value, $oldValue, $currentClassMetadata);
+
+            if (count($recursiveDiff)) {
+                $dirtyFields[$key] = $this->addIdentifiers($value, $recursiveDiff, $idSerializedKey);
+
+                // if there is only ids not objects, keep them
+                foreach ($value as $valueKey => $valueId) {
+                    if (is_string($valueId) && is_int($valueKey)) {
+                        $dirtyFields[$key][$valueKey] = $valueId;
                     }
                 }
-            } else {
-                $dirtyFields[$key] = $value;
+            } elseif (count($value) != count($oldValue)) {
+                // get all objects ids of new array
+                $dirtyFields[$key] = $this->addIdentifiers($value, [], $idSerializedKey);
             }
         }
 

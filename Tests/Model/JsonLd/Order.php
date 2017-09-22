@@ -20,6 +20,26 @@ class Order
     private $id;
 
     /**
+     * customerPaidAmount
+     *
+     * @var int
+     * @access private
+     *
+     * @Rest\Attribute(name="customerPaidAmount", type="integer")
+     */
+    private $customerPaidAmount;
+
+    /**
+     * status
+     *
+     * @var string
+     * @access private
+     *
+     * @Rest\Attribute(name="status", type="string")
+     */
+    private $status;
+
+    /**
      * Getter for id
      *
      * @return string
@@ -38,6 +58,52 @@ class Order
     public function setId($id)
     {
         $this->id = $id;
+
+        return $this;
+    }
+
+    /**
+     * Getter for customerPaidAmount
+     *
+     * @return int
+     */
+    public function getCustomerPaidAmount()
+    {
+        return $this->customerPaidAmount;
+    }
+
+    /**
+     * Setter for customerPaidAmount
+     *
+     * @param int $customerPaidAmount
+     * @return Order
+     */
+    public function setCustomerPaidAmount($customerPaidAmount)
+    {
+        $this->customerPaidAmount = $customerPaidAmount;
+
+        return $this;
+    }
+
+    /**
+     * Getter for status
+     *
+     * @return string
+     */
+    public function getStatus()
+    {
+        return $this->status;
+    }
+
+    /**
+     * Setter for status
+     *
+     * @param string $status
+     * @return Order
+     */
+    public function setStatus($status)
+    {
+        $this->status = $status;
 
         return $this;
     }
