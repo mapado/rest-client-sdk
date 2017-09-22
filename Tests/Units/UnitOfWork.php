@@ -843,6 +843,78 @@ class UnitOfWork extends atoum
         ;
     }
 
+    public function testNoMetadataChangeArray()
+    {
+        $mapping = $this->getMapping();
+        $unitOfWork = $this->newTestedInstance($mapping);
+
+        $this
+            ->given($newSerializedModel = [
+                '@id' => '/v12/carts/1',
+                'cartInfo' => [
+                    [
+                        'firstname' => 'jane',
+                        'lastname' => 'doe',
+                    ],
+                ],
+            ])
+            ->then
+            ->variable($unitOfWork->getDirtyData(
+                $newSerializedModel,
+                [
+                    '@id' => '/v12/carts/1',
+                    'cartInfo' => [
+                        [
+                            'firstname' => 'john',
+                            'lastname' => 'doe',
+                        ],
+                    ],
+                ],
+                $this->getCartMetadata()
+            ))
+            ->isEqualTo(
+                [
+                    'cartInfo' => [
+                        [
+                            'firstname' => 'jane',
+                            'lastname' => 'doe',
+                        ],
+                    ],
+                ]
+            )
+
+            ->then
+            ->variable($unitOfWork->getDirtyData(
+                [
+                    '@id' => '/v12/carts/1',
+                    'order' => [
+                        '@id' => '/v12/orders/1',
+                        'customerPaidAmount' => 1500,
+                        'status' => 'awaiting_payment',
+                    ],
+                ],
+                [
+                    '@id' => '/v12/carts/1',
+                    'order' => [
+                        '@id' => '/v12/orders/1',
+                        'customerPaidAmount' => 1000,
+                        'status' => 'awaiting_payment',
+                    ],
+                ],
+                $this->getCartMetadata()
+            ))
+            ->isEqualTo(
+                [
+                    'order' => [
+                        '@id' => '/v12/orders/1',
+                        'customerPaidAmount' => 1500,
+                    ],
+                ]
+            )
+
+        ;
+    }
+
     private function getMapping()
     {
         $mapping = $mapping = new RestMapping();

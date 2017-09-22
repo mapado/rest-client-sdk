@@ -145,7 +145,8 @@ class UnitOfWork
                         $recursiveDiff = $this->getDirtyFields($value, $oldValue, $currentClassMetadata);
 
                         if (!empty($recursiveDiff)) {
-                            $dirtyFields[$key] = $this->addIdentifiers($value, $recursiveDiff, $idSerializedKey);
+                            $recursiveDiff[$idSerializedKey] = static::getEntityId($value, $idSerializedKey);
+                            $dirtyFields[$key] = $recursiveDiff;
                         }
                     }
                 }
@@ -173,11 +174,7 @@ class UnitOfWork
                         if (!empty($recursiveDiff)) {
                             $idSerializedKey = $currentClassMetadata->getIdSerializeKey();
 
-                            $relationValueId = is_string($relationValue)
-                                ? $relationValue
-                                : $relationValue[$idSerializedKey];
-
-                            $recursiveDiff[$idSerializedKey] = $relationValueId;
+                            $recursiveDiff[$idSerializedKey] = static::getEntityId($relationValue, $idSerializedKey);
                             $dirtyFields[$key][$relationKey] = $recursiveDiff;
                         }
                     }
@@ -232,5 +229,19 @@ class UnitOfWork
         }
 
         return [];
+    }
+
+    /**
+     * get entity id from string or array
+     * @param mixed $stringOrEntity
+     * @param string $idSerializedKey
+     */
+    private static function getEntityId($stringOrEntity, $idSerializedKey)
+    {
+        if (!is_array($stringOrEntity)) {
+            return $stringOrEntity;
+        }
+
+        return $stringOrEntity[$idSerializedKey];
     }
 }
