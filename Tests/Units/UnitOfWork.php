@@ -36,6 +36,285 @@ class UnitOfWork extends atoum
         ;
     }
 
+    public function testSimpleEntity()
+    {
+        $mapping = $this->getMapping();
+        $unitOfWork = $this->newTestedInstance($mapping);
+
+        $this
+            ->array($unitOfWork->getDirtyData(
+                [
+                    '@id' => '/v12/carts/1',
+                ],
+                [
+                    '@id' => '/v12/carts/1',
+                ],
+                $this->getCartMetadata()
+            ))
+            ->isEqualTo([])
+            ->then
+            ->array($unitOfWork->getDirtyData(
+                [
+                    '@id' => '/v12/carts/1',
+                    'status' => 'payed',
+                    'order' => '/v12/orders/1',
+                ],
+                [
+                    '@id' => '/v12/carts/1',
+                    'status' => 'payed',
+                    'order' => '/v12/orders/1',
+                ],
+                $this->getCartMetadata()
+            ))
+            ->isEqualTo([])
+            ->then
+            ->array($unitOfWork->getDirtyData(
+                [
+                    '@id' => '/v12/carts/1',
+                    'status' => 'payed',
+                ],
+                [
+                    '@id' => '/v12/carts/1',
+                    'status' => 'waiting',
+                ],
+                $this->getCartMetadata()
+            ))
+            ->isEqualTo(['status' => 'payed'])
+            ->then
+            ->array($unitOfWork->getDirtyData(
+                [
+                    '@id' => '/v12/carts/2',
+                    'status' => 'payed',
+                ],
+                [
+                    '@id' => '/v12/carts/1',
+                    'status' => 'waiting',
+                ],
+                $this->getCartMetadata()
+            ))
+            ->isEqualTo([
+                '@id' => '/v12/carts/2',
+                'status' => 'payed',
+            ])
+            ->then
+            ->array($unitOfWork->getDirtyData(
+                [
+                    '@id' => '/v12/carts/1',
+                    'status' => 'payed',
+                    'someData' => [
+                        'foo' => 'bar',
+                        'loo' => 'baz',
+                    ],
+                ],
+                [
+                    '@id' => '/v12/carts/1',
+                    'status' => 'payed',
+                    'someData' => [
+                        'foo' => 'bar',
+                    ],
+                ],
+                $this->getCartMetadata()
+            ))
+            ->isEqualTo([
+                'someData' => [
+                    'foo' => 'bar',
+                    'loo' => 'baz',
+                ],
+            ])
+        ;
+    }
+
+    public function testManyToOneRelation()
+    {
+        $mapping = $this->getMapping();
+        $unitOfWork = $this->newTestedInstance($mapping);
+
+        $this
+            ->array($unitOfWork->getDirtyData(
+                [
+                    '@id' => '/v12/carts/1',
+                    'order' => '/v1/orders/2',
+                ],
+                [
+                    '@id' => '/v12/carts/1',
+                    'order' => [ '@id' => '/v1/orders/1' ],
+                ],
+                $this->getCartMetadata()
+            ))
+            ->isEqualTo([
+                'order' => '/v1/orders/2',
+            ])
+
+            ->then
+            ->array($unitOfWork->getDirtyData(
+                [
+                    '@id' => '/v12/carts/1',
+                    'order' => [
+                        '@id' => '/v1/orders/2',
+                    ]
+                ],
+                [
+                    '@id' => '/v12/carts/1',
+                    'order' => '/v1/orders/1',
+                ],
+                $this->getCartMetadata()
+            ))
+            ->isEqualTo([
+                'order' => [
+                    '@id' => '/v1/orders/2',
+                ],
+            ])
+
+            ->then
+            ->array($unitOfWork->getDirtyData(
+                [
+                    '@id' => '/v12/carts/1',
+                    'order' => [
+                        '@id' => '/v1/orders/2',
+                        'status' => 'payed',
+                    ]
+                ],
+                [
+                    '@id' => '/v12/carts/1',
+                    'order' => [
+                        '@id' => '/v1/orders/1',
+                        'status' => 'payed',
+                    ],
+                ],
+                $this->getCartMetadata()
+            ))
+            ->isEqualTo([
+                'order' => [
+                    '@id' => '/v1/orders/2',
+                ],
+            ])
+
+            ->then
+            ->array($unitOfWork->getDirtyData(
+                [
+                    '@id' => '/v12/carts/1',
+                    'order' => [
+                        '@id' => '/v1/orders/2',
+                        'status' => 'payed',
+                    ]
+                ],
+                [
+                    '@id' => '/v12/carts/1',
+                    'order' => [
+                        '@id' => '/v1/orders/1',
+                        'status' => 'waiting',
+                    ],
+                ],
+                $this->getCartMetadata()
+            ))
+            ->isEqualTo([
+                'order' => [
+                    '@id' => '/v1/orders/2',
+                    'status' => 'payed',
+                ],
+            ])
+        ;
+    }
+
+    public function dontcommittestOneToManyRelation()
+    {
+        $mapping = $this->getMapping();
+        $unitOfWork = $this->newTestedInstance($mapping);
+
+        $this
+            ->array($unitOfWork->getDirtyData(
+                [
+                    '@id' => '/v12/carts/1',
+                    'cartItemList' => [
+                        '/v1/cart_items/1',
+                        '/v1/cart_items/2',
+                    ],
+                ],
+                [
+                    '@id' => '/v12/carts/1',
+                    'cartItemList' => [
+                        '/v1/cart_items/1',
+                        '/v1/cart_items/2',
+                    ],
+                ],
+                $this->getCartMetadata()
+            ))
+            ->isEqualTo([])
+
+            ->array($unitOfWork->getDirtyData(
+                [
+                    '@id' => '/v12/carts/1',
+                    'cartItemList' => [
+                        '/v1/cart_items/1',
+                        '/v1/cart_items/2',
+                    ],
+                ],
+                [
+                    '@id' => '/v12/carts/1',
+                    'cartItemList' => [
+                        '/v1/cart_items/2',
+                        '/v1/cart_items/1',
+                    ],
+                ],
+                $this->getCartMetadata()
+            ))
+            ->isEqualTo([
+                'cartItemList' => [
+                    '/v1/cart_items/1',
+                    '/v1/cart_items/2',
+                ],
+            ])
+
+            ->array($unitOfWork->getDirtyData(
+                [
+                    '@id' => '/v12/carts/1',
+                    'cartItemList' => [
+                        '/v1/cart_items/2',
+                    ],
+                ],
+                [
+                    '@id' => '/v12/carts/1',
+                    'cartItemList' => [
+                        '/v1/cart_items/1',
+                        '/v1/cart_items/2',
+                    ],
+                ],
+                $this->getCartMetadata()
+            ))
+            ->isEqualTo([
+                'cartItemList' => [
+                    '/v1/cart_items/2',
+                ],
+            ])
+
+            ->array($unitOfWork->getDirtyData(
+                [
+                    '@id' => '/v12/carts/1',
+                    'cartItemList' => [
+                        '/v1/cart_items/1',
+                        '/v1/cart_items/2',
+                        '/v1/cart_items/3',
+                    ],
+                ],
+                [
+                    '@id' => '/v12/carts/1',
+                    'cartItemList' => [
+                        '/v1/cart_items/1',
+                        '/v1/cart_items/2',
+                    ],
+                ],
+                $this->getCartMetadata()
+            ))
+            ->isEqualTo([
+                'cartItemList' => [
+                    '/v1/cart_items/1',
+                    '/v1/cart_items/2',
+                    '/v1/cart_items/3',
+                ],
+            ])
+        ;
+    }
+
     public function testNoChanges()
     {
         $mapping = $this->getMapping();
@@ -300,7 +579,42 @@ class UnitOfWork extends atoum
                         'cartItemList' => [
                             [
                                 '@id' => '/v12/cart_items/2',
+                            ],
+                        ],
+                    ]
+                )
+            ->then
+                ->array($unitOfWork->getDirtyData(
+                    [
+                        '@id' => '/v12/carts/1',
+                        'cartItemList' => [
+                            [
+                                '@id' => '/v12/cart_items/2',
+                                'amount' => 2,
+                            ],
+                        ],
+                    ],
+                    [
+                        '@id' => '/v12/carts/1',
+                        'cartItemList' => [
+                            [
+                                '@id' => '/v12/cart_items/1',
+                                'amount' => 2,
+                            ],
+                            [
+                                '@id' => '/v12/cart_items/2',
                                 'amount' => 1,
+                            ],
+                        ],
+                    ],
+                    $this->getCartMetadata()
+                ))
+                ->isEqualTo(
+                    [
+                        'cartItemList' => [
+                            [
+                                '@id' => '/v12/cart_items/2',
+                                'amount' => 2,
                             ],
                         ],
                     ]
@@ -427,9 +741,6 @@ class UnitOfWork extends atoum
                                 '@id' => '/v12/cart_items/1',
                                 'amount' => 2,
                             ],
-                            [
-                                '@id' => '/v12/cart_items/2',
-                            ],
                         ],
                     ]
                 )
@@ -515,10 +826,10 @@ class UnitOfWork extends atoum
                             ],
                             [
                                 '@id' => '/v12/cart_items/2',
+                                'amount' => 1,
                             ],
                             [
                                 '@id' => '/v12/cart_items/3',
-                                'amount' => 1,
                                 'cartItemDetailList' => [
                                     [
                                         '@id' => '/v12/cart_item_details/2',

@@ -91,7 +91,6 @@ class ArrayHelper
         return array_diff_assoc(static::arrayDot($array1), static::arrayDot($array2));
     }
 
-
     public static function arraySame($array1, $array2)
     {
         return empty(static::arrayDiffAssocRecursive($array1, $array2));

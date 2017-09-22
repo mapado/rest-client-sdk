@@ -5,6 +5,7 @@ namespace Mapado\RestClientSdk;
 use Mapado\RestClientSdk\Helper\ArrayHelper;
 use Mapado\RestClientSdk\Mapping;
 use Mapado\RestClientSdk\Mapping\ClassMetadata;
+use Mapado\RestClientSdk\Mapping\Relation;
 
 /**
  * UnitOfWork
@@ -121,55 +122,69 @@ class UnitOfWork
 
             $oldValue = $oldSerializedModel[$key];
 
-            if (!is_array($value)) {
-                // not an array, mean that the value is not a relation
-                if ($value != $oldValue) {
-                    // the value did change, an update is needed
+            $currentRelation = $classMetadata ? $classMetadata->getRelation($key) : null;
+
+            if (!$currentRelation) {
+                if (is_array($value) && !ArrayHelper::arraySame($value, $oldValue)
+                    || $value != $oldValue
+                ) {
                     $dirtyFields[$key] = $value;
                 }
                 continue;
             }
 
-            $currentClassMetadata = $classMetadata && $classMetadata->getRelation($key)
-                ? $this->mapping->getClassMetadata($classMetadata->getRelation($key)->getTargetEntity())
-                : null
-            ;
-
-            // if (false && !$classMetadata) {
-            //     // it mean that we are on a "real" array, not a relation,
-            //     // so we need to check array equality
-
-            //     $isMap = count(array_filter(array_keys($value), function ($key) {
-            //         return !is_int($key);
-            //     })) > 0;
-
-            //     if ($isMap) {
-            //         if (!ArrayHelper::arraySame($value, $oldValue)) {
-            //             // the new array is not the same as the old array
-            //             $dirtyFields[$key] = $value;
-            //         }
-
-            //         continue;
-            //     }
-            // }
+            $currentClassMetadata = $this->mapping->getClassMetadata($currentRelation->getTargetEntity());
 
             $idSerializedKey = $currentClassMetadata ? $currentClassMetadata->getIdSerializeKey() : null;
-            $recursiveDiff = $this->getDirtyFields($value, $oldValue, $currentClassMetadata);
 
-            if (count($recursiveDiff)) {
-                $dirtyFields[$key] = $this->addIdentifiers($value, $recursiveDiff, $idSerializedKey);
+            if ($currentRelation->getType() === Relation::MANY_TO_ONE) {
+                if ($value !== $oldValue) {
+                    if (is_string($value) || is_string($oldValue)) {
+                        $dirtyFields[$key] = $value;
+                    } else {
+                        $recursiveDiff = $this->getDirtyFields($value, $oldValue, $currentClassMetadata);
 
-                // if there is only ids not objects, keep them
-                foreach ($value as $valueKey => $valueId) {
-                    if (is_string($valueId) && is_int($valueKey)) {
-                        $dirtyFields[$key][$valueKey] = $valueId;
+                        if (!empty($recursiveDiff)) {
+                            $dirtyFields[$key] = $this->addIdentifiers($value, $recursiveDiff, $idSerializedKey);
+                        }
                     }
                 }
-            } elseif (count($value) != count($oldValue)) {
+
+                continue;
+            }
+
+            // ONE_TO_MANY relation
+
+            if (count($value) != count($oldValue)) {
                 // get all objects ids of new array
                 $dirtyFields[$key] = $this->addIdentifiers($value, [], $idSerializedKey);
             }
+
+            foreach ($value as $relationKey => $relationValue) {
+                $oldRelationValue = $this->findOldRelation($relationValue, $oldValue, $currentClassMetadata);
+
+
+                if ($relationValue !== $oldRelationValue) {
+                    if (is_string($relationValue) || is_string($oldRelationValue)) {
+                        $dirtyFields[$key][$relationKey] = $relationValue;
+                    } else {
+                        $recursiveDiff = $this->getDirtyFields($relationValue, $oldRelationValue, $currentClassMetadata);
+
+                        if (!empty($recursiveDiff)) {
+                            $idSerializedKey = $currentClassMetadata->getIdSerializeKey();
+
+                            $relationValueId = is_string($relationValue)
+                                ? $relationValue
+                                : $relationValue[$idSerializedKey];
+
+                            $recursiveDiff[$idSerializedKey] = $relationValueId;
+                            $dirtyFields[$key][$relationKey] = $recursiveDiff;
+                        }
+                    }
+                }
+            }
         }
+
 
         return $dirtyFields;
     }
@@ -195,5 +210,27 @@ class UnitOfWork
         }
 
         return $dirtyFields;
+    }
+
+    private function findOldRelation($relationValue, array $oldValue, ClassMetadata $classMetadata)
+    {
+        $idSerializedKey = $classMetadata->getIdSerializeKey();
+
+        $relationValueId = is_string($relationValue)
+            ? $relationValue
+            : $relationValue[$idSerializedKey];
+
+        foreach ($oldValue as $oldRelationValue) {
+            $oldRelationValueId = is_string($oldRelationValue)
+                 ? $oldRelationValue
+                 : $oldRelationValue[$idSerializedKey]
+            ;
+
+            if ($relationValueId === $oldRelationValueId) {
+                return $oldRelationValue;
+            }
+        }
+
+        return [];
     }
 }
