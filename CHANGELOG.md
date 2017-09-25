@@ -1,6 +1,10 @@
 Changelog
 ======================
 
+## 0.25.1
+### Changed
+  * ignore backtrace args to save memory
+
 ## 0.25.0
 ### Added
   * Add the backtrace in the log
