@@ -1,6 +1,13 @@
 Changelog
 ======================
 
+## 0.25.0
+### Added
+  * Add the backtrace in the log
+
+### Fix 
+  * fix notice in `UnitOfWork`
+
 ## 0.24.0
 ### Fix / Maybe breaking
   * The UnitOfWork now treat array (without Relation) as full object and does not make a `diff` on them
