@@ -216,105 +216,6 @@ class UnitOfWork extends atoum
         ;
     }
 
-    public function dontcommittestOneToManyRelation()
-    {
-        $mapping = $this->getMapping();
-        $unitOfWork = $this->newTestedInstance($mapping);
-
-        $this
-            ->array($unitOfWork->getDirtyData(
-                [
-                    '@id' => '/v12/carts/1',
-                    'cartItemList' => [
-                        '/v1/cart_items/1',
-                        '/v1/cart_items/2',
-                    ],
-                ],
-                [
-                    '@id' => '/v12/carts/1',
-                    'cartItemList' => [
-                        '/v1/cart_items/1',
-                        '/v1/cart_items/2',
-                    ],
-                ],
-                $this->getCartMetadata()
-            ))
-            ->isEqualTo([])
-
-            ->array($unitOfWork->getDirtyData(
-                [
-                    '@id' => '/v12/carts/1',
-                    'cartItemList' => [
-                        '/v1/cart_items/1',
-                        '/v1/cart_items/2',
-                    ],
-                ],
-                [
-                    '@id' => '/v12/carts/1',
-                    'cartItemList' => [
-                        '/v1/cart_items/2',
-                        '/v1/cart_items/1',
-                    ],
-                ],
-                $this->getCartMetadata()
-            ))
-            ->isEqualTo([
-                'cartItemList' => [
-                    '/v1/cart_items/1',
-                    '/v1/cart_items/2',
-                ],
-            ])
-
-            ->array($unitOfWork->getDirtyData(
-                [
-                    '@id' => '/v12/carts/1',
-                    'cartItemList' => [
-                        '/v1/cart_items/2',
-                    ],
-                ],
-                [
-                    '@id' => '/v12/carts/1',
-                    'cartItemList' => [
-                        '/v1/cart_items/1',
-                        '/v1/cart_items/2',
-                    ],
-                ],
-                $this->getCartMetadata()
-            ))
-            ->isEqualTo([
-                'cartItemList' => [
-                    '/v1/cart_items/2',
-                ],
-            ])
-
-            ->array($unitOfWork->getDirtyData(
-                [
-                    '@id' => '/v12/carts/1',
-                    'cartItemList' => [
-                        '/v1/cart_items/1',
-                        '/v1/cart_items/2',
-                        '/v1/cart_items/3',
-                    ],
-                ],
-                [
-                    '@id' => '/v12/carts/1',
-                    'cartItemList' => [
-                        '/v1/cart_items/1',
-                        '/v1/cart_items/2',
-                    ],
-                ],
-                $this->getCartMetadata()
-            ))
-            ->isEqualTo([
-                'cartItemList' => [
-                    '/v1/cart_items/1',
-                    '/v1/cart_items/2',
-                    '/v1/cart_items/3',
-                ],
-            ])
-        ;
-    }
-
     public function testNoChanges()
     {
         $mapping = $this->getMapping();
@@ -855,6 +756,7 @@ class UnitOfWork extends atoum
                     [
                         'firstname' => 'jane',
                         'lastname' => 'doe',
+                        'children' => ['rusty', 'john-john-junior'],
                     ],
                 ],
             ])
@@ -867,6 +769,7 @@ class UnitOfWork extends atoum
                         [
                             'firstname' => 'john',
                             'lastname' => 'doe',
+                            'children' => ['rusty', 'john-john-junior'],
                         ],
                     ],
                 ],
@@ -878,6 +781,7 @@ class UnitOfWork extends atoum
                         [
                             'firstname' => 'jane',
                             'lastname' => 'doe',
+                            'children' => ['rusty', 'john-john-junior'],
                         ],
                     ],
                 ]

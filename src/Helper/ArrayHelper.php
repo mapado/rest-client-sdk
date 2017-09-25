@@ -76,7 +76,7 @@ class ArrayHelper
     {
         $results = [];
         foreach ($array as $key => $value) {
-            if (is_array($value) && ! empty($value)) {
+            if (is_array($value) && !empty($value)) {
                 $results = array_merge($results, static::arrayDot($value, $prepend . $key . '.'));
             } else {
                 $results[$prepend . $key] = $value;
