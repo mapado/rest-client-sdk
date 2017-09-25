@@ -61,8 +61,41 @@ class ArrayHelper
 
             $array = $array[$segment];
         }
+
         return true;
     }
+
+    /**
+     * Flatten a multi-dimensional associative array with dots.
+     *
+     * @param  array   $array
+     * @param  string  $prepend
+     * @return array
+     */
+    public static function arrayDot($array, $prepend = '')
+    {
+        $results = [];
+        foreach ($array as $key => $value) {
+            if (is_array($value) && !empty($value)) {
+                $results = array_merge($results, static::arrayDot($value, $prepend . $key . '.'));
+            } else {
+                $results[$prepend . $key] = $value;
+            }
+        }
+
+        return $results;
+    }
+
+    public static function arrayDiffAssocRecursive($array1, $array2)
+    {
+        return array_diff_assoc(static::arrayDot($array1), static::arrayDot($array2));
+    }
+
+    public static function arraySame($array1, $array2)
+    {
+        return empty(static::arrayDiffAssocRecursive($array1, $array2));
+    }
+
 
     /**
      * Return the default value of the given value.
