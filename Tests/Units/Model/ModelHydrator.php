@@ -3,11 +3,9 @@
 namespace Mapado\RestClientSdk\Tests\Units\Model;
 
 use atoum;
-use DateTime;
 use Mapado\RestClientSdk\Mapping;
 use Mapado\RestClientSdk\Mapping\Attribute;
 use Mapado\RestClientSdk\Mapping\ClassMetadata;
-use Mapado\RestClientSdk\Mapping\Relation;
 use Mapado\RestClientSdk\Model\Serializer;
 use Mapado\RestClientSdk\UnitOfWork;
 
