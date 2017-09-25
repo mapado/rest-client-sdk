@@ -4,7 +4,6 @@ namespace Mapado\RestClientSdk;
 
 use Mapado\RestClientSdk\Exception\SdkException;
 use Mapado\RestClientSdk\Helper\ArrayHelper;
-use Symfony\Component\Cache\CacheItem;
 use Mapado\RestClientSdk\UnitOfWork;
 
 class EntityRepository
