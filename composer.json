@@ -17,7 +17,8 @@
     },
     "require-dev": {
         "atoum/atoum": "^3.0.0",
-        "symfony/cache": "^3.1"
+        "symfony/cache": "^3.1",
+        "atoum/config-extension": "^0.2.0"
     },
     "license": "MIT",
     "authors": [

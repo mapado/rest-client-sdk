@@ -786,7 +786,7 @@ class Serializer extends atoum
      * createNewCart
      *
      * @access private
-     * @return \Mapado\RestClientSdk\Tests\Model\Cart
+     * @return \Mapado\RestClientSdk\Tests\Model\JsonLd\Cart
      */
     private function createNewCart()
     {
@@ -805,7 +805,7 @@ class Serializer extends atoum
      * createCart
      *
      * @access private
-     * @return \Mapado\RestClientSdk\Tests\Model\Cart
+     * @return \Mapado\RestClientSdk\Tests\Model\JsonLd\Cart
      */
     private function createCart()
     {
@@ -819,7 +819,7 @@ class Serializer extends atoum
      * createKnownCartItem
      *
      * @access private
-     * @return \Mapado\RestClientSdk\Tests\Model\CartItem
+     * @return \Mapado\RestClientSdk\Tests\Model\JsonLd\CartItem
      */
     private function createKnownCartItem()
     {
@@ -840,7 +840,7 @@ class Serializer extends atoum
      * createNewCartItem
      *
      * @access private
-     * @return \Mapado\RestClientSdk\Tests\Model\CartItem
+     * @return \Mapado\RestClientSdk\Tests\Model\JsonLd\CartItem
      */
     private function createNewCartItem($addKnownedProduct = true)
     {
@@ -863,7 +863,7 @@ class Serializer extends atoum
      * createNewProduct
      *
      * @access private
-     * @return \Mapado\RestClientSdk\Tests\Model\Product
+     * @return \Mapado\RestClientSdk\Tests\Model\JsonLd\Product
      */
     private function createNewProduct()
     {
@@ -880,7 +880,7 @@ class Serializer extends atoum
      * createKnownedProduct
      *
      * @access private
-     * @return \Mapado\RestClientSdk\Tests\Model\Product
+     * @return \Mapado\RestClientSdk\Tests\Model\JsonLd\Product
      */
     private function createKnownedProduct()
     {
@@ -935,6 +935,7 @@ class Serializer extends atoum
 
     /**
      * @param string $modelName
+     * @param UnitOfWork $unitOfWork
      */
     private function getCartRepositoryMock($sdk, $restClient, $unitOfWork, $modelName)
     {
