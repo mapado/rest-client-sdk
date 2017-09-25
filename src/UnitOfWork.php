@@ -213,15 +213,10 @@ class UnitOfWork
     {
         $idSerializedKey = $classMetadata->getIdSerializeKey();
 
-        $relationValueId = is_string($relationValue)
-            ? $relationValue
-            : $relationValue[$idSerializedKey];
+        $relationValueId = static::getEntityId($relationValue, $idSerializedKey);
 
         foreach ($oldValue as $oldRelationValue) {
-            $oldRelationValueId = is_string($oldRelationValue)
-                 ? $oldRelationValue
-                 : $oldRelationValue[$idSerializedKey]
-            ;
+            $oldRelationValueId = static::getEntityId($oldRelationValue, $idSerializedKey);
 
             if ($relationValueId === $oldRelationValueId) {
                 return $oldRelationValue;
