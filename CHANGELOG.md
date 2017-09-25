@@ -1,6 +1,10 @@
 Changelog
 ======================
 
+## 0.24.0
+### Fix / Maybe breaking
+  * The UnitOfWork now treat array (without Relation) as full object and does not make a `diff` on them
+
 ## 0.23.0
 ### Breaking change
   * add Mapado\RestClientSdk\UnitOfWork in constructor of Mapado\RestClientSdk\EntityRepository
