@@ -103,7 +103,7 @@ class UnitOfWork
      *
      * compares serialize object and returns only modified fields
      *
-     * @param array $newArrayModel
+     * @param array $newSerializedModel
      * @param array $oldSerializedModel
      * @param ClassMetadata $classMetadata
      * @access private
@@ -145,7 +145,7 @@ class UnitOfWork
                         $recursiveDiff = $this->getDirtyFields($value, $oldValue, $currentClassMetadata);
 
                         if (!empty($recursiveDiff)) {
-                            $recursiveDiff[$idSerializedKey] = static::getEntityId($value, $idSerializedKey);
+                            $recursiveDiff[$idSerializedKey] = self::getEntityId($value, $idSerializedKey);
                             $dirtyFields[$key] = $recursiveDiff;
                         }
                     }
@@ -174,7 +174,7 @@ class UnitOfWork
                         if (!empty($recursiveDiff)) {
                             $idSerializedKey = $currentClassMetadata->getIdSerializeKey();
 
-                            $recursiveDiff[$idSerializedKey] = static::getEntityId($relationValue, $idSerializedKey);
+                            $recursiveDiff[$idSerializedKey] = self::getEntityId($relationValue, $idSerializedKey);
                             $dirtyFields[$key][$relationKey] = $recursiveDiff;
                         }
                     }
@@ -213,10 +213,10 @@ class UnitOfWork
     {
         $idSerializedKey = $classMetadata->getIdSerializeKey();
 
-        $relationValueId = static::getEntityId($relationValue, $idSerializedKey);
+        $relationValueId = self::getEntityId($relationValue, $idSerializedKey);
 
         foreach ($oldValue as $oldRelationValue) {
-            $oldRelationValueId = static::getEntityId($oldRelationValue, $idSerializedKey);
+            $oldRelationValueId = self::getEntityId($oldRelationValue, $idSerializedKey);
 
             if ($relationValueId === $oldRelationValueId) {
                 return $oldRelationValue;
