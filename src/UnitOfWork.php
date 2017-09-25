@@ -161,21 +161,23 @@ class UnitOfWork
                 $dirtyFields[$key] = $this->addIdentifiers($value, [], $idSerializedKey);
             }
 
-            foreach ($value as $relationKey => $relationValue) {
-                $oldRelationValue = $this->findOldRelation($relationValue, $oldValue, $currentClassMetadata);
+            if (!empty($value)) {
+                foreach ($value as $relationKey => $relationValue) {
+                    $oldRelationValue = $this->findOldRelation($relationValue, $oldValue, $currentClassMetadata);
 
 
-                if ($relationValue !== $oldRelationValue) {
-                    if (is_string($relationValue) || is_string($oldRelationValue)) {
-                        $dirtyFields[$key][$relationKey] = $relationValue;
-                    } else {
-                        $recursiveDiff = $this->getDirtyFields($relationValue, $oldRelationValue, $currentClassMetadata);
+                    if ($relationValue !== $oldRelationValue) {
+                        if (is_string($relationValue) || is_string($oldRelationValue)) {
+                            $dirtyFields[$key][$relationKey] = $relationValue;
+                        } else {
+                            $recursiveDiff = $this->getDirtyFields($relationValue, $oldRelationValue, $currentClassMetadata);
 
-                        if (!empty($recursiveDiff)) {
-                            $idSerializedKey = $currentClassMetadata->getIdSerializeKey();
+                            if (!empty($recursiveDiff)) {
+                                $idSerializedKey = $currentClassMetadata->getIdSerializeKey();
 
-                            $recursiveDiff[$idSerializedKey] = self::getEntityId($relationValue, $idSerializedKey);
-                            $dirtyFields[$key][$relationKey] = $recursiveDiff;
+                                $recursiveDiff[$idSerializedKey] = self::getEntityId($relationValue, $idSerializedKey);
+                                $dirtyFields[$key][$relationKey] = $recursiveDiff;
+                            }
                         }
                     }
                 }

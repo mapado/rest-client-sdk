@@ -305,6 +305,7 @@ class RestClient
                 'response'     => $response,
                 'responseBody' => $response ? json_decode($response->getBody(), true) : null,
                 'queryTime'    => $queryTime,
+                'backtrace'    => debug_backtrace(),
             ];
         }
     }
