@@ -239,6 +239,8 @@ class UnitOfWork
             return $stringOrEntity;
         }
 
-        return $stringOrEntity[$idSerializedKey];
+        return isset($stringOrEntity[$idSerializedKey])
+            ? $stringOrEntity[$idSerializedKey]
+            : null;
     }
 }
