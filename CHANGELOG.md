@@ -1,6 +1,10 @@
 Changelog
 ======================
 
+## 0.25.2
+### Changed
+  * Avoid notice for new entity in `UnitOfWork` #4eee2ba
+
 ## 0.25.1
 ### Changed
   * ignore backtrace args to save memory
