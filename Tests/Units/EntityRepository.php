@@ -671,11 +671,9 @@ class EntityRepository extends atoum
                                 'status' => 'pending',
                                 'cart_items' => [
                                     [
-                                        'id' => null,
                                         'amount' => 2,
                                     ],
                                     [
-                                        'id' => null,
                                         'data' => ['foo' => 'bar'],
                                     ],
                                 ]

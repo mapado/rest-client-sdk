@@ -174,7 +174,10 @@ class UnitOfWork
                             if (!empty($recursiveDiff)) {
                                 $idSerializedKey = $currentClassMetadata->getIdSerializeKey();
 
-                                $recursiveDiff[$idSerializedKey] = self::getEntityId($relationValue, $idSerializedKey);
+                                $entityId = self::getEntityId($relationValue, $idSerializedKey);
+                                if ($entityId !== null) {
+                                    $recursiveDiff[$idSerializedKey] = $entityId;
+                                }
                                 $dirtyFields[$key][$relationKey] = $recursiveDiff;
                             }
                         }
