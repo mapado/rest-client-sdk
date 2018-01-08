@@ -125,8 +125,9 @@ class UnitOfWork
             $currentRelation = $classMetadata ? $classMetadata->getRelation($key) : null;
 
             if (!$currentRelation) {
-                if ($value != $oldValue
-                    || is_array($value) && !ArrayHelper::arraySame($value, $oldValue ?: [])) {
+                if (is_array($value) && !ArrayHelper::arraySame($value, $oldValue ?: [])
+                    || $value !== $oldValue
+                ) {
                     $dirtyFields[$key] = $value;
                 }
                 continue;
@@ -163,7 +164,6 @@ class UnitOfWork
             if (!empty($value)) {
                 foreach ($value as $relationKey => $relationValue) {
                     $oldRelationValue = $this->findOldRelation($relationValue, $oldValue, $currentClassMetadata);
-
 
                     if ($relationValue !== $oldRelationValue) {
                         if (is_string($relationValue) || is_string($oldRelationValue)) {

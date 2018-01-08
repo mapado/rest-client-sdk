@@ -121,6 +121,27 @@ class UnitOfWork extends atoum
                     'loo' => 'baz',
                 ],
             ])
+            ->then
+            ->array($unitOfWork->getDirtyData(
+                [
+                    '@id' => '/v12/carts/1',
+                    'status' => 'payed',
+                    'someData' => [
+                        'foo' => 'bar',
+                        'bad' => 'baz',
+                    ],
+                ],
+                [
+                    '@id' => '/v12/carts/1',
+                    'status' => 'payed',
+                    'someData' => [
+                        'foo' => 'bar',
+                        'bad' => 'baz',
+                    ],
+                ],
+                $this->getCartMetadata()
+            ))
+            ->isEqualTo([])
         ;
     }
 

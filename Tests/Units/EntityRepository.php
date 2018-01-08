@@ -653,7 +653,7 @@ class EntityRepository extends atoum
         $cart->setStatus('pending');
         $cartItem = new \Mapado\RestClientSdk\Tests\Model\JsonLd\CartItem;
         $cartItem->setCart($cart);
-        $cartItem->setAmount(2);
+        $cartItem->setAmount(0);
         $cartItem2 = new \Mapado\RestClientSdk\Tests\Model\JsonLd\CartItem;
         $cartItem2->setCart($cart);
         $cartItem2->setData(['foo' => 'bar']);
@@ -671,7 +671,8 @@ class EntityRepository extends atoum
                                 'status' => 'pending',
                                 'cart_items' => [
                                     [
-                                        'amount' => 2,
+                                        'amount' => 0,
+                                        'data' => [],
                                     ],
                                     [
                                         'data' => ['foo' => 'bar'],
