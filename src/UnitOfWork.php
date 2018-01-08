@@ -109,7 +109,7 @@ class UnitOfWork
      * @access private
      * @return array
      */
-    private function getDirtyFields(array $newSerializedModel, array $oldSerializedModel, ClassMetadata $classMetadata = null)
+    private function getDirtyFields(array $newSerializedModel, array $oldSerializedModel, ClassMetadata $classMetadata)
     {
         $dirtyFields = [];
 
@@ -125,9 +125,8 @@ class UnitOfWork
             $currentRelation = $classMetadata ? $classMetadata->getRelation($key) : null;
 
             if (!$currentRelation) {
-                if (is_array($value) && !ArrayHelper::arraySame($value, $oldValue)
-                    || $value != $oldValue
-                ) {
+                if ($value != $oldValue
+                    || is_array($value) && !ArrayHelper::arraySame($value, $oldValue ?: [])) {
                     $dirtyFields[$key] = $value;
                 }
                 continue;
@@ -225,7 +224,7 @@ class UnitOfWork
             }
         }
 
-        return [];
+        return $classMetadata->getDefaultSerializedModel();
     }
 
     /**

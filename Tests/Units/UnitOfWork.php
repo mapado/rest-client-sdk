@@ -124,6 +124,27 @@ class UnitOfWork extends atoum
         ;
     }
 
+    public function testWithMoreData()
+    {
+        $mapping = $this->getMapping();
+        $unitOfWork = $this->newTestedInstance($mapping);
+
+        $this
+            ->array($unitOfWork->getDirtyData(
+                [
+                    '@id' => '/v12/carts/1',
+                ],
+                [
+                    '@id' => '/v12/carts/1',
+                    'foo' => 'bar',
+                    'status' => 'ok',
+                ],
+                $this->getCartMetadata()
+            ))
+            ->isEqualTo([])
+        ;
+    }
+
     public function testManyToOneRelation()
     {
         $mapping = $this->getMapping();

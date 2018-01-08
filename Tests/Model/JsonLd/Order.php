@@ -2,9 +2,13 @@
 
 namespace Mapado\RestClientSdk\Tests\Model\JsonLd;
 
+use Mapado\RestClientSdk\Mapping\Annotations as Rest;
+
 /**
  * Order Model
  * @author Thomas di Luccio <thomas.diluccio@mapado.com>
+ *
+ * @Rest\Entity(key="order")
  */
 class Order
 {

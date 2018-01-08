@@ -190,9 +190,17 @@ class EntityRepository
         $key = $mapping->getKeyFromModel($this->entityName);
 
         $path = empty($prefix) ? '/' . $key : $prefix . '/' . $key;
+
+        $oldSerializedModel = $this->getClassMetadata()->getDefaultSerializedModel();
+        $newSerializedModel = $this->sdk->getSerializer()
+            ->serialize($model, $this->entityName, $serializationContext);
+
+        $diff = $this->unitOfWork
+            ->getDirtyData($newSerializedModel, $oldSerializedModel, $this->getClassMetadata());
+
         $data = $this->restClient->post(
             $this->addQueryParameter($path, $queryParams),
-            $this->sdk->getSerializer()->serialize($model, $this->entityName, $serializationContext)
+            $diff
         );
 
         $hydrator = $this->sdk->getModelHydrator();
