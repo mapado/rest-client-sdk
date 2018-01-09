@@ -95,7 +95,7 @@ Relations definition:
   * `targetEntity` class name of the target entity
 
 ### UnitOfWork
-[EntityRepository](https://github.com/mapado/rest-client-sdk/blob/master/src/EntityRepository.php) has a UnitofWork used only for PUT requests.
+[EntityRepository](https://github.com/mapado/rest-client-sdk/blob/master/src/EntityRepository.php) has a UnitofWork used for PUT and POST requests.
 It sends only changed data not the full model by comparing with the entity stored on GET request.
 
 ## Configuration
