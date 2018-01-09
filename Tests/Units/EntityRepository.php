@@ -5,9 +5,9 @@ namespace Mapado\RestClientSdk\Tests\Units;
 use atoum;
 use Mapado\RestClientSdk\Mapping as RestMapping;
 use Mapado\RestClientSdk\Mapping\Attribute;
-use Mapado\RestClientSdk\UnitOfWork;
 use Mapado\RestClientSdk\Mapping\ClassMetadata;
 use Mapado\RestClientSdk\Mapping\Driver\AnnotationDriver;
+use Mapado\RestClientSdk\UnitOfWork;
 use Symfony\Component\Cache\Adapter\ArrayAdapter;
 
 /**
@@ -620,6 +620,67 @@ class EntityRepository extends atoum
             ->then
                 ->variable($order = $this->repository->findOneBy(['a' => 'a']))
                     ->isNull()
+        ;
+    }
+
+    public function testPersistWithUnitOfWork()
+    {
+        $annotationDriver = new AnnotationDriver(__DIR__ . '/../cache/');
+        $mapping = new RestMapping();
+        $mapping->setMapping($annotationDriver->loadDirectory(__DIR__ . '/../Model/JsonLd/'));
+
+        $unitOfWork = new UnitOfWork($mapping);
+
+        $this->calling($this->mockedSdk)->getMapping = $mapping;
+        $this->calling($this->mockedSdk)->getSerializer = new \Mapado\RestClientSdk\Model\Serializer($mapping, $unitOfWork);
+
+
+        $cartItemRepository = new \mock\Mapado\RestClientSdk\EntityRepository(
+            $this->mockedSdk,
+            $this->mockedRestClient,
+            $unitOfWork,
+            'Mapado\RestClientSdk\Tests\Model\JsonLd\CartItem'
+        );
+        $cartRepository = new \mock\Mapado\RestClientSdk\EntityRepository(
+            $this->mockedSdk,
+            $this->mockedRestClient,
+            $unitOfWork,
+            'Mapado\RestClientSdk\Tests\Model\JsonLd\Cart'
+        );
+
+
+        $cart = new \Mapado\RestClientSdk\Tests\Model\JsonLd\Cart;
+        $cart->setStatus('pending');
+        $cartItem = new \Mapado\RestClientSdk\Tests\Model\JsonLd\CartItem;
+        $cartItem->setCart($cart);
+        $cartItem->setAmount(0);
+        $cartItem2 = new \Mapado\RestClientSdk\Tests\Model\JsonLd\CartItem;
+        $cartItem2->setCart($cart);
+        $cartItem2->setData(['foo' => 'bar']);
+
+        $this->calling($this->mockedRestClient)->post = [];
+
+        $this
+            ->if($cartRepository->persist($cart))
+            ->then
+                ->mock($this->mockedRestClient)
+                    ->call('post')
+                        ->withArguments(
+                            '/cart',
+                            [
+                                'status' => 'pending',
+                                'cart_items' => [
+                                    [
+                                        'amount' => 0,
+                                        'data' => [],
+                                    ],
+                                    [
+                                        'data' => ['foo' => 'bar'],
+                                    ],
+                                ]
+                            ]
+                        )
+                        ->once()
         ;
     }
 }

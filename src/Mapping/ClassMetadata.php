@@ -246,6 +246,33 @@ class ClassMetadata
         }
     }
 
+    /**
+     * return default serialize model with null value or empty array on relations
+     *
+     * @return array
+     */
+    public function getDefaultSerializedModel()
+    {
+        $out = [];
+        $attributeList = $this->getAttributeList();
+        if ($attributeList) {
+            foreach ($attributeList as $attribute) {
+                $out[$attribute->getSerializedKey()] = null;
+            }
+        }
+
+        $relationList = $this->getRelationList();
+        if ($relationList) {
+            foreach ($relationList as $relation) {
+                if ($relation->isOneToMany()) {
+                    $out[$relation->getSerializedKey()] = [];
+                }
+            }
+        }
+
+        return $out;
+    }
+
     private function getIdKey()
     {
         if ($this->getIdentifierAttribute()) {

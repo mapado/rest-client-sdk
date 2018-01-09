@@ -109,7 +109,7 @@ class UnitOfWork
      * @access private
      * @return array
      */
-    private function getDirtyFields(array $newSerializedModel, array $oldSerializedModel, ClassMetadata $classMetadata = null)
+    private function getDirtyFields(array $newSerializedModel, array $oldSerializedModel, ClassMetadata $classMetadata)
     {
         $dirtyFields = [];
 
@@ -125,8 +125,8 @@ class UnitOfWork
             $currentRelation = $classMetadata ? $classMetadata->getRelation($key) : null;
 
             if (!$currentRelation) {
-                if (is_array($value) && !ArrayHelper::arraySame($value, $oldValue)
-                    || $value != $oldValue
+                if (is_array($value) && !ArrayHelper::arraySame($value, $oldValue ?: [])
+                    || $value !== $oldValue
                 ) {
                     $dirtyFields[$key] = $value;
                 }
@@ -165,7 +165,6 @@ class UnitOfWork
                 foreach ($value as $relationKey => $relationValue) {
                     $oldRelationValue = $this->findOldRelation($relationValue, $oldValue, $currentClassMetadata);
 
-
                     if ($relationValue !== $oldRelationValue) {
                         if (is_string($relationValue) || is_string($oldRelationValue)) {
                             $dirtyFields[$key][$relationKey] = $relationValue;
@@ -175,7 +174,10 @@ class UnitOfWork
                             if (!empty($recursiveDiff)) {
                                 $idSerializedKey = $currentClassMetadata->getIdSerializeKey();
 
-                                $recursiveDiff[$idSerializedKey] = self::getEntityId($relationValue, $idSerializedKey);
+                                $entityId = self::getEntityId($relationValue, $idSerializedKey);
+                                if ($entityId !== null) {
+                                    $recursiveDiff[$idSerializedKey] = $entityId;
+                                }
                                 $dirtyFields[$key][$relationKey] = $recursiveDiff;
                             }
                         }
@@ -225,7 +227,7 @@ class UnitOfWork
             }
         }
 
-        return [];
+        return $classMetadata->getDefaultSerializedModel();
     }
 
     /**
