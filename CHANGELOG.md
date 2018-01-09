@@ -1,6 +1,10 @@
 Changelog
 ======================
 
+## 0.26.0
+### Added / Maybe breaking
+  * persisting an entity now leverage the power of the `UnitOfWork` and only `POST` data that are not null.
+
 ## 0.25.2
 ### Changed
   * Avoid notice for new entity in `UnitOfWork` #4eee2ba
