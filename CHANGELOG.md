@@ -3,7 +3,7 @@ Changelog
 
 ## 0.26.0
 ### Added / Maybe breaking
-  * persisting an entity now leverage the power of the `UnitOfWork` and only `POST` data that are not null.
+  * persisting an entity now leverage the power of the `UnitOfWork` and only `POST` data that are not null. [See #68](https://github.com/mapado/rest-client-sdk/pull/68)
 
 ## 0.25.2
 ### Changed
