@@ -232,7 +232,12 @@ class SdkClient
             $classMetadata,
             $id
         ) {
-            if ($method !== 'getId' && $method !== 'setId' && $method !== 'jsonSerialize') {
+            $isAllowedMethod = $method === 'getId'
+                || $method === 'setId'
+                || $method === 'jsonSerialize'
+                || ($method === '__isset' && $parameters['name'] === 'id');
+
+            if (!$isAllowedMethod) {
                 $initializer   = null; // disable initialization
                 // load data and modify the object here
                 if ($id) {
