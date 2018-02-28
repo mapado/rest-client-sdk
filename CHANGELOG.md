@@ -1,6 +1,15 @@
 Changelog
 ======================
 
+## 0.26.2
+### Changed
+  * Fix issue with count and PHP 7.2
+  * Drop support for PHP < 7.0
+
+## 0.26.1
+### Changed
+   allow calling magic method `isset` on id
+
 ## 0.26.0
 ### Added / Maybe breaking
   * persisting an entity now leverage the power of the `UnitOfWork` and only `POST` data that are not null. [See #68](https://github.com/mapado/rest-client-sdk/pull/68)
