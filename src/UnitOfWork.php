@@ -156,7 +156,7 @@ class UnitOfWork
 
             // ONE_TO_MANY relation
 
-            if (count($value) != count($oldValue)) {
+            if (count($value ?? []) !== count($oldValue ?? [])) {
                 // get all objects ids of new array
                 $dirtyFields[$key] = $this->addIdentifiers($value, [], $idSerializedKey);
             }
