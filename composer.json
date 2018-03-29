@@ -18,8 +18,9 @@
     },
     "require-dev": {
         "atoum/atoum": "^3.0.0",
+        "atoum/config-extension": "^0.3.0",
         "symfony/cache": "^4.0",
-        "atoum/config-extension": "^0.3.0"
+        "phpstan/phpstan": "^0.9.2"
     },
     "license": "MIT",
     "authors": [

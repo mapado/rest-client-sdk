@@ -112,8 +112,7 @@ class SdkClient
     /**
      * getCacheItemPool
      *
-     * @access public
-     * @return CacheItemPoolInterface
+     * @return ?CacheItemPoolInterface
      */
     public function getCacheItemPool()
     {

@@ -7,6 +7,7 @@ use Doctrine\Common\Annotations\AnnotationRegistry;
 use Doctrine\Common\Annotations\FileCacheReader;
 use Doctrine\Common\Annotations\Reader;
 use Mapado\RestClientSdk\Exception\MappingException;
+use Mapado\RestClientSdk\Mapping\Annotations;
 use Mapado\RestClientSdk\Mapping\Attribute;
 use Mapado\RestClientSdk\Mapping\ClassMetadata;
 use Mapado\RestClientSdk\Mapping\Relation;
@@ -135,7 +136,8 @@ class AnnotationDriver
         );
 
         $reflClass = new \ReflectionClass($classname);
-        $classAnnotation = $reader->getClassAnnotation($reflClass, 'Mapado\RestClientSdk\Mapping\Annotations\Entity');
+        /** @var Annotations\Entity */
+        $classAnnotation = $reader->getClassAnnotation($reflClass, Annotations\Entity::class);
 
         if (!$classAnnotation) {
             return null;
@@ -145,6 +147,7 @@ class AnnotationDriver
         $relationList = [];
         foreach ($reflClass->getProperties() as $property) {
             // manage attributes
+            /** @var Annotations\Attribute */
             $propertyAnnotation = $this->getPropertyAnnotation($reader, $property, 'Attribute');
 
             if ($propertyAnnotation) {
@@ -158,8 +161,10 @@ class AnnotationDriver
                 );
             } else {
                 // manage relations
+                /** @var Annotations\OneToMany */
                 $relation = $this->getPropertyAnnotation($reader, $property, 'OneToMany');
                 if (!$relation) {
+                    /** @var Annotations\ManyToOne */
                     $relation = $this->getPropertyAnnotation($reader, $property, 'ManyToOne');
                 }
 

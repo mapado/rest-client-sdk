@@ -14,13 +14,13 @@ class ArrayHelper
      * Get an item from an array using "dot" notation.
      *
      * @param  array   $array
-     * @param  string  $key
+     * @param  ?string  $key
      * @param  mixed   $default
      * @return mixed
      */
     public static function arrayGet($array, $key, $default = null)
     {
-        if (is_null($key)) {
+        if (null === $key) {
             return $array;
         }
 
@@ -41,12 +41,12 @@ class ArrayHelper
      * Check if an item exists in an array using "dot" notation.
      *
      * @param  array   $array
-     * @param  string  $key
+     * @param  ?string  $key
      * @return bool
      */
     public static function arrayHas($array, $key)
     {
-        if (empty($array) || is_null($key)) {
+        if (empty($array) || null === $key) {
             return false;
         }
 
@@ -105,6 +105,6 @@ class ArrayHelper
      */
     public static function value($value)
     {
-        return $value instanceof Closure ? $value() : $value;
+        return $value instanceof \Closure ? $value() : $value;
     }
 }

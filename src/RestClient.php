@@ -257,7 +257,7 @@ class RestClient
             $response = $this->httpClient->request($method, $url, $parameters);
             $this->logRequest($startTime, $method, $url, $parameters, $response);
         } catch (TransferException $e) {
-            $this->logRequest($startTime, $method, $url, $parameters, $e->getResponse());
+            $this->logRequest($startTime, $method, $url, $parameters);
             throw $e;
         }
 
