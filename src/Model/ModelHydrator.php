@@ -37,7 +37,7 @@ class ModelHydrator
     /**
       * convertId
       *
-      * @param string $id
+      * @param mixed $id
       * @param string $modelName
       * @access public
       * @return string
@@ -83,7 +83,7 @@ class ModelHydrator
      * @param array $data
      * @param string $modelName
      * @access public
-     * @return array
+     * @return Collection
      */
     public function hydrateList($data, $modelName)
     {
@@ -112,7 +112,7 @@ class ModelHydrator
             ->getConfig()['collectionKey'];
 
         $itemList = array_map(
-            function ($member) use ($modelName, $collectionKey) {
+            function ($member) use ($modelName) {
                 return $this->deserialize($member, $modelName);
             },
             ArrayHelper::arrayGet($data, $collectionKey)

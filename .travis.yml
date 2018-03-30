@@ -1,15 +1,14 @@
+---
 sudo: false
 
 language: php
 php:
     - 7.2
     - 7.1
-    - 7.0
 
 before_script:
     - composer install
 
 script:
+    - vendor/bin/phpstan analyse -c phpstan.neon --level 4 src/
     - vendor/bin/atoum
-
-

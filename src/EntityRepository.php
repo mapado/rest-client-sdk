@@ -30,7 +30,7 @@ class EntityRepository
     /**
      * classMetadataCache
      *
-     * @var ClassMetadata
+     * @var \Mapado\RestClientSdk\Mapping\ClassMetadata
      * @access private
      */
     private $classMetadataCache;
@@ -93,7 +93,7 @@ class EntityRepository
      * findAll
      *
      * @access public
-     * @return array
+     * @return array|object
      */
     public function findAll()
     {
@@ -142,7 +142,7 @@ class EntityRepository
         $this->removeFromCache($identifier);
         $this->unitOfWork->clear($identifier);
 
-        return $this->restClient->delete($identifier);
+        $this->restClient->delete($identifier);
     }
 
     /**
@@ -150,7 +150,7 @@ class EntityRepository
      *
      * @param object $model
      * @access public
-     * @return void
+     * @return object
      */
     public function update($model, $serializationContext = [], $queryParams = [])
     {
@@ -181,7 +181,7 @@ class EntityRepository
      *
      * @param object $model
      * @access public
-     * @return void
+     * @return object
      */
     public function persist($model, $serializationContext = [], $queryParams = [])
     {
@@ -302,7 +302,7 @@ class EntityRepository
     {
         $key = $this->normalizeCacheKey($key);
         $cacheItemPool = $this->sdk->getCacheItemPool();
-        if (isset($cacheItemPool)) {
+        if ($cacheItemPool) {
             $cacheKey = $this->sdk->getCachePrefix() . $key;
             if ($cacheItemPool->hasItem($cacheKey)) {
                 $cacheItem = $cacheItemPool->getItem($cacheKey);
@@ -324,7 +324,7 @@ class EntityRepository
     {
         $key = $this->normalizeCacheKey($key);
         $cacheItemPool = $this->sdk->getCacheItemPool();
-        if (isset($cacheItemPool)) {
+        if ($cacheItemPool) {
             $cacheKey = $this->sdk->getCachePrefix() . $key;
 
             if (!$cacheItemPool->hasItem($cacheKey)) {
@@ -346,7 +346,7 @@ class EntityRepository
     {
         $key = $this->normalizeCacheKey($key);
         $cacheItemPool = $this->sdk->getCacheItemPool();
-        if (isset($cacheItemPool)) {
+        if ($cacheItemPool) {
             $cacheKey = $this->sdk->getCachePrefix() . $key;
 
             if ($cacheItemPool->hasItem($cacheKey)) {
@@ -402,7 +402,7 @@ class EntityRepository
                     }
 
                     if (method_exists($item, 'getId')) {
-                        return $item->getId();
+                        return call_user_func([$item, 'getId']);
                     }
                 }
 
