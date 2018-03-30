@@ -1,6 +1,11 @@
 Changelog
 ======================
 
+## 0.27.0
+### Changed
+  * [Breaking] Drop support for PHP < 7.1
+  * Use PHPStan to detect errors
+
 ## 0.26.2
 ### Changed
   * Fix issue with count and PHP 7.2
