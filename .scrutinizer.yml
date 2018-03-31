@@ -3,17 +3,20 @@ checks:
         excluded_dependencies:
             - atoum/atoum
             - atoum/config-extension
-            
+
 tools:
     php_cs_fixer:
-        config: { level: psr2 }
+        config:
+            level: psr2
 
 build:
-    tests:
-        override:
-            - 
-                command: 'vendor/bin/atoum'
-                coverage:
-                    file: 'clover.xml'
-                    format: 'clover'
-             
+    nodes:
+        analysis:
+            tests:
+                override:
+                    - 'php-scrutinizer-run'
+                    -
+                        command: 'vendor/bin/atoum'
+                        coverage:
+                            file: 'clover.xml'
+                            format: 'clover'
