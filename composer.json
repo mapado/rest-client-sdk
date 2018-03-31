@@ -8,7 +8,7 @@
         "psr-4": { "Mapado\\RestClientSdk\\Tests\\": "Tests/" }
     },
     "require": {
-        "php": "^7.0",
+        "php": "^7.1",
         "guzzlehttp/guzzle": "^6.2.2",
         "ocramius/proxy-manager": "^2.0",
         "doctrine/annotations": "^1.2",
