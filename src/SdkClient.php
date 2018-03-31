@@ -235,10 +235,7 @@ class SdkClient
             $id,
             $proxyModelName
         ) {
-            $isAllowedMethod = $method === 'getId'
-                || $method === 'setId'
-                || $method === 'jsonSerialize'
-                || ($method === '__isset' && $parameters['name'] === 'id')
+            $isAllowedMethod = $method === 'jsonSerialize'
                 || $method === '__set';
 
             if (!$isAllowedMethod) {
@@ -253,8 +250,6 @@ class SdkClient
                     foreach ($attributeList as $attribute) {
                         $getter = 'get' . ucfirst($attribute->getAttributeName());
                         $value = $model->$getter();
-                        // $setter = 'set' . ucfirst($attribute->getAttributeName());
-                        //$proxy->$setter($value);
                         $properties['\0' . $proxyModelName . '\0' . $attribute->getAttributeName()] = $value;
                     }
                 }
@@ -263,16 +258,20 @@ class SdkClient
             }
         };
 
+        // initialize the proxy instance
         $instance = $factory->createProxy(
             $modelName,
             $initializer,
             [
-                'skippedProperties' => [ $proxyModelName . '\0' ]
+                'skippedProperties' => [ $proxyModelName . '\0id' ]
             ]
         );
-        // $instance->setId($id);
-        // ldd($classMetadata->getIdentifierAttribute());
-        $idReflexion = new \ReflectionProperty($modelName, $classMetadata->getIdentifierAttribute()->getAttributeName());
+
+        // set the id of the object
+        $idReflexion = new \ReflectionProperty(
+            $modelName,
+            $classMetadata->getIdentifierAttribute()->getAttributeName()
+        );
         $idReflexion->setAccessible(true);
         $idReflexion->setValue($instance, $id);
 
