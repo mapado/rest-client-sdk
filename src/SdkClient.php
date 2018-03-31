@@ -238,7 +238,8 @@ class SdkClient
             $isAllowedMethod = $method === 'getId'
                 || $method === 'setId'
                 || $method === 'jsonSerialize'
-                || ($method === '__isset' && $parameters['name'] === 'id');
+                || ($method === '__isset' && $parameters['name'] === 'id')
+                || $method === '__set';
 
             if (!$isAllowedMethod) {
                 $initializer   = null; // disable initialization
