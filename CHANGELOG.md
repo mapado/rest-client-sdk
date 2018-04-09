@@ -1,6 +1,13 @@
 Changelog
 ======================
 
+## 0.28.0
+### Changed
+  * Upgrade to [ProxyManager](https://packagist.org/packages/ocramius/proxy-manager) `^2.0`
+  * [Might Break] Remove dependencies on `misd/phone-number-bundle`. If you used this, you need to either: 
+    * Set the dependency in your `composer.json` file,
+    * Or set the dependency on `giggsey/libphonenumber-for-php` only (as the bundle is not used in this package)
+
 ## 0.27.0
 ### Changed
   * [Breaking] Drop support for PHP < 7.1

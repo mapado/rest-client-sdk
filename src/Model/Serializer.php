@@ -2,6 +2,7 @@
 
 namespace Mapado\RestClientSdk\Model;
 
+use libphonenumber\PhoneNumber;
 use libphonenumber\PhoneNumberFormat;
 use libphonenumber\PhoneNumberUtil;
 use Mapado\RestClientSdk\Exception\SdkException;
@@ -226,7 +227,7 @@ class Serializer
                     continue;
                 } elseif ($data instanceof \DateTime) {
                     $data = $data->format('c');
-                } elseif (is_object($data) && $data instanceof \libphonenumber\PhoneNumber) {
+                } elseif (is_object($data) && $data instanceof PhoneNumber) {
                     $phoneNumberUtil = PhoneNumberUtil::getInstance();
                     $data = $phoneNumberUtil->format(
                         $data,
