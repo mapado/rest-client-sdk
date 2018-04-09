@@ -7,7 +7,7 @@ use Mapado\RestClientSdk\Model\Serializer;
 use Mapado\RestClientSdk\UnitOfWork;
 use ProxyManager\Configuration;
 use ProxyManager\Factory\LazyLoadingGhostFactory;
-use ProxyManager\Proxy\LazyLoadingInterface;
+use ProxyManager\Proxy\GhostObjectInterface;
 use Psr\Cache\CacheItemPoolInterface;
 
 /**
@@ -221,20 +221,22 @@ class SdkClient
             $factory = new LazyLoadingGhostFactory();
         }
 
+        $proxyModelName = preg_replace('/^\\\\*/', '', $modelName);
+
         $initializer = function (
-            LazyLoadingInterface &$proxy,
-            $method,
+            GhostObjectInterface $proxy,
+            string $method,
             array $parameters,
-            & $initializer
+            & $initializer,
+            array $properties
         ) use (
             $sdk,
             $classMetadata,
-            $id
+            $id,
+            $proxyModelName
         ) {
-            $isAllowedMethod = $method === 'getId'
-                || $method === 'setId'
-                || $method === 'jsonSerialize'
-                || ($method === '__isset' && $parameters['name'] === 'id');
+            $isAllowedMethod = $method === 'jsonSerialize'
+                || $method === '__set';
 
             if (!$isAllowedMethod) {
                 $initializer   = null; // disable initialization
@@ -247,9 +249,8 @@ class SdkClient
 
                     foreach ($attributeList as $attribute) {
                         $getter = 'get' . ucfirst($attribute->getAttributeName());
-                        $setter = 'set' . ucfirst($attribute->getAttributeName());
                         $value = $model->$getter();
-                        $proxy->$setter($value);
+                        $properties['\0' . $proxyModelName . '\0' . $attribute->getAttributeName()] = $value;
                     }
                 }
 
@@ -257,8 +258,22 @@ class SdkClient
             }
         };
 
-        $instance = $factory->createProxy($modelName, $initializer);
-        $instance->setId($id);
+        // initialize the proxy instance
+        $instance = $factory->createProxy(
+            $modelName,
+            $initializer,
+            [
+                'skippedProperties' => [ $proxyModelName . '\0id' ]
+            ]
+        );
+
+        // set the id of the object
+        $idReflexion = new \ReflectionProperty(
+            $modelName,
+            $classMetadata->getIdentifierAttribute()->getAttributeName()
+        );
+        $idReflexion->setAccessible(true);
+        $idReflexion->setValue($instance, $id);
 
         return $instance;
     }
