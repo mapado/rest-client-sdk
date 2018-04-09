@@ -145,7 +145,7 @@ $cart = $repository->findOneByName('username');
 // Find one entity based on the criteria defined in the array
 $cart = $repository->findOneBy(array('name'=>'username','date'=>'1-1-2016'));
 
-To find all matches for the two examples above replace findOneByName() with findByName() and findOneBy() with findBy()
+// To find all matches for the two examples above replace findOneByName() with findByName() and findOneBy() with findBy()
 ```
 
 ### Creating a new instance
