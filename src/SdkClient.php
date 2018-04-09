@@ -289,8 +289,6 @@ class SdkClient
         $this->proxyManagerConfig = new Configuration();
         $this->proxyManagerConfig->setProxiesTargetDir($fileCachePath);
 
-        // spl_autoload_register($this->proxyManagerConfig->getProxyAutoloader());
-
         return $this;
     }
 }
