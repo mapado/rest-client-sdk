@@ -59,7 +59,9 @@ class RestClient
     public function __construct(ClientInterface $httpClient, $baseUrl = null)
     {
         $this->httpClient = $httpClient;
-        $this->baseUrl = '/' === substr($baseUrl, -1) ? substr($baseUrl, 0, -1) : $baseUrl;
+        $this->baseUrl = '/' === substr($baseUrl, -1)
+            ? substr($baseUrl, 0, -1)
+            : $baseUrl;
         $this->logHistory = false;
         $this->requestHistory = [];
     }
@@ -127,9 +129,21 @@ class RestClient
             if (404 === $e->getResponse()->getStatusCode()) {
                 return null;
             }
-            throw new RestClientException('Error while getting resource', $path, [], 7, $e);
+            throw new RestClientException(
+                'Error while getting resource',
+                $path,
+                [],
+                7,
+                $e
+            );
         } catch (TransferException $e) {
-            throw new RestException('Error while getting resource', $path, [], 1, $e);
+            throw new RestException(
+                'Error while getting resource',
+                $path,
+                [],
+                1,
+                $e
+            );
         }
     }
 
@@ -147,7 +161,13 @@ class RestClient
         } catch (ClientException $e) {
             return;
         } catch (TransferException $e) {
-            throw new RestException('Error while deleting resource', $path, [], 2, $e);
+            throw new RestException(
+                'Error while deleting resource',
+                $path,
+                [],
+                2,
+                $e
+            );
         }
     }
 
@@ -165,11 +185,27 @@ class RestClient
     {
         $parameters['json'] = $data;
         try {
-            return $this->executeRequest('POST', $this->baseUrl . $path, $parameters);
+            return $this->executeRequest(
+                'POST',
+                $this->baseUrl . $path,
+                $parameters
+            );
         } catch (ClientException $e) {
-            throw new RestClientException('Cannot create resource', $path, [], 3, $e);
+            throw new RestClientException(
+                'Cannot create resource',
+                $path,
+                [],
+                3,
+                $e
+            );
         } catch (TransferException $e) {
-            throw new RestException('Error while posting resource', $path, [], 4, $e);
+            throw new RestException(
+                'Error while posting resource',
+                $path,
+                [],
+                4,
+                $e
+            );
         }
     }
 
@@ -188,11 +224,27 @@ class RestClient
         $parameters['json'] = $data;
 
         try {
-            return $this->executeRequest('PUT', $this->baseUrl . $path, $parameters);
+            return $this->executeRequest(
+                'PUT',
+                $this->baseUrl . $path,
+                $parameters
+            );
         } catch (ClientException $e) {
-            throw new RestClientException('Cannot update resource', $path, [], 5, $e);
+            throw new RestClientException(
+                'Cannot update resource',
+                $path,
+                [],
+                5,
+                $e
+            );
         } catch (TransferException $e) {
-            throw new RestException('Error while puting resource', $path, [], 6, $e);
+            throw new RestException(
+                'Error while puting resource',
+                $path,
+                [],
+                6,
+                $e
+            );
         }
     }
 
@@ -207,14 +259,10 @@ class RestClient
     {
         $request = $this->getCurrentRequest();
 
-        $defaultParameters = [
-            'version' => '1.0',
-        ];
+        $defaultParameters = ['version' => '1.0'];
 
         if ($request) {
-            $defaultParameters['headers'] = [
-                'Referer' => $request->getUri(),
-            ];
+            $defaultParameters['headers'] = ['Referer' => $request->getUri()];
         }
 
         return array_replace_recursive($defaultParameters, $parameters);
@@ -256,7 +304,13 @@ class RestClient
 
         try {
             $response = $this->httpClient->request($method, $url, $parameters);
-            $this->logRequest($startTime, $method, $url, $parameters, $response);
+            $this->logRequest(
+                $startTime,
+                $method,
+                $url,
+                $parameters,
+                $response
+            );
         } catch (TransferException $e) {
             $this->logRequest($startTime, $method, $url, $parameters);
             throw $e;
@@ -269,7 +323,9 @@ class RestClient
 
         if (isset($headers['Content-Type'])) {
             foreach ($jsonContentTypeList as $contentType) {
-                if (false !== stripos($headers['Content-Type'][0], $contentType)) {
+                if (
+                    false !== stripos($headers['Content-Type'][0], $contentType)
+                ) {
                     $requestIsJson = true;
                     break;
                 }
@@ -292,8 +348,13 @@ class RestClient
      * @param array                  $parameters
      * @param ResponseInterface|null $response
      */
-    private function logRequest($startTime, $method, $url, $parameters, ResponseInterface $response = null)
-    {
+    private function logRequest(
+        $startTime,
+        $method,
+        $url,
+        $parameters,
+        ResponseInterface $response = null
+    ) {
         if ($this->isHistoryLogged()) {
             $queryTime = microtime(true) - $startTime;
 
@@ -302,7 +363,9 @@ class RestClient
                 'url' => $url,
                 'parameters' => $parameters,
                 'response' => $response,
-                'responseBody' => $response ? json_decode($response->getBody(), true) : null,
+                'responseBody' => $response
+                    ? json_decode($response->getBody(), true)
+                    : null,
                 'queryTime' => $queryTime,
                 'backtrace' => debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS),
             ];

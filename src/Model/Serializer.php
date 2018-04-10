@@ -89,7 +89,9 @@ class Serializer
 
         $classMetadata = $this->mapping->getClassMetadata($className);
         $identifierAttribute = $classMetadata->getIdentifierAttribute();
-        $identifierAttrKey = $identifierAttribute ? $identifierAttribute->getSerializedKey() : null;
+        $identifierAttrKey = $identifierAttribute
+            ? $identifierAttribute->getSerializedKey()
+            : null;
 
         $attributeList = $classMetadata->getAttributeList();
 
@@ -113,23 +115,40 @@ class Serializer
                         $value = $this->sdk->createProxy($value);
                     } elseif (is_array($value)) {
                         if (isset($value[$identifierAttrKey])) {
-                            $key = $this->mapping->getKeyFromId($value[$identifierAttrKey]);
-                            $subClassMetadata = $this->getClassMetadataFromId($value[$identifierAttrKey]);
-                            $value = $this->deserialize($value, $subClassMetadata->getModelName());
+                            $key = $this->mapping->getKeyFromId(
+                                $value[$identifierAttrKey]
+                            );
+                            $subClassMetadata = $this->getClassMetadataFromId(
+                                $value[$identifierAttrKey]
+                            );
+                            $value = $this->deserialize(
+                                $value,
+                                $subClassMetadata->getModelName()
+                            );
                         } else {
                             $list = [];
                             foreach ($value as $item) {
                                 if (is_string($item)) {
                                     $list[] = $this->sdk->createProxy($item);
-                                } elseif (is_array($item) && isset($item[$identifierAttrKey])) {
+                                } elseif (
+                                    is_array($item) &&
+                                    isset($item[$identifierAttrKey])
+                                ) {
                                     // not tested for now
                                     // /the $identifierAttrKey is not the real identifier, as it is
                                     // the main object identifier, but we do not have the metadada for now
                                     // the thing we assume now is that every entity "may" have the same key
                                     // as identifier
-                                    $key = $this->mapping->getKeyFromId($item[$identifierAttrKey]);
-                                    $subClassMetadata = $this->getClassMetadataFromId($item[$identifierAttrKey]);
-                                    $list[] = $this->deserialize($item, $subClassMetadata->getModelName());
+                                    $key = $this->mapping->getKeyFromId(
+                                        $item[$identifierAttrKey]
+                                    );
+                                    $subClassMetadata = $this->getClassMetadataFromId(
+                                        $item[$identifierAttrKey]
+                                    );
+                                    $list[] = $this->deserialize(
+                                        $item,
+                                        $subClassMetadata->getModelName()
+                                    );
                                 }
                             }
 
@@ -143,12 +162,14 @@ class Serializer
                         $value = new \DateTime($value);
                     }
 
-                    $instance->$setter($value);
+                    $instance->{$setter}($value);
                 }
             }
         }
 
-        $identifier = $instance->{$this->getClassMetadata($instance)->getIdGetter()}();
+        $identifier = $instance->{$this->getClassMetadata(
+            $instance
+        )->getIdGetter()}();
         if ($identifier) {
             $this->unitOfWork->registerClean($identifier, $instance);
         }
@@ -168,7 +189,9 @@ class Serializer
     private function resolveRealClassName(array $data, $className)
     {
         if (!empty($data['@id'])) {
-            $classMetadata = $this->mapping->tryGetClassMetadataById($data['@id']);
+            $classMetadata = $this->mapping->tryGetClassMetadataById(
+                $data['@id']
+            );
 
             if ($classMetadata) {
                 return $classMetadata->getModelName();
@@ -176,7 +199,6 @@ class Serializer
         }
 
         // Real class name could also be retrieved from @type property.
-
         return $className;
     }
 
@@ -190,8 +212,12 @@ class Serializer
      *
      * @return array|mixed
      */
-    private function recursiveSerialize($entity, $modelName, $level = 0, $context = [])
-    {
+    private function recursiveSerialize(
+        $entity,
+        $modelName,
+        $level = 0,
+        $context = []
+    ) {
         $classMetadata = $this->mapping->getClassMetadata($modelName);
 
         if ($level > 0 && empty($context['serializeRelation'])) {
@@ -210,14 +236,21 @@ class Serializer
             foreach ($attributeList as $attribute) {
                 $method = 'get' . ucfirst($attribute->getAttributeName());
 
-                if ($attribute->isIdentifier() && !$entity->$method()) {
+                if ($attribute->isIdentifier() && !$entity->{$method}()) {
                     continue;
                 }
-                $relation = $classMetadata->getRelation($attribute->getSerializedKey());
+                $relation = $classMetadata->getRelation(
+                    $attribute->getSerializedKey()
+                );
 
-                $data = $entity->$method();
+                $data = $entity->{$method}();
 
-                if (null === $data && $relation && $relation->isManyToOne() && $level > 0) {
+                if (
+                    null === $data &&
+                    $relation &&
+                    $relation->isManyToOne() &&
+                    $level > 0
+                ) {
                     /*
                         We only serialize the root many-to-one relations to prevent, hopefully,
                         unlinked and/or duplicated content. For instance, a cart with cartItemList containing
@@ -233,17 +266,23 @@ class Serializer
                         $data,
                         PhoneNumberFormat::INTERNATIONAL
                     );
-                } elseif (is_object($data)
-                    && $relation
-                    && $this->mapping->hasClassMetadata($relation->getTargetEntity())
+                } elseif (
+                    is_object($data) &&
+                    $relation &&
+                    $this->mapping->hasClassMetadata(
+                        $relation->getTargetEntity()
+                    )
                 ) {
-                    $idAttribute = $this->mapping
-                        ->getClassMetadata($relation->getTargetEntity())
+                    $idAttribute = $this->mapping->getClassMetadata(
+                        $relation->getTargetEntity()
+                    )
                         ->getIdentifierAttribute()
                         ->getAttributeName();
                     $idGetter = 'get' . ucfirst($idAttribute);
 
-                    if (method_exists($data, $idGetter) && $data->{$idGetter}()) {
+                    if (
+                        method_exists($data, $idGetter) && $data->{$idGetter}()
+                    ) {
                         $data = $data->{$idGetter}();
                     } elseif ($relation->isManyToOne()) {
                         if ($level > 0) {
@@ -257,12 +296,19 @@ class Serializer
                     foreach ($data as $key => $item) {
                         if ($item instanceof \DateTime) {
                             $newData[$key] = $item->format('c');
-                        } elseif (is_object($item) &&
+                        } elseif (
+                            is_object($item) &&
                             $relation &&
-                            $this->mapping->hasClassMetadata($relation->getTargetEntity())
+                            $this->mapping->hasClassMetadata(
+                                $relation->getTargetEntity()
+                            )
                         ) {
-                            $serializeRelation = !empty($context['serializeRelations'])
-                                && in_array($relation->getSerializedKey(), $context['serializeRelations']);
+                            $serializeRelation =
+                                !empty($context['serializeRelations']) &&
+                                in_array(
+                                    $relation->getSerializedKey(),
+                                    $context['serializeRelations']
+                                );
 
                             $newData[$key] = $this->recursiveSerialize(
                                 $item,
@@ -303,7 +349,6 @@ class Serializer
 
     private function getClassMetadata($entity)
     {
-        return $this->mapping
-            ->getClassMetadata(get_class($entity));
+        return $this->mapping->getClassMetadata(get_class($entity));
     }
 }

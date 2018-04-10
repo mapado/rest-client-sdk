@@ -74,8 +74,12 @@ class SdkClient
      * @param Mapping         $mapping
      * @param Serializer|null $serializer
      */
-    public function __construct(RestClient $restClient, Mapping $mapping, UnitOfWork $unitOfWork, Serializer $serializer = null)
-    {
+    public function __construct(
+        RestClient $restClient,
+        Mapping $mapping,
+        UnitOfWork $unitOfWork,
+        Serializer $serializer = null
+    ) {
         $this->restClient = $restClient;
         $this->mapping = $mapping;
         $this->unitOfWork = $unitOfWork;
@@ -95,8 +99,10 @@ class SdkClient
      *
      * @return SdkClient
      */
-    public function setCacheItemPool(CacheItemPoolInterface $cacheItemPool, $cachePrefix = '')
-    {
+    public function setCacheItemPool(
+        CacheItemPoolInterface $cacheItemPool,
+        $cachePrefix = ''
+    ) {
         $this->cacheItemPool = $cacheItemPool;
         $this->cachePrefix = $cachePrefix;
 
@@ -142,8 +148,15 @@ class SdkClient
         $modelName = $metadata->getModelName();
 
         if (!isset($this->repositoryList[$modelName])) {
-            $repositoryName = $metadata->getRepositoryName() ?: '\Mapado\RestClientSdk\EntityRepository';
-            $this->repositoryList[$modelName] = new $repositoryName($this, $this->restClient, $this->unitOfWork, $modelName);
+            $repositoryName =
+                $metadata->getRepositoryName()
+                ?: '\Mapado\RestClientSdk\EntityRepository';
+            $this->repositoryList[$modelName] = new $repositoryName(
+                $this,
+                $this->restClient,
+                $this->unitOfWork,
+                $modelName
+            );
         }
 
         return $this->repositoryList[$modelName];
@@ -219,28 +232,31 @@ class SdkClient
             array $parameters,
             &$initializer,
             array $properties
-        ) use (
-            $sdk,
-            $classMetadata,
-            $id,
-            $proxyModelName
-        ) {
-            $isAllowedMethod = 'jsonSerialize' === $method
-                || '__set' === $method;
+        ) use ($sdk, $classMetadata, $id, $proxyModelName) {
+            $isAllowedMethod =
+                'jsonSerialize' === $method || '__set' === $method;
 
             if (!$isAllowedMethod) {
                 $initializer = null; // disable initialization
                 // load data and modify the object here
                 if ($id) {
-                    $repository = $sdk->getRepository($classMetadata->getModelName());
+                    $repository = $sdk->getRepository(
+                        $classMetadata->getModelName()
+                    );
                     $model = $repository->find($id);
 
                     $attributeList = $classMetadata->getAttributeList();
 
                     foreach ($attributeList as $attribute) {
-                        $getter = 'get' . ucfirst($attribute->getAttributeName());
-                        $value = $model->$getter();
-                        $properties['\0' . $proxyModelName . '\0' . $attribute->getAttributeName()] = $value;
+                        $getter =
+                            'get' . ucfirst($attribute->getAttributeName());
+                        $value = $model->{$getter}();
+                        $properties[
+                            '\0' .
+                            $proxyModelName .
+                            '\0' .
+                            $attribute->getAttributeName()
+                        ] = $value;
                     }
                 }
 
@@ -249,13 +265,9 @@ class SdkClient
         };
 
         // initialize the proxy instance
-        $instance = $factory->createProxy(
-            $modelName,
-            $initializer,
-            [
-                'skippedProperties' => [$proxyModelName . '\0id'],
-            ]
-        );
+        $instance = $factory->createProxy($modelName, $initializer, [
+            'skippedProperties' => [$proxyModelName . '\0id'],
+        ]);
 
         // set the id of the object
         $idReflexion = new \ReflectionProperty(

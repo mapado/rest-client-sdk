@@ -45,9 +45,16 @@ class UnitOfWork
      *
      * @return array
      */
-    public function getDirtyData(array $newSerializedModel, array $oldSerializedModel, ClassMetadata $classMetadata)
-    {
-        return $this->getDirtyFields($newSerializedModel, $oldSerializedModel, $classMetadata);
+    public function getDirtyData(
+        array $newSerializedModel,
+        array $oldSerializedModel,
+        ClassMetadata $classMetadata
+    ) {
+        return $this->getDirtyFields(
+            $newSerializedModel,
+            $oldSerializedModel,
+            $classMetadata
+        );
     }
 
     /**
@@ -109,8 +116,11 @@ class UnitOfWork
      *
      * @return array
      */
-    private function getDirtyFields(array $newSerializedModel, array $oldSerializedModel, ClassMetadata $classMetadata)
-    {
+    private function getDirtyFields(
+        array $newSerializedModel,
+        array $oldSerializedModel,
+        ClassMetadata $classMetadata
+    ) {
         $dirtyFields = [];
 
         foreach ($newSerializedModel as $key => $value) {
@@ -122,30 +132,44 @@ class UnitOfWork
 
             $oldValue = $oldSerializedModel[$key];
 
-            $currentRelation = $classMetadata ? $classMetadata->getRelation($key) : null;
+            $currentRelation = $classMetadata
+                ? $classMetadata->getRelation($key)
+                : null;
 
             if (!$currentRelation) {
-                if (is_array($value) && !ArrayHelper::arraySame($value, $oldValue ?: [])
-                    || $value !== $oldValue
+                if (
+                    is_array($value) &&
+                    !ArrayHelper::arraySame($value, $oldValue ?: []) ||
+                    $value !== $oldValue
                 ) {
                     $dirtyFields[$key] = $value;
                 }
                 continue;
             }
 
-            $currentClassMetadata = $this->mapping->getClassMetadata($currentRelation->getTargetEntity());
+            $currentClassMetadata = $this->mapping->getClassMetadata(
+                $currentRelation->getTargetEntity()
+            );
 
-            $idSerializedKey = $currentClassMetadata ? $currentClassMetadata->getIdSerializeKey() : null;
+            $idSerializedKey = $currentClassMetadata
+                ? $currentClassMetadata->getIdSerializeKey()
+                : null;
 
             if (Relation::MANY_TO_ONE === $currentRelation->getType()) {
                 if ($value !== $oldValue) {
                     if (is_string($value) || is_string($oldValue)) {
                         $dirtyFields[$key] = $value;
                     } else {
-                        $recursiveDiff = $this->getDirtyFields($value, $oldValue, $currentClassMetadata);
+                        $recursiveDiff = $this->getDirtyFields(
+                            $value,
+                            $oldValue,
+                            $currentClassMetadata
+                        );
 
                         if (!empty($recursiveDiff)) {
-                            $recursiveDiff[$idSerializedKey] = self::getEntityId($value, $idSerializedKey);
+                            $recursiveDiff[
+                                $idSerializedKey
+                            ] = self::getEntityId($value, $idSerializedKey);
                             $dirtyFields[$key] = $recursiveDiff;
                         }
                     }
@@ -155,30 +179,51 @@ class UnitOfWork
             }
 
             // ONE_TO_MANY relation
-
             if (count($value ?? []) !== count($oldValue ?? [])) {
                 // get all objects ids of new array
-                $dirtyFields[$key] = $this->addIdentifiers($value, [], $idSerializedKey);
+                $dirtyFields[$key] = $this->addIdentifiers(
+                    $value,
+                    [],
+                    $idSerializedKey
+                );
             }
 
             if (!empty($value)) {
                 foreach ($value as $relationKey => $relationValue) {
-                    $oldRelationValue = $this->findOldRelation($relationValue, $oldValue, $currentClassMetadata);
+                    $oldRelationValue = $this->findOldRelation(
+                        $relationValue,
+                        $oldValue,
+                        $currentClassMetadata
+                    );
 
                     if ($relationValue !== $oldRelationValue) {
-                        if (is_string($relationValue) || is_string($oldRelationValue)) {
+                        if (
+                            is_string($relationValue) ||
+                            is_string($oldRelationValue)
+                        ) {
                             $dirtyFields[$key][$relationKey] = $relationValue;
                         } else {
-                            $recursiveDiff = $this->getDirtyFields($relationValue, $oldRelationValue, $currentClassMetadata);
+                            $recursiveDiff = $this->getDirtyFields(
+                                $relationValue,
+                                $oldRelationValue,
+                                $currentClassMetadata
+                            );
 
                             if (!empty($recursiveDiff)) {
                                 $idSerializedKey = $currentClassMetadata->getIdSerializeKey();
 
-                                $entityId = self::getEntityId($relationValue, $idSerializedKey);
+                                $entityId = self::getEntityId(
+                                    $relationValue,
+                                    $idSerializedKey
+                                );
                                 if (null !== $entityId) {
-                                    $recursiveDiff[$idSerializedKey] = $entityId;
+                                    $recursiveDiff[
+                                        $idSerializedKey
+                                    ] = $entityId;
                                 }
-                                $dirtyFields[$key][$relationKey] = $recursiveDiff;
+                                $dirtyFields[$key][
+                                    $relationKey
+                                ] = $recursiveDiff;
                             }
                         }
                     }
@@ -199,8 +244,11 @@ class UnitOfWork
      *
      * @return array
      */
-    private function addIdentifiers($newSerializedModel, $dirtyFields, $idSerializedKey = null)
-    {
+    private function addIdentifiers(
+        $newSerializedModel,
+        $dirtyFields,
+        $idSerializedKey = null
+    ) {
         foreach ($newSerializedModel as $key => $value) {
             if ($idSerializedKey && isset($value[$idSerializedKey])) {
                 $dirtyFields[$key][$idSerializedKey] = $value[$idSerializedKey];
@@ -212,14 +260,20 @@ class UnitOfWork
         return $dirtyFields;
     }
 
-    private function findOldRelation($relationValue, array $oldValue, ClassMetadata $classMetadata)
-    {
+    private function findOldRelation(
+        $relationValue,
+        array $oldValue,
+        ClassMetadata $classMetadata
+    ) {
         $idSerializedKey = $classMetadata->getIdSerializeKey();
 
         $relationValueId = self::getEntityId($relationValue, $idSerializedKey);
 
         foreach ($oldValue as $oldRelationValue) {
-            $oldRelationValueId = self::getEntityId($oldRelationValue, $idSerializedKey);
+            $oldRelationValueId = self::getEntityId(
+                $oldRelationValue,
+                $idSerializedKey
+            );
 
             if ($relationValueId === $oldRelationValueId) {
                 return $oldRelationValue;
@@ -241,7 +295,6 @@ class UnitOfWork
             return $stringOrEntity;
         }
 
-        return $stringOrEntity[$idSerializedKey]
-            ?? null;
+        return $stringOrEntity[$idSerializedKey] ?? null;
     }
 }
