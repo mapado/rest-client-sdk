@@ -7,16 +7,5 @@
   },
   "scripts": {
     "precommit": "lint-staged"
-  },
-  "lint-staged": {
-    "src/**/*.php": [
-      "yarn run prettier --write",
-      "vendor/bin/php-cs-fixer fix --config=.php_cs",
-      "git add"
-    ],
-    "Tests/**/*.php": [
-      "vendor/bin/php-cs-fixer fix --config=.php_cs",
-      "git add"
-    ]
   }
 }
