@@ -1,0 +1,15 @@
+{
+  "dependencies": {
+    "husky": "^0.14.3",
+    "lint-staged": "^7.0.4"
+  },
+  "scripts": {
+    "precommit": "lint-staged"
+  },
+  "lint-staged": {
+    "*.php": [
+      "bin/php-cs-fixer fix --config=.php_cs",
+      "git add"
+    ]
+  }
+}
