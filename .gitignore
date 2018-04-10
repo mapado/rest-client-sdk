@@ -13,3 +13,6 @@ nbproject
 # composer.lock
 
 clover.xml
+
+node_modules/
+.php_cs.cache
