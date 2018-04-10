@@ -85,8 +85,7 @@ class ModelHydrator
      */
     public function hydrateList($data, $modelName)
     {
-        $collectionKey = $this->sdk->getMapping()
-            ->getConfig()['collectionKey'];
+        $collectionKey = $this->sdk->getMapping()->getConfig()['collectionKey'];
 
         if (is_array($data) && ArrayHelper::arrayHas($data, $collectionKey)) {
             return $this->deserializeAll($data, $modelName);
@@ -105,15 +104,11 @@ class ModelHydrator
      */
     private function deserializeAll($data, $modelName)
     {
-        $collectionKey = $this->sdk->getMapping()
-            ->getConfig()['collectionKey'];
+        $collectionKey = $this->sdk->getMapping()->getConfig()['collectionKey'];
 
-        $itemList = array_map(
-            function ($member) use ($modelName) {
-                return $this->deserialize($member, $modelName);
-            },
-            ArrayHelper::arrayGet($data, $collectionKey)
-        );
+        $itemList = array_map(function ($member) use ($modelName) {
+            return $this->deserialize($member, $modelName);
+        }, ArrayHelper::arrayGet($data, $collectionKey));
 
         $extraProperties = array_filter(
             $data,
@@ -159,7 +154,8 @@ class ModelHydrator
     private function guessCollectionClassname($data)
     {
         switch (true) {
-            case !empty($data['@type']) && 'hydra:PagedCollection' === $data['@type']:
+            case !empty($data['@type']) &&
+            'hydra:PagedCollection' === $data['@type']:
                 return HydraPaginatedCollection::class;
 
             case array_key_exists('_embedded', $data):

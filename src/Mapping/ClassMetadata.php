@@ -122,7 +122,9 @@ class ClassMetadata
      */
     public function getAttribute($name)
     {
-        return isset($this->attributeList[$name]) ? $this->attributeList[$name] : null;
+        return isset($this->attributeList[$name])
+            ? $this->attributeList[$name]
+            : null;
     }
 
     /**
@@ -240,8 +242,7 @@ class ClassMetadata
     public function getIdSerializeKey()
     {
         if ($this->getIdentifierAttribute()) {
-            $idAttr = $this->getIdentifierAttribute()
-                ->getSerializedKey();
+            $idAttr = $this->getIdentifierAttribute()->getSerializedKey();
 
             return $idAttr;
         } else {
@@ -279,8 +280,7 @@ class ClassMetadata
     private function getIdKey()
     {
         if ($this->getIdentifierAttribute()) {
-            $idAttr = $this->getIdentifierAttribute()
-                ->getAttributeName();
+            $idAttr = $this->getIdentifierAttribute()->getAttributeName();
 
             return $idAttr;
         } else {

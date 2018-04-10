@@ -12,9 +12,7 @@ use Mapado\RestClientSdk\Mapping\ClassMetadata;
  */
 class Mapping
 {
-    public const DEFAULT_CONFIG = [
-        'collectionKey' => 'hydra:member',
-    ];
+    public const DEFAULT_CONFIG = ['collectionKey' => 'hydra:member'];
 
     /**
      * @var string
@@ -79,10 +77,7 @@ class Mapping
      */
     public function setConfig(array $config)
     {
-        $this->config = array_merge(
-            self::DEFAULT_CONFIG,
-            $config
-        );
+        $this->config = array_merge(self::DEFAULT_CONFIG, $config);
 
         return $this;
     }
@@ -122,12 +117,9 @@ class Mapping
      */
     public function getMappingKeys()
     {
-        return array_map(
-            function (ClassMetadata $classMetadata) {
-                return $classMetadata->getKey();
-            },
-            $this->classMetadataList
-        );
+        return array_map(function (ClassMetadata $classMetadata) {
+            return $classMetadata->getKey();
+        }, $this->classMetadataList);
     }
 
     /**
@@ -162,7 +154,9 @@ class Mapping
             }
         }
 
-        throw new MappingException('Model name ' . $modelName . ' not found in mapping');
+        throw new MappingException(
+            'Model name ' . $modelName . ' not found in mapping'
+        );
     }
 
     /**
@@ -273,8 +267,10 @@ class Mapping
 
         if (!empty($subKey)) {
             $methodName = 'get' . ucfirst($subKey);
-            if (!$metadata->$methodName()) {
-                throw new MappingException($key . ' key is mapped but no ' . $subKey . ' found');
+            if (!$metadata->{$methodName}()) {
+                throw new MappingException(
+                    $key . ' key is mapped but no ' . $subKey . ' found'
+                );
             }
         }
     }
@@ -288,7 +284,10 @@ class Mapping
      */
     private function removePrefix($value)
     {
-        if (($this->idPrefixLength > 0) && (0 === strpos($value, $this->idPrefix))) {
+        if (
+            ($this->idPrefixLength > 0) &&
+            (0 === strpos($value, $this->idPrefix))
+        ) {
             return substr($value, $this->idPrefixLength);
         }
 

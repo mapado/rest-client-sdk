@@ -32,8 +32,10 @@ class Collection implements \IteratorAggregate, \Serializable, \Countable, \Arra
      * @param array $elements the data elements as an array
      * @param array $extraProperties the extra properties
      */
-    public function __construct(array $elements = [], array $extraProperties = [])
-    {
+    public function __construct(
+        array $elements = [],
+        array $extraProperties = []
+    ) {
         $this->elements = $elements;
         $this->extraProperties = $extraProperties;
     }
@@ -115,7 +117,9 @@ class Collection implements \IteratorAggregate, \Serializable, \Countable, \Arra
      */
     public function offsetGet($offset)
     {
-        return isset($this->elements[$offset]) ? $this->elements[$offset] : null;
+        return isset($this->elements[$offset])
+            ? $this->elements[$offset]
+            : null;
     }
 
     /**

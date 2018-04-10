@@ -47,8 +47,12 @@ class EntityRepository
      * @param RestClient $restClient The client to process the http requests
      * @param string     $entityName The entity to work with
      */
-    public function __construct(SdkClient $sdkClient, RestClient $restClient, UnitOfWork $unitOfWork, $entityName)
-    {
+    public function __construct(
+        SdkClient $sdkClient,
+        RestClient $restClient,
+        UnitOfWork $unitOfWork,
+        $entityName
+    ) {
         $this->sdk = $sdkClient;
         $this->restClient = $restClient;
         $this->unitOfWork = $unitOfWork;
@@ -78,13 +82,17 @@ class EntityRepository
 
             default:
                 throw new \BadMethodCallException(
-                    'Undefined method \'' . $method . '\'. The method name must start with
+                    'Undefined method \'' .
+                    $method .
+                    '\'. The method name must start with
                     either findBy or findOneBy!'
                 );
         }
 
         if (empty($arguments)) {
-            throw new SdkException('You need to pass a parameter to ' . $method);
+            throw new SdkException(
+                'You need to pass a parameter to ' . $method
+            );
         }
 
         $mapping = $this->sdk->getMapping();
@@ -97,7 +105,8 @@ class EntityRepository
         } else {
             $queryParams = current($arguments);
         }
-        $path .= '?' . http_build_query($this->convertQueryParameters($queryParams));
+        $path .=
+            '?' . http_build_query($this->convertQueryParameters($queryParams));
 
         // if entityList is found in cache, return it
         $entityListFromCache = $this->fetchFromCache($path);
@@ -230,16 +239,31 @@ class EntityRepository
      *
      * @return object
      */
-    public function update($model, $serializationContext = [], $queryParams = [])
-    {
+    public function update(
+        $model,
+        $serializationContext = [],
+        $queryParams = []
+    ) {
         $identifier = $model->{$this->getClassMetadata()->getIdGetter()}();
         $serializer = $this->sdk->getSerializer();
-        $newSerializedModel = $serializer->serialize($model, $this->entityName, $serializationContext);
+        $newSerializedModel = $serializer->serialize(
+            $model,
+            $this->entityName,
+            $serializationContext
+        );
 
         $oldModel = $this->unitOfWork->getDirtyEntity($identifier);
         if ($oldModel) {
-            $oldSerializedModel = $serializer->serialize($oldModel, $this->entityName, $serializationContext);
-            $newSerializedModel = $this->unitOfWork->getDirtyData($newSerializedModel, $oldSerializedModel, $this->getClassMetadata());
+            $oldSerializedModel = $serializer->serialize(
+                $oldModel,
+                $this->entityName,
+                $serializationContext
+            );
+            $newSerializedModel = $this->unitOfWork->getDirtyData(
+                $newSerializedModel,
+                $oldSerializedModel,
+                $this->getClassMetadata()
+            );
         }
 
         $data = $this->restClient->put(
@@ -262,8 +286,11 @@ class EntityRepository
      *
      * @return object
      */
-    public function persist($model, $serializationContext = [], $queryParams = [])
-    {
+    public function persist(
+        $model,
+        $serializationContext = [],
+        $queryParams = []
+    ) {
         $mapping = $this->sdk->getMapping();
         $prefix = $mapping->getIdPrefix();
         $key = $mapping->getKeyFromModel($this->entityName);
@@ -271,11 +298,17 @@ class EntityRepository
         $path = empty($prefix) ? '/' . $key : $prefix . '/' . $key;
 
         $oldSerializedModel = $this->getClassMetadata()->getDefaultSerializedModel();
-        $newSerializedModel = $this->sdk->getSerializer()
-            ->serialize($model, $this->entityName, $serializationContext);
+        $newSerializedModel = $this->sdk->getSerializer()->serialize(
+            $model,
+            $this->entityName,
+            $serializationContext
+        );
 
-        $diff = $this->unitOfWork
-            ->getDirtyData($newSerializedModel, $oldSerializedModel, $this->getClassMetadata());
+        $diff = $this->unitOfWork->getDirtyData(
+            $newSerializedModel,
+            $oldSerializedModel,
+            $this->getClassMetadata()
+        );
 
         $data = $this->restClient->post(
             $this->addQueryParameter($path, $queryParams),
@@ -381,31 +414,30 @@ class EntityRepository
     {
         $mapping = $this->sdk->getMapping();
 
-        return array_map(
-            function ($item) use ($mapping) {
-                if (is_object($item)) {
-                    $classname = get_class($item);
+        return array_map(function ($item) use ($mapping) {
+            if (is_object($item)) {
+                $classname = get_class($item);
 
-                    if ($mapping->hasClassMetadata($classname)) {
-                        $idAttr = $mapping->getClassMetadata($classname)
-                            ->getIdentifierAttribute();
+                if ($mapping->hasClassMetadata($classname)) {
+                    $idAttr = $mapping->getClassMetadata(
+                        $classname
+                    )->getIdentifierAttribute();
 
-                        if ($idAttr) {
-                            $idGetter = 'get' . ucfirst($idAttr->getAttributeName());
+                    if ($idAttr) {
+                        $idGetter =
+                            'get' . ucfirst($idAttr->getAttributeName());
 
-                            return $item->{$idGetter}();
-                        }
-                    }
-
-                    if (method_exists($item, 'getId')) {
-                        return call_user_func([$item, 'getId']);
+                        return $item->{$idGetter}();
                     }
                 }
 
-                return $item;
-            },
-            $queryParameters
-        );
+                if (method_exists($item, 'getId')) {
+                    return call_user_func([$item, 'getId']);
+                }
+            }
+
+            return $item;
+        }, $queryParameters);
     }
 
     /**
@@ -421,9 +453,9 @@ class EntityRepository
     private function getClassMetadata()
     {
         if (!isset($this->classMetadata)) {
-            $this->classMetadataCache = $this->sdk
-                ->getMapping()
-                ->getClassMetadata($this->entityName);
+            $this->classMetadataCache = $this->sdk->getMapping()->getClassMetadata(
+                $this->entityName
+            );
         }
 
         return $this->classMetadataCache;

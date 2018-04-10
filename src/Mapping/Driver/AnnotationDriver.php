@@ -66,7 +66,10 @@ class AnnotationDriver
 
         $iterator = new \RegexIterator(
             new \RecursiveIteratorIterator(
-                new \RecursiveDirectoryIterator($path, \FilesystemIterator::SKIP_DOTS),
+                new \RecursiveDirectoryIterator(
+                    $path,
+                    \FilesystemIterator::SKIP_DOTS
+                ),
                 \RecursiveIteratorIterator::LEAVES_ONLY
             ),
             '/^.+\.php$/i',
@@ -136,7 +139,10 @@ class AnnotationDriver
 
         $reflClass = new \ReflectionClass($classname);
         /** @var Annotations\Entity */
-        $classAnnotation = $reader->getClassAnnotation($reflClass, Annotations\Entity::class);
+        $classAnnotation = $reader->getClassAnnotation(
+            $reflClass,
+            Annotations\Entity::class
+        );
 
         if (!$classAnnotation) {
             return null;
@@ -147,7 +153,11 @@ class AnnotationDriver
         foreach ($reflClass->getProperties() as $property) {
             // manage attributes
             /** @var Annotations\Attribute */
-            $propertyAnnotation = $this->getPropertyAnnotation($reader, $property, 'Attribute');
+            $propertyAnnotation = $this->getPropertyAnnotation(
+                $reader,
+                $property,
+                'Attribute'
+            );
 
             if ($propertyAnnotation) {
                 $isId = $this->getPropertyAnnotation($reader, $property, 'Id');
@@ -161,18 +171,35 @@ class AnnotationDriver
             } else {
                 // manage relations
                 /** @var Annotations\OneToMany */
-                $relation = $this->getPropertyAnnotation($reader, $property, 'OneToMany');
+                $relation = $this->getPropertyAnnotation(
+                    $reader,
+                    $property,
+                    'OneToMany'
+                );
                 if (!$relation) {
                     /** @var Annotations\ManyToOne */
-                    $relation = $this->getPropertyAnnotation($reader, $property, 'ManyToOne');
+                    $relation = $this->getPropertyAnnotation(
+                        $reader,
+                        $property,
+                        'ManyToOne'
+                    );
                 }
 
                 if ($relation) {
-                    $attributeList[] = new Attribute($relation->name, $property->getName());
+                    $attributeList[] = new Attribute(
+                        $relation->name,
+                        $property->getName()
+                    );
 
                     $targetEntity = $relation->targetEntity;
                     if (false === strpos($targetEntity, '/')) {
-                        $targetEntity = substr($classname, 0, strrpos($classname, '\\') + 1) . $targetEntity;
+                        $targetEntity =
+                            substr(
+                                $classname,
+                                0,
+                                strrpos($classname, '\\') + 1
+                            ) .
+                            $targetEntity;
                     }
 
                     $relationList[] = new Relation(
