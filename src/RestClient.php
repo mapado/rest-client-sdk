@@ -12,6 +12,7 @@ use Symfony\Component\HttpFoundation\Request;
 
 /**
  * Class RestClient
+ *
  * @author Julien Deniau <julien.deniau@mapado.com>
  */
 class RestClient
@@ -20,7 +21,6 @@ class RestClient
      * httpClient
      *
      * @var ClientInterface
-     * @access private
      */
     private $httpClient;
 
@@ -28,15 +28,13 @@ class RestClient
      * baseUrl
      *
      * @var string
-     * @access private
      */
     private $baseUrl;
 
     /**
      * logHistory
      *
-     * @var boolean
-     * @access private
+     * @var bool
      */
     private $logHistory;
 
@@ -44,7 +42,6 @@ class RestClient
      * requestHistory
      *
      * @var array
-     * @access private
      */
     private $requestHistory;
 
@@ -52,7 +49,6 @@ class RestClient
      * currentRequest
      *
      * @var Request
-     * @access private
      */
     private $currentRequest;
 
@@ -62,9 +58,9 @@ class RestClient
      */
     public function __construct(ClientInterface $httpClient, $baseUrl = null)
     {
-        $this->httpClient     = $httpClient;
-        $this->baseUrl        = substr($baseUrl, -1) === '/' ? substr($baseUrl, 0, -1) : $baseUrl;
-        $this->logHistory     = false;
+        $this->httpClient = $httpClient;
+        $this->baseUrl = '/' === substr($baseUrl, -1) ? substr($baseUrl, 0, -1) : $baseUrl;
+        $this->logHistory = false;
         $this->requestHistory = [];
     }
 
@@ -80,7 +76,7 @@ class RestClient
      * setCurrentRequest
      *
      * @param Request $currentRequest
-     * @access public
+     *
      * @return RestClient
      */
     public function setCurrentRequest(Request $currentRequest)
@@ -93,8 +89,8 @@ class RestClient
     /**
      * setLogHistory
      *
-     * @param boolean $logHistory
-     * @access public
+     * @param bool $logHistory
+     *
      * @return RestClient
      */
     public function setLogHistory($logHistory)
@@ -117,7 +113,9 @@ class RestClient
      *
      * @param string $path
      * @param array  $parameters
+     *
      * @return array|ResponseInterface|null
+     *
      * @throws RestException
      */
     public function get($path, $parameters = [])
@@ -126,7 +124,7 @@ class RestClient
         try {
             return $this->executeRequest('GET', $requestUrl, $parameters);
         } catch (ClientException $e) {
-            if ($e->getResponse()->getStatusCode() === 404) {
+            if (404 === $e->getResponse()->getStatusCode()) {
                 return null;
             }
             throw new RestClientException('Error while getting resource', $path, [], 7, $e);
@@ -139,8 +137,7 @@ class RestClient
      * delete
      *
      * @param string $path
-     * @access public
-     * @return void
+     *
      * @throws RestException
      */
     public function delete($path)
@@ -158,7 +155,9 @@ class RestClient
      * @param string $path
      * @param mixed  $data
      * @param array  $parameters
+     *
      * @return array|ResponseInterface
+     *
      * @throws RestClientException
      * @throws RestException
      */
@@ -178,7 +177,9 @@ class RestClient
      * @param string $path
      * @param mixed  $data
      * @param array  $parameters
+     *
      * @return array|ResponseInterface
+     *
      * @throws RestClientException
      * @throws RestException
      */
@@ -199,7 +200,7 @@ class RestClient
      * Merge default parameters.
      *
      * @param array $parameters
-     * @access protected
+     *
      * @return array
      */
     protected function mergeDefaultParameters(array $parameters)
@@ -222,7 +223,6 @@ class RestClient
     /**
      * getCurrentRequest
      *
-     * @access private
      * @return Request
      */
     protected function getCurrentRequest()
@@ -240,8 +240,9 @@ class RestClient
      * @param string $method
      * @param string $url
      * @param array  $parameters
-     * @access private
+     *
      * @return ResponseInterface|array
+     *
      * @throws TransferException
      */
     private function executeRequest($method, $url, $parameters = [])
@@ -268,7 +269,7 @@ class RestClient
 
         if (isset($headers['Content-Type'])) {
             foreach ($jsonContentTypeList as $contentType) {
-                if (stripos($headers['Content-Type'][0], $contentType) !== false) {
+                if (false !== stripos($headers['Content-Type'][0], $contentType)) {
                     $requestIsJson = true;
                     break;
                 }
@@ -290,8 +291,6 @@ class RestClient
      * @param string                 $url
      * @param array                  $parameters
      * @param ResponseInterface|null $response
-     * @access private
-     * @return void
      */
     private function logRequest($startTime, $method, $url, $parameters, ResponseInterface $response = null)
     {
@@ -299,13 +298,13 @@ class RestClient
             $queryTime = microtime(true) - $startTime;
 
             $this->requestHistory[] = [
-                'method'       => $method,
-                'url'          => $url,
-                'parameters'   => $parameters,
-                'response'     => $response,
+                'method' => $method,
+                'url' => $url,
+                'parameters' => $parameters,
+                'response' => $response,
                 'responseBody' => $response ? json_decode($response->getBody(), true) : null,
-                'queryTime'    => $queryTime,
-                'backtrace'    => debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS),
+                'queryTime' => $queryTime,
+                'backtrace' => debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS),
             ];
         }
     }

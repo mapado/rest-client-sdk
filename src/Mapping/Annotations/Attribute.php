@@ -4,6 +4,7 @@ namespace Mapado\RestClientSdk\Mapping\Annotations;
 
 /**
  * Class Attribute
+ *
  * @author Julien Deniau <julien.deniau@mapado.com>
  *
  * @Annotation
@@ -15,7 +16,6 @@ final class Attribute
      * type
      *
      * @var string
-     * @access public
      *
      * @Required
      */
@@ -25,7 +25,6 @@ final class Attribute
      * name
      *
      * @var string
-     * @access public
      *
      * @Required
      */

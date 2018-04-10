@@ -4,6 +4,7 @@ namespace Mapado\RestClientSdk\Mapping\Annotations;
 
 /**
  * Class Relation
+ *
  * @author Julien Deniau <julien.deniau@mapado.com>
  */
 abstract class Relation
@@ -12,7 +13,6 @@ abstract class Relation
      * name
      *
      * @var string
-     * @access public
      *
      * @Required
      */
@@ -22,7 +22,6 @@ abstract class Relation
      * targetEntity
      *
      * @var string
-     * @access public
      *
      * @Required
      */

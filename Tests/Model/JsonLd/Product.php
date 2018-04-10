@@ -6,6 +6,7 @@ use Mapado\RestClientSdk\Mapping\Annotations as Rest;
 
 /**
  * Class Product
+ *
  * @author Julien Deniau <julien.deniau@mapado.com>
  *
  * @Rest\Entity(key="product", repository="Mapado\RestClientSdk\Test\Model\ModelRepository")
@@ -16,7 +17,6 @@ class Product
      * id
      *
      * @var int
-     * @access private
      *
      * @Rest\Id
      * @Rest\Attribute(name="id", type="integer")
@@ -27,7 +27,6 @@ class Product
      * value
      *
      * @var string
-     * @access private
      *
      * @Rest\Attribute(name="product_value", type="string")
      */
@@ -37,7 +36,6 @@ class Product
      * currency
      *
      * @var string
-     * @access private
      *
      * @Rest\Attribute(name="currency", type="string")
      */
@@ -57,11 +55,13 @@ class Product
      * Setter for id
      *
      * @param int $id
+     *
      * @return Product
      */
     public function setId($id)
     {
         $this->id = $id;
+
         return $this;
     }
 
@@ -79,11 +79,13 @@ class Product
      * Setter for value
      *
      * @param string $value
+     *
      * @return Product
      */
     public function setValue($value)
     {
         $this->value = $value;
+
         return $this;
     }
 
@@ -101,11 +103,13 @@ class Product
      * Setter for currency
      *
      * @param string $currency
+     *
      * @return Product
      */
     public function setCurrency($currency)
     {
         $this->currency = $currency;
+
         return $this;
     }
 }

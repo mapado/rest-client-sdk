@@ -16,6 +16,7 @@ class ArrayHelper
      * @param  array   $array
      * @param  ?string  $key
      * @param  mixed   $default
+     *
      * @return mixed
      */
     public static function arrayGet($array, $key, $default = null)
@@ -34,6 +35,7 @@ class ArrayHelper
             }
             $array = $array[$segment];
         }
+
         return $array;
     }
 
@@ -42,6 +44,7 @@ class ArrayHelper
      *
      * @param  array   $array
      * @param  ?string  $key
+     *
      * @return bool
      */
     public static function arrayHas($array, $key)
@@ -70,6 +73,7 @@ class ArrayHelper
      *
      * @param  array   $array
      * @param  string  $prepend
+     *
      * @return array
      */
     public static function arrayDot($array, $prepend = '')
@@ -96,11 +100,11 @@ class ArrayHelper
         return empty(static::arrayDiffAssocRecursive($array1, $array2));
     }
 
-
     /**
      * Return the default value of the given value.
      *
      * @param  mixed  $value
+     *
      * @return mixed
      */
     public static function value($value)

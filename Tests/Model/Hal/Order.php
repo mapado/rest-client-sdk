@@ -4,6 +4,7 @@ namespace Mapado\RestClientSdk\Tests\Model\Hal;
 
 /**
  * Class Order
+ *
  * @author Julien Deniau <julien.deniau@mapado.com>
  */
 class Order
@@ -27,6 +28,7 @@ class Order
      * Setter for id
      *
      * @param string $id
+     *
      * @return Order
      */
     public function setId($id)
@@ -50,6 +52,7 @@ class Order
      * Setter for total
      *
      * @param float $total
+     *
      * @return Order
      */
     public function setTotal($total)
@@ -73,6 +76,7 @@ class Order
      * Setter for currency
      *
      * @param string $currency
+     *
      * @return Order
      */
     public function setCurrency($currency)
@@ -96,6 +100,7 @@ class Order
      * Setter for status
      *
      * @param string $status
+     *
      * @return Order
      */
     public function setStatus($status)

@@ -7,11 +7,12 @@ use Mapado\RestClientSdk\Mapping\ClassMetadata;
 
 /**
  * Class Mapping
+ *
  * @author Julien Deniau <julien.deniau@mapado.com>
  */
 class Mapping
 {
-    const DEFAULT_CONFIG = [
+    public const DEFAULT_CONFIG = [
         'collectionKey' => 'hydra:member',
     ];
 
@@ -34,7 +35,6 @@ class Mapping
      * config
      *
      * @var array
-     * @access private
      */
     private $config;
 
@@ -42,7 +42,6 @@ class Mapping
      * Constructor.
      *
      * @param string $idPrefix
-     * @access public
      */
     public function __construct($idPrefix = '', $config = [])
     {
@@ -54,7 +53,6 @@ class Mapping
     /**
      * getIdPrefix
      *
-     * @access public
      * @return string
      */
     public function getIdPrefix()
@@ -76,6 +74,7 @@ class Mapping
      * Setter for config
      *
      * @param array $config
+     *
      * @return Mapping
      */
     public function setConfig(array $config)
@@ -92,7 +91,7 @@ class Mapping
      * setMapping
      *
      * @param ClassMetadata[] $classMetadataList
-     * @access public
+     *
      * @return Mapping
      */
     public function setMapping(array $classMetadataList)
@@ -106,7 +105,7 @@ class Mapping
      * return a model class name for a given key
      *
      * @param string $key
-     * @access public
+     *
      * @return string
      */
     public function getModelName($key)
@@ -119,7 +118,6 @@ class Mapping
     /**
      * return the list of mapping keys
      *
-     * @access public
      * @return string[]
      */
     public function getMappingKeys()
@@ -136,7 +134,7 @@ class Mapping
      * get the key from an id (path)
      *
      * @param string $id
-     * @access public
+     *
      * @return string
      */
     public function getKeyFromId($id)
@@ -148,28 +146,12 @@ class Mapping
     }
 
     /**
-     * Parse the key from an id (path)
-     *
-     * @param string $id
-     * @access private
-     * @return string|null
-     */
-    private function parseKeyFromId($id)
-    {
-        $id = $this->removePrefix($id);
-
-        $matches = [];
-        if (1 === preg_match('|/([^/]+)/[^/]+$|', $id, $matches)) {
-            return $matches[1];
-        }
-    }
-
-    /**
      * getKeyFromModel
      *
      * @param string $modelName model name
-     * @access public
+     *
      * @return string
+     *
      * @throws MappingException
      */
     public function getKeyFromModel($modelName)
@@ -187,8 +169,9 @@ class Mapping
      * getClassMetadata for model name
      *
      * @param string $modelName
-     * @access public
+     *
      * @return ClassMetadata
+     *
      * @throws MappingException
      */
     public function getClassMetadata($modelName)
@@ -206,7 +189,7 @@ class Mapping
      * getClassMetadata for id
      *
      * @param string $id
-     * @access public
+     *
      * @return ClassMetadata|null
      */
     public function tryGetClassMetadataById($id)
@@ -224,8 +207,8 @@ class Mapping
      * hasClassMetadata
      *
      * @param string $modelName
-     * @access public
-     * @return boolean
+     *
+     * @return bool
      */
     public function hasClassMetadata($modelName)
     {
@@ -242,7 +225,7 @@ class Mapping
      * getMappingByKey
      *
      * @param string $key
-     * @access public
+     *
      * @return ClassMetadata|null
      */
     public function getClassMetadataByKey($key)
@@ -255,12 +238,27 @@ class Mapping
     }
 
     /**
+     * Parse the key from an id (path)
+     *
+     * @param string $id
+     *
+     * @return string|null
+     */
+    private function parseKeyFromId($id)
+    {
+        $id = $this->removePrefix($id);
+
+        $matches = [];
+        if (1 === preg_match('|/([^/]+)/[^/]+$|', $id, $matches)) {
+            return $matches[1];
+        }
+    }
+
+    /**
      * checkMappingExistence
      *
      * @param string $key
      * @param string|null $subKey
-     * @access private
-     * @return void
      */
     private function checkMappingExistence($key, $subKey = null)
     {
@@ -285,7 +283,7 @@ class Mapping
      * removePrefix
      *
      * @param mixed $value
-     * @access private
+     *
      * @return string
      */
     private function removePrefix($value)

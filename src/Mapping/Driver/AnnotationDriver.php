@@ -14,6 +14,7 @@ use Mapado\RestClientSdk\Mapping\Relation;
 
 /**
  * Class AnnotationDriver
+ *
  * @author Julien Deniau <julien.deniau@mapado.com>
  */
 class AnnotationDriver
@@ -22,7 +23,6 @@ class AnnotationDriver
      * cachePath
      *
      * @var string
-     * @access private
      */
     private $cachePath;
 
@@ -30,7 +30,6 @@ class AnnotationDriver
      * debug
      *
      * @var bool
-     * @access private
      */
     private $debug;
 
@@ -39,7 +38,6 @@ class AnnotationDriver
      *
      * @param string $cachePath
      * @param bool   $debug
-     * @access public
      */
     public function __construct($cachePath, $debug = false)
     {
@@ -55,8 +53,9 @@ class AnnotationDriver
      * loadDirectory
      *
      * @param string $path
-     * @access public
+     *
      * @return ClassMetadata[]
+     *
      * @throws MappingException
      */
     public function loadDirectory($path)
@@ -79,7 +78,7 @@ class AnnotationDriver
 
         foreach ($iterator as $file) {
             $sourceFile = $file[0];
-            if (! preg_match('(^phar:)i', $sourceFile)) {
+            if (!preg_match('(^phar:)i', $sourceFile)) {
                 $sourceFile = realpath($sourceFile);
             }
 
@@ -110,21 +109,21 @@ class AnnotationDriver
      * loadClassname
      *
      * @param string $classname
-     * @access public
+     *
      * @return ClassMetadata[]
      */
     public function loadClassname($classname)
     {
         $metadata = $this->getClassMetadataForClassname($classname);
 
-        return $metadata ? [$metadata,] : [];
+        return $metadata ? [$metadata] : [];
     }
 
     /**
      * getClassMetadataForClassname
      *
      * @param string $classname
-     * @access private
+     *
      * @return ClassMetadata|null
      */
     private function getClassMetadataForClassname($classname)
@@ -172,7 +171,7 @@ class AnnotationDriver
                     $attributeList[] = new Attribute($relation->name, $property->getName());
 
                     $targetEntity = $relation->targetEntity;
-                    if (strpos($targetEntity, '/') === false) {
+                    if (false === strpos($targetEntity, '/')) {
                         $targetEntity = substr($classname, 0, strrpos($classname, '\\') + 1) . $targetEntity;
                     }
 
@@ -202,7 +201,7 @@ class AnnotationDriver
      * @param Reader              $reader
      * @param \ReflectionProperty $property
      * @param string              $classname
-     * @access private
+     *
      * @return null|object
      */
     private function getPropertyAnnotation(

@@ -4,6 +4,7 @@ namespace Mapado\RestClientSdk\Mapping;
 
 /**
  * Class ClassMetadata
+ *
  * @author Julien Deniau <julien.deniau@mapado.com>
  */
 class ClassMetadata
@@ -12,7 +13,6 @@ class ClassMetadata
      * Model name (entity class with full namespace, ie: "Foo\Entity\Article").
      *
      * @var string
-     * @access private
      */
     private $modelName;
 
@@ -20,7 +20,6 @@ class ClassMetadata
      * Model key, used as path prefix for API calls.
      *
      * @var string
-     * @access private
      */
     private $key;
 
@@ -28,7 +27,6 @@ class ClassMetadata
      * Repository name (repository class with full namespace, ie: "Foo\Repository\ArticleRepository").
      *
      * @var string
-     * @access private
      */
     private $repositoryName;
 
@@ -36,7 +34,6 @@ class ClassMetadata
      * attributeList
      *
      * @var Attribute[]
-     * @access private
      */
     private $attributeList;
 
@@ -44,7 +41,6 @@ class ClassMetadata
      * relationList
      *
      * @var Relation[]
-     * @access private
      */
     private $relationList;
 
@@ -52,7 +48,6 @@ class ClassMetadata
      * identifierAttribute
      *
      * @var Attribute
-     * @access private
      */
     private $identifierAttribute;
 
@@ -62,7 +57,6 @@ class ClassMetadata
      * @param string $key
      * @param string $modelName
      * @param string $repositoryName
-     * @access public
      */
     public function __construct($key, $modelName, $repositoryName)
     {
@@ -85,11 +79,13 @@ class ClassMetadata
      * Setter for modelName
      *
      * @param string $modelName
+     *
      * @return ClassMetadata
      */
     public function setModelName($modelName)
     {
         $this->modelName = $modelName;
+
         return $this;
     }
 
@@ -107,6 +103,7 @@ class ClassMetadata
      * Setter for key
      *
      * @param string $key
+     *
      * @return ClassMetadata
      */
     public function setKey($key)
@@ -120,7 +117,7 @@ class ClassMetadata
      * getAttribute
      *
      * @param string $name
-     * @access public
+     *
      * @return Attribute
      */
     public function getAttribute($name)
@@ -131,7 +128,6 @@ class ClassMetadata
     /**
      * getIdentifierAttribute
      *
-     * @access public
      * @return Attribute
      */
     public function getIdentifierAttribute()
@@ -153,6 +149,7 @@ class ClassMetadata
      * Setter for attributeList
      *
      * @param Attribute[] $attributeList
+     *
      * @return ClassMetadata
      */
     public function setAttributeList($attributeList)
@@ -165,6 +162,7 @@ class ClassMetadata
                 $this->identifierAttribute = $attribute;
             }
         }
+
         return $this;
     }
 
@@ -182,11 +180,13 @@ class ClassMetadata
      * Setter for relationList
      *
      * @param Relation[] $relationList
+     *
      * @return ClassMetadata
      */
     public function setRelationList($relationList)
     {
         $this->relationList = $relationList;
+
         return $this;
     }
 
@@ -194,7 +194,7 @@ class ClassMetadata
      * getRelation
      *
      * @param string $key
-     * @access public
+     *
      * @return Relation|null
      */
     public function getRelation($key)
@@ -222,11 +222,13 @@ class ClassMetadata
      * Setter for repositoryName
      *
      * @param string $repositoryName
+     *
      * @return ClassMetadata
      */
     public function setRepositoryName($repositoryName)
     {
         $this->repositoryName = $repositoryName;
+
         return $this;
     }
 
@@ -240,6 +242,7 @@ class ClassMetadata
         if ($this->getIdentifierAttribute()) {
             $idAttr = $this->getIdentifierAttribute()
                 ->getSerializedKey();
+
             return $idAttr;
         } else {
             return 'id';
@@ -278,6 +281,7 @@ class ClassMetadata
         if ($this->getIdentifierAttribute()) {
             $idAttr = $this->getIdentifierAttribute()
                 ->getAttributeName();
+
             return $idAttr;
         } else {
             return 'id';

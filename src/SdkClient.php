@@ -4,7 +4,6 @@ namespace Mapado\RestClientSdk;
 
 use Mapado\RestClientSdk\Model\ModelHydrator;
 use Mapado\RestClientSdk\Model\Serializer;
-use Mapado\RestClientSdk\UnitOfWork;
 use ProxyManager\Configuration;
 use ProxyManager\Factory\LazyLoadingGhostFactory;
 use ProxyManager\Proxy\GhostObjectInterface;
@@ -19,6 +18,20 @@ class SdkClient
      * @var RestClient
      */
     protected $restClient;
+
+    /**
+     * Cache item pool.
+     *
+     * @var CacheItemPoolInterface
+     */
+    protected $cacheItemPool;
+
+    /**
+     * Cache prefix.
+     *
+     * @var string
+     */
+    protected $cachePrefix;
 
     /**
      * @var Mapping
@@ -44,31 +57,13 @@ class SdkClient
      * proxyManagerConfig
      *
      * @var Configuration
-     * @access private
      */
     private $proxyManagerConfig;
-
-    /**
-     * Cache item pool.
-     *
-     * @var CacheItemPoolInterface
-     * @access private
-     */
-    protected $cacheItemPool;
-
-    /**
-     * Cache prefix.
-     *
-     * @var string
-     * @access private
-     */
-    protected $cachePrefix;
 
     /**
      * unitOfWork
      *
      * @var UnitOfWork
-     * @access private
      */
     private $unitOfWork;
 
@@ -90,7 +85,6 @@ class SdkClient
         $this->serializer = $serializer;
         $this->serializer->setSdk($this);
 
-
         $this->modelHydrator = new ModelHydrator($this);
     }
 
@@ -98,7 +92,7 @@ class SdkClient
      * setCacheItemPool
      *
      * @param CacheItemPoolInterface $cacheItemPool
-     * @access public
+     *
      * @return SdkClient
      */
     public function setCacheItemPool(CacheItemPoolInterface $cacheItemPool, $cachePrefix = '')
@@ -122,7 +116,6 @@ class SdkClient
     /**
      * getCachePrefix
      *
-     * @access public
      * @return string
      */
     public function getCachePrefix()
@@ -134,7 +127,7 @@ class SdkClient
      * getRepository
      *
      * @param string $modelName
-     * @access public
+     *
      * @return EntityRepository
      */
     public function getRepository($modelName)
@@ -152,13 +145,13 @@ class SdkClient
             $repositoryName = $metadata->getRepositoryName() ?: '\Mapado\RestClientSdk\EntityRepository';
             $this->repositoryList[$modelName] = new $repositoryName($this, $this->restClient, $this->unitOfWork, $modelName);
         }
+
         return $this->repositoryList[$modelName];
     }
 
     /**
      * getRestClient
      *
-     * @access public
      * @return RestClient
      */
     public function getRestClient()
@@ -169,7 +162,6 @@ class SdkClient
     /**
      * getMapping
      *
-     * @access public
      * @return Mapping
      */
     public function getMapping()
@@ -180,7 +172,6 @@ class SdkClient
     /**
      * getSerializer
      *
-     * @access public
      * @return Serializer
      */
     public function getSerializer()
@@ -191,7 +182,6 @@ class SdkClient
     /**
      * getModelHydrator
      *
-     * @access public
      * @return ModelHydrator
      */
     public function getModelHydrator()
@@ -203,7 +193,7 @@ class SdkClient
      * createProxy
      *
      * @param string $id
-     * @access public
+     *
      * @return \ProxyManager\Proxy\GhostObjectInterface
      */
     public function createProxy($id)
@@ -227,7 +217,7 @@ class SdkClient
             GhostObjectInterface $proxy,
             string $method,
             array $parameters,
-            & $initializer,
+            &$initializer,
             array $properties
         ) use (
             $sdk,
@@ -235,11 +225,11 @@ class SdkClient
             $id,
             $proxyModelName
         ) {
-            $isAllowedMethod = $method === 'jsonSerialize'
-                || $method === '__set';
+            $isAllowedMethod = 'jsonSerialize' === $method
+                || '__set' === $method;
 
             if (!$isAllowedMethod) {
-                $initializer   = null; // disable initialization
+                $initializer = null; // disable initialization
                 // load data and modify the object here
                 if ($id) {
                     $repository = $sdk->getRepository($classMetadata->getModelName());
@@ -263,7 +253,7 @@ class SdkClient
             $modelName,
             $initializer,
             [
-                'skippedProperties' => [ $proxyModelName . '\0id' ]
+                'skippedProperties' => [$proxyModelName . '\0id'],
             ]
         );
 
@@ -282,6 +272,7 @@ class SdkClient
      * Setter for fileCachePath
      *
      * @param string $fileCachePath
+     *
      * @return SdkClient
      */
     public function setFileCachePath($fileCachePath)

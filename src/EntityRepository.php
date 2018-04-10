@@ -4,7 +4,6 @@ namespace Mapado\RestClientSdk;
 
 use Mapado\RestClientSdk\Exception\SdkException;
 use Mapado\RestClientSdk\Helper\ArrayHelper;
-use Mapado\RestClientSdk\UnitOfWork;
 
 class EntityRepository
 {
@@ -31,7 +30,6 @@ class EntityRepository
      * classMetadataCache
      *
      * @var \Mapado\RestClientSdk\Mapping\ClassMetadata
-     * @access private
      */
     private $classMetadataCache;
 
@@ -39,7 +37,6 @@ class EntityRepository
      * unitOfWork
      *
      * @var UnitOfWork
-     * @access private
      */
     private $unitOfWork;
 
@@ -52,159 +49,10 @@ class EntityRepository
      */
     public function __construct(SdkClient $sdkClient, RestClient $restClient, UnitOfWork $unitOfWork, $entityName)
     {
-        $this->sdk        = $sdkClient;
+        $this->sdk = $sdkClient;
         $this->restClient = $restClient;
         $this->unitOfWork = $unitOfWork;
         $this->entityName = $entityName;
-    }
-
-    /**
-     * find - finds one item of the entity based on the @REST\Id field in the entity
-     *
-     * @param string $id          id of the element to fetch
-     * @param array  $queryParams query parameters to add to the query
-     * @access public
-     * @return object
-     */
-    public function find($id, $queryParams = [])
-    {
-        $hydrator = $this->sdk->getModelHydrator();
-        $id = $hydrator->convertId($id, $this->entityName);
-
-        $id = $this->addQueryParameter($id, $queryParams);
-
-        // if entity is found in cache, return it
-        $entityFromCache = $this->fetchFromCache($id);
-        if ($entityFromCache != false) {
-            return $entityFromCache;
-        }
-
-        $data = $this->restClient->get($id);
-        $entity = $hydrator->hydrate($data, $this->entityName);
-
-        // cache entity
-        $this->saveToCache($id, $entity);
-        $this->unitOfWork->registerClean($id, $entity);
-
-        return $entity;
-    }
-
-    /**
-     * findAll
-     *
-     * @access public
-     * @return array|object
-     */
-    public function findAll()
-    {
-        $mapping = $this->sdk->getMapping();
-        $key = $this->getClassMetadata()->getKey();
-        $prefix = $mapping->getIdPrefix();
-        $path = empty($prefix) ? '/' . $key : $prefix . '/' . $key;
-
-        $entityListFromCache = $this->fetchFromCache($path);
-
-        // if entityList is found in cache, return it
-        if ($entityListFromCache !== false) {
-            return $entityListFromCache;
-        }
-
-        $data = $this->restClient->get($path);
-
-        $hydrator = $this->sdk->getModelHydrator();
-        $entityList = $hydrator->hydrateList($data, $this->entityName);
-
-        // cache entity list
-        $this->saveToCache($path, $entityList);
-
-        // then cache each entity from list
-        foreach ($entityList as $entity) {
-            $identifier = $entity->{$this->getClassMetadata()->getIdGetter()}();
-            $this->unitOfWork->registerClean($identifier, $entity);
-            $this->saveToCache($identifier, $entity);
-        }
-
-        return $entityList;
-    }
-
-    /**
-     * remove
-     *
-     * @param object $model
-     * @access public
-     * @return void
-     *
-     * @TODO STILL NEEDS TO BE CONVERTED TO ENTITY MODEL
-     */
-    public function remove($model)
-    {
-        $identifier = $model->{$this->getClassMetadata()->getIdGetter()}();
-        $this->removeFromCache($identifier);
-        $this->unitOfWork->clear($identifier);
-
-        $this->restClient->delete($identifier);
-    }
-
-    /**
-     * update
-     *
-     * @param object $model
-     * @access public
-     * @return object
-     */
-    public function update($model, $serializationContext = [], $queryParams = [])
-    {
-        $identifier = $model->{$this->getClassMetadata()->getIdGetter()}();
-        $serializer = $this->sdk->getSerializer();
-        $newSerializedModel = $serializer->serialize($model, $this->entityName, $serializationContext);
-
-        $oldModel = $this->unitOfWork->getDirtyEntity($identifier);
-        if ($oldModel) {
-            $oldSerializedModel = $serializer->serialize($oldModel, $this->entityName, $serializationContext);
-            $newSerializedModel = $this->unitOfWork->getDirtyData($newSerializedModel, $oldSerializedModel, $this->getClassMetadata());
-        }
-
-        $data = $this->restClient->put(
-            $this->addQueryParameter($identifier, $queryParams),
-            $newSerializedModel
-        );
-
-        $this->removeFromCache($identifier);
-        $this->unitOfWork->registerClean($identifier, $newSerializedModel);
-
-        $hydrator = $this->sdk->getModelHydrator();
-        return $hydrator->hydrate($data, $this->entityName);
-    }
-
-    /**
-     * persist
-     *
-     * @param object $model
-     * @access public
-     * @return object
-     */
-    public function persist($model, $serializationContext = [], $queryParams = [])
-    {
-        $mapping = $this->sdk->getMapping();
-        $prefix = $mapping->getIdPrefix();
-        $key = $mapping->getKeyFromModel($this->entityName);
-
-        $path = empty($prefix) ? '/' . $key : $prefix . '/' . $key;
-
-        $oldSerializedModel = $this->getClassMetadata()->getDefaultSerializedModel();
-        $newSerializedModel = $this->sdk->getSerializer()
-            ->serialize($model, $this->entityName, $serializationContext);
-
-        $diff = $this->unitOfWork
-            ->getDirtyData($newSerializedModel, $oldSerializedModel, $this->getClassMetadata());
-
-        $data = $this->restClient->post(
-            $this->addQueryParameter($path, $queryParams),
-            $diff
-        );
-
-        $hydrator = $this->sdk->getModelHydrator();
-        return $hydrator->hydrate($data, $this->entityName);
     }
 
     /**
@@ -213,17 +61,17 @@ class EntityRepository
      * @param string $method
      * @param mixed  $arguments
      *
-     * @return array|object The found entity/entities.
+     * @return array|object the found entity/entities
      */
     public function __call($method, $arguments)
     {
         switch (true) {
-            case (0 === strpos($method, 'findBy')):
+            case 0 === strpos($method, 'findBy'):
                 $fieldName = strtolower(substr($method, 6));
                 $methodName = 'findBy';
                 break;
 
-            case (0 === strpos($method, 'findOneBy')):
+            case 0 === strpos($method, 'findOneBy'):
                 $fieldName = strtolower(substr($method, 9));
                 $methodName = 'findOneBy';
                 break;
@@ -253,7 +101,7 @@ class EntityRepository
 
         // if entityList is found in cache, return it
         $entityListFromCache = $this->fetchFromCache($path);
-        if ($entityListFromCache !== false) {
+        if (false !== $entityListFromCache) {
             return $entityListFromCache;
         }
 
@@ -261,7 +109,7 @@ class EntityRepository
 
         $hydrator = $this->sdk->getModelHydrator();
 
-        if ($methodName == 'findOneBy') {
+        if ('findOneBy' == $methodName) {
             // If more results are found but one is requested return the first hit.
             $collectionKey = $mapping->getConfig()['collectionKey'];
             $entityList = ArrayHelper::arrayGet($data, $collectionKey);
@@ -292,10 +140,158 @@ class EntityRepository
     }
 
     /**
+     * find - finds one item of the entity based on the @REST\Id field in the entity
+     *
+     * @param string $id          id of the element to fetch
+     * @param array  $queryParams query parameters to add to the query
+     *
+     * @return object
+     */
+    public function find($id, $queryParams = [])
+    {
+        $hydrator = $this->sdk->getModelHydrator();
+        $id = $hydrator->convertId($id, $this->entityName);
+
+        $id = $this->addQueryParameter($id, $queryParams);
+
+        // if entity is found in cache, return it
+        $entityFromCache = $this->fetchFromCache($id);
+        if (false != $entityFromCache) {
+            return $entityFromCache;
+        }
+
+        $data = $this->restClient->get($id);
+        $entity = $hydrator->hydrate($data, $this->entityName);
+
+        // cache entity
+        $this->saveToCache($id, $entity);
+        $this->unitOfWork->registerClean($id, $entity);
+
+        return $entity;
+    }
+
+    /**
+     * findAll
+     *
+     * @return array|object
+     */
+    public function findAll()
+    {
+        $mapping = $this->sdk->getMapping();
+        $key = $this->getClassMetadata()->getKey();
+        $prefix = $mapping->getIdPrefix();
+        $path = empty($prefix) ? '/' . $key : $prefix . '/' . $key;
+
+        $entityListFromCache = $this->fetchFromCache($path);
+
+        // if entityList is found in cache, return it
+        if (false !== $entityListFromCache) {
+            return $entityListFromCache;
+        }
+
+        $data = $this->restClient->get($path);
+
+        $hydrator = $this->sdk->getModelHydrator();
+        $entityList = $hydrator->hydrateList($data, $this->entityName);
+
+        // cache entity list
+        $this->saveToCache($path, $entityList);
+
+        // then cache each entity from list
+        foreach ($entityList as $entity) {
+            $identifier = $entity->{$this->getClassMetadata()->getIdGetter()}();
+            $this->unitOfWork->registerClean($identifier, $entity);
+            $this->saveToCache($identifier, $entity);
+        }
+
+        return $entityList;
+    }
+
+    /**
+     * remove
+     *
+     * @param object $model
+     *
+     * @TODO STILL NEEDS TO BE CONVERTED TO ENTITY MODEL
+     */
+    public function remove($model)
+    {
+        $identifier = $model->{$this->getClassMetadata()->getIdGetter()}();
+        $this->removeFromCache($identifier);
+        $this->unitOfWork->clear($identifier);
+
+        $this->restClient->delete($identifier);
+    }
+
+    /**
+     * update
+     *
+     * @param object $model
+     *
+     * @return object
+     */
+    public function update($model, $serializationContext = [], $queryParams = [])
+    {
+        $identifier = $model->{$this->getClassMetadata()->getIdGetter()}();
+        $serializer = $this->sdk->getSerializer();
+        $newSerializedModel = $serializer->serialize($model, $this->entityName, $serializationContext);
+
+        $oldModel = $this->unitOfWork->getDirtyEntity($identifier);
+        if ($oldModel) {
+            $oldSerializedModel = $serializer->serialize($oldModel, $this->entityName, $serializationContext);
+            $newSerializedModel = $this->unitOfWork->getDirtyData($newSerializedModel, $oldSerializedModel, $this->getClassMetadata());
+        }
+
+        $data = $this->restClient->put(
+            $this->addQueryParameter($identifier, $queryParams),
+            $newSerializedModel
+        );
+
+        $this->removeFromCache($identifier);
+        $this->unitOfWork->registerClean($identifier, $newSerializedModel);
+
+        $hydrator = $this->sdk->getModelHydrator();
+
+        return $hydrator->hydrate($data, $this->entityName);
+    }
+
+    /**
+     * persist
+     *
+     * @param object $model
+     *
+     * @return object
+     */
+    public function persist($model, $serializationContext = [], $queryParams = [])
+    {
+        $mapping = $this->sdk->getMapping();
+        $prefix = $mapping->getIdPrefix();
+        $key = $mapping->getKeyFromModel($this->entityName);
+
+        $path = empty($prefix) ? '/' . $key : $prefix . '/' . $key;
+
+        $oldSerializedModel = $this->getClassMetadata()->getDefaultSerializedModel();
+        $newSerializedModel = $this->sdk->getSerializer()
+            ->serialize($model, $this->entityName, $serializationContext);
+
+        $diff = $this->unitOfWork
+            ->getDirtyData($newSerializedModel, $oldSerializedModel, $this->getClassMetadata());
+
+        $data = $this->restClient->post(
+            $this->addQueryParameter($path, $queryParams),
+            $diff
+        );
+
+        $hydrator = $this->sdk->getModelHydrator();
+
+        return $hydrator->hydrate($data, $this->entityName);
+    }
+
+    /**
      * fetchFromCache
      *
-     * @access protected
      * @param string $key
+     *
      * @return object|false
      */
     protected function fetchFromCache($key)
@@ -307,6 +303,7 @@ class EntityRepository
             if ($cacheItemPool->hasItem($cacheKey)) {
                 $cacheItem = $cacheItemPool->getItem($cacheKey);
                 $cacheData = $cacheItem->get();
+
                 return $cacheData;
             }
         }
@@ -317,7 +314,6 @@ class EntityRepository
     /**
      * saveToCache
      *
-     * @access protected
      * @return object
      */
     protected function saveToCache($key, $value)
@@ -339,8 +335,8 @@ class EntityRepository
      * removeFromCache
      *
      * @param string $key
-     * @access private
-     * @return boolean true if no cache or cache successfully cleared, false otherwise
+     *
+     * @return bool true if no cache or cache successfully cleared, false otherwise
      */
     protected function removeFromCache($key)
     {
@@ -362,7 +358,7 @@ class EntityRepository
      *
      * @param string $path path to call
      * @param array $params query parameters to add
-     * @access private
+     *
      * @return string
      */
     protected function addQueryParameter($path, $params = [])
@@ -378,7 +374,7 @@ class EntityRepository
      * convertQueryParameters
      *
      * @param array $queryParameters
-     * @access private
+     *
      * @return array
      */
     private function convertQueryParameters($queryParameters)
@@ -415,7 +411,6 @@ class EntityRepository
     /**
      * normalizeCacheKey
      *
-     * @access private
      * @return string
      */
     private function normalizeCacheKey($key)

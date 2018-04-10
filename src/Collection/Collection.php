@@ -2,7 +2,7 @@
 
 namespace Mapado\RestClientSdk\Collection;
 
-use \ArrayIterator;
+use ArrayIterator;
 
 /**
  * Class Collection
@@ -25,13 +25,12 @@ class Collection implements \IteratorAggregate, \Serializable, \Countable, \Arra
      * or anything you want to really ("foo" is OK for exemple)
      *
      * @var array
-     * @access private
      */
     private $extraProperties;
 
     /**
-     * @param array $elements The data elements as an array.
-     * @param array $extraProperties The extra properties.
+     * @param array $elements the data elements as an array
+     * @param array $extraProperties the extra properties
      */
     public function __construct(array $elements = [], array $extraProperties = [])
     {
@@ -130,7 +129,6 @@ class Collection implements \IteratorAggregate, \Serializable, \Countable, \Arra
     /**
      * getExtraProperties
      *
-     * @access public
      * @return array
      */
     public function getExtraProperties()
@@ -142,7 +140,7 @@ class Collection implements \IteratorAggregate, \Serializable, \Countable, \Arra
      * return the value of an extra property
      *
      * @param string $key
-     * @access public
+     *
      * @return mixed
      */
     public function getExtraProperty($key)

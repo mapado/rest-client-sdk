@@ -11,6 +11,7 @@ use Mapado\RestClientSdk\UnitOfWork;
 
 /**
  * Class ModelHydrator
+ *
  * @author Julien Deniau <julien.deniau@mapado.com>
  */
 class ModelHydrator extends atoum
@@ -36,15 +37,12 @@ class ModelHydrator extends atoum
 
         $this->mockGenerator->orphanize('__construct');
         $this->mockGenerator->shuntParentClassCalls();
-        $this->sdk = new \mock\Mapado\RestClientSdk\SdkClient;
+        $this->sdk = new \mock\Mapado\RestClientSdk\SdkClient();
         $this->calling($this->sdk)->getMapping = $mapping;
     }
 
     /**
      * testConvertId
-     *
-     * @access public
-     * @return void
      */
     public function testConvertId()
     {
@@ -60,9 +58,6 @@ class ModelHydrator extends atoum
 
     /**
      * testConvertIdWithoutMappingPrefix
-     *
-     * @access public
-     * @return void
      */
     public function testConvertIdWithoutMappingPrefix()
     {
@@ -79,7 +74,7 @@ class ModelHydrator extends atoum
 
         $this->mockGenerator->orphanize('__construct');
         $this->mockGenerator->shuntParentClassCalls();
-        $sdk = new \mock\Mapado\RestClientSdk\SdkClient;
+        $sdk = new \mock\Mapado\RestClientSdk\SdkClient();
         $this->calling($sdk)->getMapping = $mapping;
         $this
             ->given($this->newTestedInstance($sdk))
@@ -111,7 +106,7 @@ class ModelHydrator extends atoum
 
         $this->mockGenerator->orphanize('__construct');
         $this->mockGenerator->shuntParentClassCalls();
-        $sdk = new \mock\Mapado\RestClientSdk\SdkClient;
+        $sdk = new \mock\Mapado\RestClientSdk\SdkClient();
         $this->calling($sdk)->getMapping = $mapping;
         $this->calling($sdk)->getSerializer = new Serializer($mapping, $this->unitOfWork);
 
@@ -160,11 +155,11 @@ class ModelHydrator extends atoum
         $mapping->setConfig([
             'collectionKey' => '_embedded.ea:order',
         ]);
-        $mapping->setMapping([ $orderMetadata ]);
+        $mapping->setMapping([$orderMetadata]);
 
         $this->mockGenerator->orphanize('__construct');
         $this->mockGenerator->shuntParentClassCalls();
-        $sdk = new \mock\Mapado\RestClientSdk\SdkClient;
+        $sdk = new \mock\Mapado\RestClientSdk\SdkClient();
         $this->calling($sdk)->getMapping = $mapping;
         $this->calling($sdk)->getSerializer = new Serializer($mapping, $this->unitOfWork);
 

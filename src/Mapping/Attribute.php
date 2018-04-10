@@ -4,6 +4,7 @@ namespace Mapado\RestClientSdk\Mapping;
 
 /**
  * Class Attribute
+ *
  * @author Julien Deniau <julien.deniau@mapado.com>
  */
 class Attribute
@@ -35,7 +36,7 @@ class Attribute
      * @param string|null $attributeName
      * @param string      $type
      * @param bool        $isIdentifier
-     * @access public
+     *
      * @throws \InvalidArgumentException
      */
     public function __construct(
@@ -68,6 +69,7 @@ class Attribute
      * Setter for serializedKey
      *
      * @param string $serializedKey
+     *
      * @return Attribute
      */
     public function setSerializedKey($serializedKey)
@@ -91,6 +93,7 @@ class Attribute
      * Setter for type
      *
      * @param string $type
+     *
      * @return Attribute
      */
     public function setType($type)
@@ -114,6 +117,7 @@ class Attribute
      * Setter for isIdentifier
      *
      * @param bool $isIdentifier
+     *
      * @return Attribute
      */
     public function setIsIdentifier($isIdentifier)
@@ -137,6 +141,7 @@ class Attribute
      * Setter for attributeName
      *
      * @param string $attributeName
+     *
      * @return Attribute
      */
     public function setAttributeName($attributeName)

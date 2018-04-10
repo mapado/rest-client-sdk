@@ -11,7 +11,8 @@ use Mapado\RestClientSdk\Mapping\Relation;
 /**
  * UnitOfWork
  *
- * @uses atoum
+ * @uses \atoum
+ *
  * @author Julien Petit <julien.petit@mapado.com>
  */
 class UnitOfWork extends atoum
@@ -179,7 +180,7 @@ class UnitOfWork extends atoum
                 ],
                 [
                     '@id' => '/v12/carts/1',
-                    'order' => [ '@id' => '/v1/orders/1' ],
+                    'order' => ['@id' => '/v1/orders/1'],
                 ],
                 $this->getCartMetadata()
             ))
@@ -193,7 +194,7 @@ class UnitOfWork extends atoum
                     '@id' => '/v12/carts/1',
                     'order' => [
                         '@id' => '/v1/orders/2',
-                    ]
+                    ],
                 ],
                 [
                     '@id' => '/v12/carts/1',
@@ -214,7 +215,7 @@ class UnitOfWork extends atoum
                     'order' => [
                         '@id' => '/v1/orders/2',
                         'status' => 'payed',
-                    ]
+                    ],
                 ],
                 [
                     '@id' => '/v12/carts/1',
@@ -238,7 +239,7 @@ class UnitOfWork extends atoum
                     'order' => [
                         '@id' => '/v1/orders/2',
                         'status' => 'payed',
-                    ]
+                    ],
                 ],
                 [
                     '@id' => '/v12/carts/1',
@@ -777,10 +778,10 @@ class UnitOfWork extends atoum
                                     [
                                         '@id' => '/v12/cart_item_details/2',
                                         'name' => '',
-                                    ]
+                                    ],
                                 ],
                             ],
-                        ]
+                        ],
                     ]
                 )
         ;
