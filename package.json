@@ -1,13 +1,20 @@
 {
   "dependencies": {
+    "@prettier/plugin-php": "^0.1.0",
     "husky": "^0.14.3",
-    "lint-staged": "^7.0.4"
+    "lint-staged": "^7.0.4",
+    "prettier": "^1.11.1"
   },
   "scripts": {
     "precommit": "lint-staged"
   },
   "lint-staged": {
-    "*.php": [
+    "src/**/*.php": [
+      "yarn run prettier --write",
+      "vendor/bin/php-cs-fixer fix --config=.php_cs",
+      "git add"
+    ],
+    "Tests/**/*.php": [
       "vendor/bin/php-cs-fixer fix --config=.php_cs",
       "git add"
     ]
