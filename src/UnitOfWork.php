@@ -3,7 +3,6 @@
 namespace Mapado\RestClientSdk;
 
 use Mapado\RestClientSdk\Helper\ArrayHelper;
-use Mapado\RestClientSdk\Mapping;
 use Mapado\RestClientSdk\Mapping\ClassMetadata;
 use Mapado\RestClientSdk\Mapping\Relation;
 
@@ -16,7 +15,6 @@ class UnitOfWork
      * mapping
      *
      * @var Mapping
-     * @access private
      */
     private $mapping;
 
@@ -44,7 +42,7 @@ class UnitOfWork
      * @param array $newSerializedModel
      * @param array $oldSerializedModel
      * @param ClassMetadata $classMetadata
-     * @access public
+     *
      * @return array
      */
     public function getDirtyData(array $newSerializedModel, array $oldSerializedModel, ClassMetadata $classMetadata)
@@ -57,7 +55,7 @@ class UnitOfWork
      *
      * @param string $id
      * @param object $entity
-     * @access public
+     *
      * @return UnitOfWork
      */
     public function registerClean($id, $entity)
@@ -74,7 +72,7 @@ class UnitOfWork
      * getDirtyEntity
      *
      * @param string $id
-     * @access public
+     *
      * @return mixed
      */
     public function getDirtyEntity($id)
@@ -82,19 +80,21 @@ class UnitOfWork
         if (isset($this->storage[$id])) {
             return $this->storage[$id];
         }
-        return null;
+
+        return;
     }
 
     /**
      * clear
      *
      * @param string $id
-     * @access public
+     *
      * @return UnitOfWork
      */
     public function clear($id)
     {
         unset($this->storage[$id]);
+
         return $this;
     }
 
@@ -106,7 +106,7 @@ class UnitOfWork
      * @param array $newSerializedModel
      * @param array $oldSerializedModel
      * @param ClassMetadata $classMetadata
-     * @access private
+     *
      * @return array
      */
     private function getDirtyFields(array $newSerializedModel, array $oldSerializedModel, ClassMetadata $classMetadata)
@@ -137,7 +137,7 @@ class UnitOfWork
 
             $idSerializedKey = $currentClassMetadata ? $currentClassMetadata->getIdSerializeKey() : null;
 
-            if ($currentRelation->getType() === Relation::MANY_TO_ONE) {
+            if (Relation::MANY_TO_ONE === $currentRelation->getType()) {
                 if ($value !== $oldValue) {
                     if (is_string($value) || is_string($oldValue)) {
                         $dirtyFields[$key] = $value;
@@ -175,7 +175,7 @@ class UnitOfWork
                                 $idSerializedKey = $currentClassMetadata->getIdSerializeKey();
 
                                 $entityId = self::getEntityId($relationValue, $idSerializedKey);
-                                if ($entityId !== null) {
+                                if (null !== $entityId) {
                                     $recursiveDiff[$idSerializedKey] = $entityId;
                                 }
                                 $dirtyFields[$key][$relationKey] = $recursiveDiff;
@@ -185,7 +185,6 @@ class UnitOfWork
                 }
             }
         }
-
 
         return $dirtyFields;
     }
@@ -197,7 +196,7 @@ class UnitOfWork
      *
      * @param array $newSerializedModel
      * @param array $dirtyFields
-     * @access private
+     *
      * @return array
      */
     private function addIdentifiers($newSerializedModel, $dirtyFields, $idSerializedKey = null)
@@ -232,6 +231,7 @@ class UnitOfWork
 
     /**
      * get entity id from string or array
+     *
      * @param mixed $stringOrEntity
      * @param string $idSerializedKey
      */
@@ -241,8 +241,7 @@ class UnitOfWork
             return $stringOrEntity;
         }
 
-        return isset($stringOrEntity[$idSerializedKey])
-            ? $stringOrEntity[$idSerializedKey]
-            : null;
+        return $stringOrEntity[$idSerializedKey]
+            ?? null;
     }
 }

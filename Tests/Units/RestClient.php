@@ -3,24 +3,21 @@
 namespace Mapado\RestClientSdk\Tests\Units;
 
 use atoum;
-use GuzzleHttp\HandlerStack;
 use GuzzleHttp\Client as HttpClient;
 use GuzzleHttp\Handler\MockHandler;
-use GuzzleHttp\Psr7\Response;
+use GuzzleHttp\HandlerStack;
 use GuzzleHttp\Middleware;
-use GuzzleHttp\Stream\Stream;
+use GuzzleHttp\Psr7\Response;
 
 /**
  * Class RestClient
+ *
  * @author Julien Deniau <julien.deniau@mapado.com>
  */
 class RestClient extends atoum
 {
     /**
      * testGet
-     *
-     * @access public
-     * @return void
      */
     public function testGet()
     {
@@ -29,7 +26,7 @@ class RestClient extends atoum
                 new Response(
                     200,
                     [
-                        'Content-Type' => 'application/ld+json'
+                        'Content-Type' => 'application/ld+json',
                     ],
                     file_get_contents(__DIR__ . '/../data/ticketing.list.no_result.json')
                 ),
@@ -85,9 +82,6 @@ class RestClient extends atoum
 
     /**
      * testDelete
-     *
-     * @access public
-     * @return void
      */
     public function testDelete()
     {
@@ -124,9 +118,6 @@ class RestClient extends atoum
 
     /**
      * testPost
-     *
-     * @access public
-     * @return void
      */
     public function testPost()
     {
@@ -135,7 +126,7 @@ class RestClient extends atoum
                 new Response(
                     201,
                     [
-                        'Content-Type' => 'application/ld+json'
+                        'Content-Type' => 'application/ld+json',
                     ],
                     file_get_contents(__DIR__ . '/../data/ticketing.created.json')
                 ),
@@ -177,9 +168,6 @@ class RestClient extends atoum
 
     /**
      * testPut
-     *
-     * @access public
-     * @return void
      */
     public function testPut()
     {
@@ -188,7 +176,7 @@ class RestClient extends atoum
                 new Response(
                     200,
                     [
-                        'Content-Type' => 'application/ld+json'
+                        'Content-Type' => 'application/ld+json',
                     ],
                     file_get_contents(__DIR__ . '/../data/ticketing.updated.json')
                 ),
@@ -299,13 +287,13 @@ class RestClient extends atoum
             [
                 new Response(
                     200,
-                    [ 'Content-Type' => 'application/ld+json' ],
+                    ['Content-Type' => 'application/ld+json'],
                     file_get_contents(__DIR__ . '/../data/ticketing.list.no_result.json')
                 ),
 
                 new Response(
                     200,
-                    [ 'Content-Type' => 'application/ld+json' ],
+                    ['Content-Type' => 'application/ld+json'],
                     file_get_contents(__DIR__ . '/../data/ticketing.list.no_result.json')
                 ),
             ]

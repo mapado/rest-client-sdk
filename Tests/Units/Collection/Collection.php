@@ -3,21 +3,18 @@
 namespace Mapado\RestClientSdk\Tests\Units\Collection;
 
 use atoum;
-use Mapado\RestClientSdk\Collection\Collection as TestedClass;
 
 /**
  * Collection
  *
- * @uses   atoum
+ * @uses   \atoum
+ *
  * @author Florent Clerc <florent.clerc@mapado.com>
  */
 class Collection extends atoum
 {
     /**
      * testCreateCollection
-     *
-     * @access public
-     * @return void
      */
     public function testCreateCollection()
     {

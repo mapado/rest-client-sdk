@@ -7,6 +7,7 @@ use Psr\Http\Message\ResponseInterface;
 
 /**
  * Class RestException
+ *
  * @author Julien Deniau <julien.deniau@mapado.com>
  */
 class RestException extends \RuntimeException

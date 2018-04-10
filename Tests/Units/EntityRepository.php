@@ -12,6 +12,7 @@ use Symfony\Component\Cache\Adapter\ArrayAdapter;
 
 /**
  * Class EntityRepository
+ *
  * @author Julien Deniau <julien.deniau@mapado.com>
  */
 class EntityRepository extends atoum
@@ -42,7 +43,6 @@ class EntityRepository extends atoum
         $this->mockedHydrator = new \mock\Mapado\RestClientSdk\Model\ModelHydrator($this->mockedSdk);
         $this->calling($this->mockedSdk)->getModelHydrator = $this->mockedHydrator;
 
-
         $this->mapping = new RestMapping('v12');
         $this->mapping->setMapping([
             new ClassMetadata(
@@ -65,9 +65,6 @@ class EntityRepository extends atoum
 
     /**
      * testFind
-     *
-     * @access public
-     * @return void
      */
     public function testFind()
     {
@@ -115,16 +112,13 @@ class EntityRepository extends atoum
 
     /**
      * testFindWithQueryParameters
-     *
-     * @access public
-     * @return void
      */
     public function testFindWithQueryParameters()
     {
         $this->calling($this->mockedRestClient)->get = [];
 
         $this
-            ->if($this->repository->find('1', [ 'foo' => 'bar', 'bar'  => 'baz' ]))
+            ->if($this->repository->find('1', ['foo' => 'bar', 'bar' => 'baz']))
             ->then
                 ->mock($this->mockedRestClient)
                     ->call('get')
@@ -134,15 +128,12 @@ class EntityRepository extends atoum
 
     /**
      * testFindWithCache
-     *
-     * @access public
-     * @return void
      */
     public function testFindWithCache()
     {
-        $mockOrder1 = new \mock\entity;
-        $mockOrder2 = new \mock\entity;
-        $mockOrder3 = new \mock\entity;
+        $mockOrder1 = new \mock\entity();
+        $mockOrder2 = new \mock\entity();
+        $mockOrder3 = new \mock\entity();
         $this->calling($mockOrder1)->getId = 'v12/orders/1';
         $this->calling($mockOrder2)->getId = 'v12/orders/2';
         $this->calling($mockOrder3)->getId = 'v12/orders/3';
@@ -186,8 +177,8 @@ class EntityRepository extends atoum
             ->given($this->resetMock($this->mockedRestClient))
                 ->and($this->mockedSdk->getCacheItemPool()->clear())
 
-            ->if($this->repository->findBy([ 'foo' => 'bar', 'bar'  => 'baz' ]))
-            ->and($this->repository->findBy([ 'foo' => 'bar', 'bar'  => 'baz' ]))
+            ->if($this->repository->findBy(['foo' => 'bar', 'bar' => 'baz']))
+            ->and($this->repository->findBy(['foo' => 'bar', 'bar' => 'baz']))
             ->if($this->repository->find(1))
             ->then
                 ->mock($this->mockedRestClient)
@@ -212,8 +203,8 @@ class EntityRepository extends atoum
             // find one by
             ->given($this->resetMock($this->mockedRestClient))
 
-            ->if($this->repository->findOneBy([ 'foo' => 'baz', 'bar'  => 'bar' ]))
-            ->and($this->repository->findOneBy([ 'foo' => 'baz', 'bar'  => 'bar' ]))
+            ->if($this->repository->findOneBy(['foo' => 'baz', 'bar' => 'bar']))
+            ->and($this->repository->findOneBy(['foo' => 'baz', 'bar' => 'bar']))
             ->then
                 ->mock($this->mockedRestClient)
                     ->call('get')
@@ -231,7 +222,7 @@ class EntityRepository extends atoum
 
             // find one by with data already in cache
             ->given($this->resetMock($this->mockedRestClient))
-            ->if($this->repository->findOneBy([ 'foo' => 'bar', 'bar'  => 'baz' ]))
+            ->if($this->repository->findOneBy(['foo' => 'bar', 'bar' => 'baz']))
             ->then
                 ->mock($this->mockedRestClient)
                     ->call('get')
@@ -241,10 +232,6 @@ class EntityRepository extends atoum
 
     /**
      * testClearCacheAfterUpdate
-     *
-     * @access public
-     *
-     * @return void
      */
     public function testClearCacheAfterUpdate()
     {
@@ -260,10 +247,9 @@ class EntityRepository extends atoum
         $this->calling($this->mockedSdk)->getMapping = $mapping;
         $this->calling($this->mockedSdk)->getSerializer = new \Mapado\RestClientSdk\Model\Serializer($mapping, $this->unitOfWork);
 
-
-        $product1 = new \Mapado\RestClientSdk\Tests\Model\JsonLd\Product;
-        $product2 = new \Mapado\RestClientSdk\Tests\Model\JsonLd\Product;
-        $product3 = new \Mapado\RestClientSdk\Tests\Model\JsonLd\Product;
+        $product1 = new \Mapado\RestClientSdk\Tests\Model\JsonLd\Product();
+        $product2 = new \Mapado\RestClientSdk\Tests\Model\JsonLd\Product();
+        $product3 = new \Mapado\RestClientSdk\Tests\Model\JsonLd\Product();
         $product1->setId('/v12/products/1');
         $product2->setId('/v12/products/2');
         $product3->setId('/v12/products/3');
@@ -319,7 +305,7 @@ class EntityRepository extends atoum
 
     public function testPutWithoutStore()
     {
-        $product1 = new \Mapado\RestClientSdk\Tests\Model\JsonLd\Order;
+        $product1 = new \Mapado\RestClientSdk\Tests\Model\JsonLd\Order();
         $product1->setId('/v12/orders/1');
 
         $this->calling($this->mockedHydrator)->hydrate = $product1;
@@ -346,7 +332,7 @@ class EntityRepository extends atoum
         $this->calling($this->mockedSdk)->getMapping = $mapping;
         $this->calling($this->mockedSdk)->getSerializer = new \Mapado\RestClientSdk\Model\Serializer($mapping, $unitOfWork);
 
-        $section1 = new \Mapado\RestClientSdk\Tests\Model\Issue46\Section;
+        $section1 = new \Mapado\RestClientSdk\Tests\Model\Issue46\Section();
         $section1->setIri('/sections/1');
 
         $this->calling($this->mockedHydrator)->hydrate = $section1;
@@ -410,9 +396,6 @@ class EntityRepository extends atoum
 
     /**
      * testFindNotFound
-     *
-     * @access public
-     * @return void
      */
     public function testFindNotFound()
     {
@@ -451,12 +434,11 @@ class EntityRepository extends atoum
             'Mapado\RestClientSdk\Tests\Model\JsonLd\CartItem'
         );
 
-
-        $cart = new \Mapado\RestClientSdk\Tests\Model\JsonLd\Cart;
+        $cart = new \Mapado\RestClientSdk\Tests\Model\JsonLd\Cart();
         $cart->setId(1);
 
         $this
-            ->given($cart = new \Mapado\RestClientSdk\Tests\Model\JsonLd\Cart)
+            ->given($cart = new \Mapado\RestClientSdk\Tests\Model\JsonLd\Cart())
                 ->and($cart->setId(1))
             ->if($cartItemRepository->findOneByCart($cart))
             ->then
@@ -465,7 +447,7 @@ class EntityRepository extends atoum
                         ->withArguments('v12/cart_items?cart=1')->once()
 
             // test with unmapped class
-            ->given($cart = new \mock\stdClass)
+            ->given($cart = new \mock\stdClass())
             ->if($cartItemRepository->findOneByCart($cart))
             ->then
                 ->mock($this->mockedRestClient)
@@ -504,8 +486,7 @@ class EntityRepository extends atoum
             'Mapado\RestClientSdk\Tests\Model\JsonLd\CartItem'
         );
 
-
-        $cart = new \Mapado\RestClientSdk\Tests\Model\JsonLd\Cart;
+        $cart = new \Mapado\RestClientSdk\Tests\Model\JsonLd\Cart();
         $cart->setId(1);
 
         $this
@@ -527,7 +508,7 @@ class EntityRepository extends atoum
                     ->call('get')
                         ->withArguments('/cart_items?foo=bar')->once()
 
-            ->given($cartItem = new \mock\Mapado\RestClientSdk\Tests\Model\JsonLd\CartItem)
+            ->given($cartItem = new \mock\Mapado\RestClientSdk\Tests\Model\JsonLd\CartItem())
             ->if($cartItemRepository->persist($cartItem))
             ->then
                 ->mock($this->mockedRestClient)
@@ -565,7 +546,7 @@ class EntityRepository extends atoum
             'fooList' => [
                 [
                     '@id' => '/orders/2',
-                ]
+                ],
             ],
         ];
         $this->calling($this->mockedSdk)->getSerializer = new \Mapado\RestClientSdk\Model\Serializer($mapping, $this->unitOfWork);
@@ -581,9 +562,6 @@ class EntityRepository extends atoum
 
     /**
      * testFindOneByWithoutResult
-     *
-     * @access public
-     * @return void
      */
     public function testFindOneByWithoutResult()
     {
@@ -634,7 +612,6 @@ class EntityRepository extends atoum
         $this->calling($this->mockedSdk)->getMapping = $mapping;
         $this->calling($this->mockedSdk)->getSerializer = new \Mapado\RestClientSdk\Model\Serializer($mapping, $unitOfWork);
 
-
         $cartItemRepository = new \mock\Mapado\RestClientSdk\EntityRepository(
             $this->mockedSdk,
             $this->mockedRestClient,
@@ -648,13 +625,12 @@ class EntityRepository extends atoum
             'Mapado\RestClientSdk\Tests\Model\JsonLd\Cart'
         );
 
-
-        $cart = new \Mapado\RestClientSdk\Tests\Model\JsonLd\Cart;
+        $cart = new \Mapado\RestClientSdk\Tests\Model\JsonLd\Cart();
         $cart->setStatus('pending');
-        $cartItem = new \Mapado\RestClientSdk\Tests\Model\JsonLd\CartItem;
+        $cartItem = new \Mapado\RestClientSdk\Tests\Model\JsonLd\CartItem();
         $cartItem->setCart($cart);
         $cartItem->setAmount(0);
-        $cartItem2 = new \Mapado\RestClientSdk\Tests\Model\JsonLd\CartItem;
+        $cartItem2 = new \Mapado\RestClientSdk\Tests\Model\JsonLd\CartItem();
         $cartItem2->setCart($cart);
         $cartItem2->setData(['foo' => 'bar']);
 
@@ -677,7 +653,7 @@ class EntityRepository extends atoum
                                     [
                                         'data' => ['foo' => 'bar'],
                                     ],
-                                ]
+                                ],
                             ]
                         )
                         ->once()

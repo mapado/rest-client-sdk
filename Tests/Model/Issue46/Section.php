@@ -54,6 +54,7 @@ class Section
      * Setter for iri
      *
      * @param string $iri
+     *
      * @return Section
      */
     public function setIri($iri)

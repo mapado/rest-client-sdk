@@ -4,6 +4,7 @@ namespace Mapado\RestClientSdk\Collection;
 
 /**
  * Class HalCollection
+ *
  * @author Julien Deniau <julien.deniau@mapado.com>
  */
 class HalCollection extends Collection

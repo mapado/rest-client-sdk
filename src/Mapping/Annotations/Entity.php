@@ -4,6 +4,7 @@ namespace Mapado\RestClientSdk\Mapping\Annotations;
 
 /**
  * Class Entity
+ *
  * @author Julien Deniau <julien.deniau@mapado.com>
  *
  * @Annotation
@@ -15,7 +16,6 @@ final class Entity
      * key
      *
      * @var string
-     * @access public
      *
      * @Required
      */
@@ -25,7 +25,6 @@ final class Entity
      * repository
      *
      * @var string
-     * @access public
      */
     public $repository;
 }

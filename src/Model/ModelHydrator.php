@@ -9,17 +9,16 @@ use Mapado\RestClientSdk\Helper\ArrayHelper;
 use Mapado\RestClientSdk\SdkClient;
 
 /**
-* Class ModelHydrator
-*
-* @author Julien Deniau <julien.deniau@mapado.com>
-*/
+ * Class ModelHydrator
+ *
+ * @author Julien Deniau <julien.deniau@mapado.com>
+ */
 class ModelHydrator
 {
     /**
      * sdk
      *
      * @var SdkClient
-     * @access private
      */
     protected $sdk;
 
@@ -27,7 +26,6 @@ class ModelHydrator
      * Constructor.
      *
      * @param SdkClient $sdk
-     * @access public
      */
     public function __construct(SdkClient $sdk)
     {
@@ -35,19 +33,19 @@ class ModelHydrator
     }
 
     /**
-      * convertId
-      *
-      * @param mixed $id
-      * @param string $modelName
-      * @access public
-      * @return string
-      */
+     * convertId
+     *
+     * @param mixed $id
+     * @param string $modelName
+     *
+     * @return string
+     */
     public function convertId($id, $modelName)
     {
         $id = (string) $id;
 
         // add slash if needed to have a valid hydra id
-        if (strpos($id, '/') === false) {
+        if (false === strpos($id, '/')) {
             $mapping = $this->sdk->getMapping();
             $key = $mapping->getKeyFromModel($modelName);
             $id = '/' . $key . '/' . $id;
@@ -65,7 +63,7 @@ class ModelHydrator
      *
      * @param array $data
      * @param string $modelName
-     * @access public
+     *
      * @return object
      */
     public function hydrate($data, $modelName)
@@ -82,7 +80,7 @@ class ModelHydrator
      *
      * @param array $data
      * @param string $modelName
-     * @access public
+     *
      * @return Collection
      */
     public function hydrateList($data, $modelName)
@@ -103,7 +101,6 @@ class ModelHydrator
      * @param array  $data
      * @param string $modelName
      *
-     * @access private
      * @return Collection
      */
     private function deserializeAll($data, $modelName)
@@ -117,7 +114,6 @@ class ModelHydrator
             },
             ArrayHelper::arrayGet($data, $collectionKey)
         );
-
 
         $extraProperties = array_filter(
             $data,
@@ -137,17 +133,17 @@ class ModelHydrator
      *
      * @param array  $data
      * @param string $modelName
-     * @access private
+     *
      * @return object|null
      */
     private function deserialize($data, $modelName)
     {
         if (empty($data)) {
-            return null;
+            return;
         }
 
         if (!is_array($data)) {
-            return null;
+            return;
         }
 
         return $this->sdk->getSerializer()->deserialize($data, $modelName);
@@ -157,16 +153,16 @@ class ModelHydrator
      * guess collection classname according to response data
      *
      * @param array $data
-     * @access private
+     *
      * @return string
      */
     private function guessCollectionClassname($data)
     {
         switch (true) {
-            case (!empty($data['@type']) && $data['@type'] === 'hydra:PagedCollection'):
+            case !empty($data['@type']) && 'hydra:PagedCollection' === $data['@type']:
                 return HydraPaginatedCollection::class;
 
-            case (array_key_exists('_embedded', $data)):
+            case array_key_exists('_embedded', $data):
                 return HalCollection::class;
 
             default:

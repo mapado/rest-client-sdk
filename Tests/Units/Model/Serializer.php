@@ -16,15 +16,13 @@ use Mapado\RestClientSdk\UnitOfWork;
 
 /**
  * Class Serializer
+ *
  * @author Julien Deniau <julien.deniau@mapado.com>
  */
 class Serializer extends atoum
 {
     /**
      * testJsonEncode
-     *
-     * @access public
-     * @return void
      */
     public function testJsonEncode()
     {
@@ -37,7 +35,7 @@ class Serializer extends atoum
                     ->isIdenticalTo([
                         '@id' => '/v1/carts/8',
                         'status' => 'payed',
-                        "clientPhoneNumber" => '+33 1 23 45 67 89',
+                        'clientPhoneNumber' => '+33 1 23 45 67 89',
                         'createdAt' => (new \DateTime('2015-09-20T12:08:00'))->format(DateTime::RFC3339),
                         'cart_items' => [],
                         'order' => null,
@@ -61,9 +59,6 @@ class Serializer extends atoum
 
     /**
      * testJsonEncodeRelation
-     *
-     * @access public
-     * @return void
      */
     public function testJsonEncodeRelationWithLink()
     {
@@ -78,7 +73,7 @@ class Serializer extends atoum
                 ->array($data = $this->testedInstance->serialize(
                     $cart,
                     'Mapado\RestClientSdk\Tests\Model\JsonLd\Cart',
-                    [ 'serializeRelations' => ['cart_items'] ]
+                    ['serializeRelations' => ['cart_items']]
                 ))
                     ->isIdenticalTo([
                         '@id' => '/v1/carts/8',
@@ -106,7 +101,7 @@ class Serializer extends atoum
                 ->array($data = $this->testedInstance->serialize(
                     $cart,
                     'Mapado\RestClientSdk\Tests\Model\JsonLd\Cart',
-                    [ 'serializeRelations' => ['cart_items'] ]
+                    ['serializeRelations' => ['cart_items']]
                 ))
                     ->isIdenticalTo([
                         '@id' => '/v1/carts/8',
@@ -144,9 +139,6 @@ class Serializer extends atoum
 
     /**
      * testJsonEncodeRelationWithoutLink
-     *
-     * @access public
-     * @return void
      */
     public function testJsonEncodeRelationWithoutLink()
     {
@@ -219,9 +211,6 @@ class Serializer extends atoum
 
     /**
      * testJsonEncodeRelationWithoutLinkMultipleLevel
-     *
-     * @access public
-     * @return void
      */
     public function testJsonEncodeRelationWithoutLinkMultipleLevel()
     {
@@ -248,8 +237,8 @@ class Serializer extends atoum
                                     'who' => 'John',
                                 ],
                                 'cartItemDetailList' => [
-                                    [ 'name' => 'Bill' ],
-                                    [ 'name' => 'Bill', ],
+                                    ['name' => 'Bill'],
+                                    ['name' => 'Bill'],
                                 ],
                             ],
                         ],
@@ -260,9 +249,6 @@ class Serializer extends atoum
 
     /**
      * testJsonEncodeMixRelations
-     *
-     * @access public
-     * @return void
      */
     public function testJsonEncodeMixRelations()
     {
@@ -278,7 +264,7 @@ class Serializer extends atoum
                 ->array($data = $this->testedInstance->serialize(
                     $cart,
                     'Mapado\RestClientSdk\Tests\Model\JsonLd\Cart',
-                    [ 'serializeRelations' => ['cart_items'] ]
+                    ['serializeRelations' => ['cart_items']]
                 ))
                     ->isIdenticalTo([
                         '@id' => '/v1/carts/8',
@@ -326,9 +312,6 @@ class Serializer extends atoum
 
     /**
      * testNotAllowedSerialization
-     *
-     * @access public
-     * @return void
      */
     public function testNotAllowedSerialization()
     {
@@ -350,9 +333,6 @@ class Serializer extends atoum
 
     /**
      * testMultipleLevelSerialization
-     *
-     * @access public
-     * @return void
      */
     public function testMultipleLevelSerialization()
     {
@@ -387,9 +367,6 @@ class Serializer extends atoum
 
     /**
      * testLinkedUnserialize
-     *
-     * @access public
-     * @return void
      */
     public function testLinkedUnserialize()
     {
@@ -517,7 +494,7 @@ class Serializer extends atoum
                 ->array($data = $this->testedInstance->serialize(
                     $cart,
                     'Mapado\RestClientSdk\Tests\Model\JsonLd\Cart',
-                    [ 'serializeRelations' => ['cart_items'] ]
+                    ['serializeRelations' => ['cart_items']]
                 ))
                     ->isIdenticalTo([
                         'weirdId' => '/v1/carts/8',
@@ -545,7 +522,7 @@ class Serializer extends atoum
                 ->array($data = $this->testedInstance->serialize(
                     $cart,
                     'Mapado\RestClientSdk\Tests\Model\JsonLd\Cart',
-                    [ 'serializeRelations' => ['cart_items'] ]
+                    ['serializeRelations' => ['cart_items']]
                 ))
                     ->isIdenticalTo([
                         'weirdId' => '/v1/carts/8',
@@ -592,7 +569,7 @@ class Serializer extends atoum
                 '@foo' => 'bar',
                 '@id' => '/v1/carts/8',
                 'status' => 'payed',
-                "clientPhoneNumber" => '+33 1 23 45 67 89',
+                'clientPhoneNumber' => '+33 1 23 45 67 89',
                 'createdAt' => (new \DateTime('2015-09-20T12:08:00'))->format(DateTime::RFC3339),
                 'cart_items' => [],
                 'order' => null,
@@ -648,7 +625,7 @@ class Serializer extends atoum
                     ->serialize(
                         $section,
                         'Mapado\RestClientSdk\Tests\Model\Issue46\Section',
-                        [ 'serializeRelations' => ['articleList'] ]
+                        ['serializeRelations' => ['articleList']]
                     ))
                 ->isIdenticalTo([
                     '@id' => '/sections/46',
@@ -659,7 +636,7 @@ class Serializer extends atoum
                             '@id' => '/articles/44',
                             'id' => null,
                             'section' => '/sections/46',
-                        ]
+                        ],
                     ],
                 ])
         ;
@@ -668,7 +645,6 @@ class Serializer extends atoum
     /**
      * getMapping
      *
-     * @access private
      * @return Mapping
      */
     private function getMapping($idKey = '@id')
@@ -785,7 +761,6 @@ class Serializer extends atoum
     /**
      * createNewCart
      *
-     * @access private
      * @return \Mapado\RestClientSdk\Tests\Model\JsonLd\Cart
      */
     private function createNewCart()
@@ -804,7 +779,6 @@ class Serializer extends atoum
     /**
      * createCart
      *
-     * @access private
      * @return \Mapado\RestClientSdk\Tests\Model\JsonLd\Cart
      */
     private function createCart()
@@ -818,7 +792,6 @@ class Serializer extends atoum
     /**
      * createKnownCartItem
      *
-     * @access private
      * @return \Mapado\RestClientSdk\Tests\Model\JsonLd\CartItem
      */
     private function createKnownCartItem()
@@ -839,7 +812,6 @@ class Serializer extends atoum
     /**
      * createNewCartItem
      *
-     * @access private
      * @return \Mapado\RestClientSdk\Tests\Model\JsonLd\CartItem
      */
     private function createNewCartItem($addKnownedProduct = true)
@@ -862,7 +834,6 @@ class Serializer extends atoum
     /**
      * createNewProduct
      *
-     * @access private
      * @return \Mapado\RestClientSdk\Tests\Model\JsonLd\Product
      */
     private function createNewProduct()
@@ -875,11 +846,9 @@ class Serializer extends atoum
         return $product;
     }
 
-
     /**
      * createKnownedProduct
      *
-     * @access private
      * @return \Mapado\RestClientSdk\Tests\Model\JsonLd\Product
      */
     private function createKnownedProduct()
@@ -902,9 +871,7 @@ class Serializer extends atoum
     /**
      * createNewInstance
      *
-     * @access private
      * @param Mapping $mapping
-     * @return void
      */
     private function createNewInstance($mapping = null)
     {
@@ -926,7 +893,7 @@ class Serializer extends atoum
                 case 'Mapado\RestClientSdk\Tests\Model\JsonLd\Cart':
                     return $cartRepositoryMock;
                 default:
-                    return null;
+                    return;
             }
         };
 

@@ -49,6 +49,7 @@ class Article
      * Setter for iri
      *
      * @param string $iri
+     *
      * @return Article
      */
     public function setIri($iri)

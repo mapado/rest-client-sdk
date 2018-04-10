@@ -7,17 +7,14 @@ use atoum;
 /**
  * HalCollection
  *
- * @uses   atoum
+ * @uses   \atoum
+ *
  * @author Florent Clerc <florent.clerc@mapado.com>
  */
 class HalCollection extends atoum
 {
-
     /**
      * testCreateHydraPaginatedCollection
-     *
-     * @access public
-     * @return void
      */
     public function testCreateHalCollection()
     {

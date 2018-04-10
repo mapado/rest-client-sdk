@@ -7,15 +7,13 @@ use Mapado\RestClientSdk\Mapping\ClassMetadata;
 
 /**
  * Class Mapping
+ *
  * @author Julien Deniau <julien.deniau@mapado.com>
  */
 class Mapping extends atoum
 {
     /**
      * testGetModelName
-     *
-     * @access public
-     * @return void
      */
     public function testGetModelName()
     {
@@ -60,9 +58,6 @@ class Mapping extends atoum
 
     /**
      * testTryGetClassMetadataById
-     *
-     * @access public
-     * @return void
      */
     public function testTryGetClassMetadataById()
     {
@@ -76,7 +71,7 @@ class Mapping extends atoum
                                 'bars',
                                 'Foo\Entity\Bar',
                                 'Foo\Repository\BarRepository'
-                            )
+                            ),
                         ]
                     )
                 )
@@ -95,9 +90,6 @@ class Mapping extends atoum
 
     /**
      * testGetMappingKeys
-     *
-     * @access public
-     * @return void
      */
     public function testGetMappingKeys()
     {
@@ -117,9 +109,6 @@ class Mapping extends atoum
 
     /**
      * testGetKeyFromId
-     *
-     * @access public
-     * @return void
      */
     public function testGetKeyFromId()
     {
@@ -151,9 +140,6 @@ class Mapping extends atoum
 
     /**
      * testPrefix
-     *
-     * @access public
-     * @return void
      */
     public function testPrefix()
     {
@@ -169,9 +155,6 @@ class Mapping extends atoum
 
     /**
      * testGetKeyFromModel
-     *
-     * @access public
-     * @return void
      */
     public function testGetKeyFromModel()
     {
@@ -193,9 +176,6 @@ class Mapping extends atoum
 
     /**
      * testGetClassMetadata
-     *
-     * @access public
-     * @return void
      */
     public function testGetClassMetadata()
     {
@@ -219,9 +199,6 @@ class Mapping extends atoum
 
     /**
      * testHasClassMetadata
-     *
-     * @access public
-     * @return void
      */
     public function testHasClassMetadata()
     {
@@ -265,7 +242,6 @@ class Mapping extends atoum
     /**
      * getMappingArray
      *
-     * @access private
      * @return ClassMetadata[]
      */
     private function getMappingArray()
@@ -288,6 +264,6 @@ class Mapping extends atoum
             'Foo\Bar\Client\ClientClient'
         );
 
-        return [ $order, $orderItem, $client, ];
+        return [$order, $orderItem, $client];
     }
 }

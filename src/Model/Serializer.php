@@ -14,6 +14,7 @@ use Mapado\RestClientSdk\UnitOfWork;
 
 /**
  * Class Serializer
+ *
  * @author Julien Deniau <julien.deniau@mapado.com>
  */
 class Serializer
@@ -22,7 +23,6 @@ class Serializer
      * mapping
      *
      * @var Mapping
-     * @access private
      */
     private $mapping;
 
@@ -40,7 +40,6 @@ class Serializer
      * Constructor.
      *
      * @param Mapping $mapping
-     * @access public
      */
     public function __construct(Mapping $mapping, UnitOfWork $unitOfWork)
     {
@@ -52,12 +51,13 @@ class Serializer
      * setSdk
      *
      * @param SdkClient $sdk
-     * @access public
+     *
      * @return Serializer
      */
     public function setSdk(SdkClient $sdk)
     {
         $this->sdk = $sdk;
+
         return $this;
     }
 
@@ -67,7 +67,7 @@ class Serializer
      * @param object $entity
      * @param string $modelName
      * @param array  $context
-     * @access public
+     *
      * @return array
      */
     public function serialize($entity, $modelName, $context = [])
@@ -80,7 +80,7 @@ class Serializer
      *
      * @param array  $data
      * @param string $className
-     * @access public
+     *
      * @return object
      */
     public function deserialize(array $data, $className)
@@ -139,7 +139,7 @@ class Serializer
                 }
 
                 if (isset($value)) {
-                    if ($attribute && $attribute->getType() === 'datetime') {
+                    if ($attribute && 'datetime' === $attribute->getType()) {
                         $value = new \DateTime($value);
                     }
 
@@ -162,7 +162,7 @@ class Serializer
      *
      * @param array  $data
      * @param string $className
-     * @access private
+     *
      * @return string
      */
     private function resolveRealClassName(array $data, $className)
@@ -187,7 +187,7 @@ class Serializer
      * @param string $modelName
      * @param int    $level
      * @param array  $context
-     * @access private
+     *
      * @return array|mixed
      */
     private function recursiveSerialize($entity, $modelName, $level = 0, $context = [])
@@ -268,7 +268,7 @@ class Serializer
                                 $item,
                                 $relation->getTargetEntity(),
                                 $level + 1,
-                                [ 'serializeRelation' => $serializeRelation ]
+                                ['serializeRelation' => $serializeRelation]
                             );
                         } else {
                             $newData[$key] = $item;
@@ -290,13 +290,14 @@ class Serializer
      * getClassMetadataFromId
      *
      * @param string $id
-     * @access private
+     *
      * @return ClassMetadata|null
      */
     private function getClassMetadataFromId($id)
     {
         $key = $this->mapping->getKeyFromId($id);
         $classMetadata = $this->mapping->getClassMetadataByKey($key);
+
         return $classMetadata;
     }
 

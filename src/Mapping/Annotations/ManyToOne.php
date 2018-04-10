@@ -6,6 +6,7 @@ use Mapado\RestClientSdk\Mapping\Relation as RelationMapping;
 
 /**
  * Class ManyToOne
+ *
  * @author Julien Deniau <julien.deniau@mapado.com>
  *
  * @Annotation

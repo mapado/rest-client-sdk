@@ -7,17 +7,14 @@ use atoum;
 /**
  * HydraPaginatedCollection
  *
- * @uses   atoum
+ * @uses   \atoum
+ *
  * @author Florent Clerc <florent.clerc@mapado.com>
  */
 class HydraPaginatedCollection extends atoum
 {
-
     /**
      * testCreateHydraPaginatedCollection
-     *
-     * @access public
-     * @return void
      */
     public function testCreateHydraPaginatedCollection()
     {

@@ -4,6 +4,7 @@ namespace Mapado\RestClientSdk\Tests\Model\JsonLd;
 
 /**
  * Class CartItemDetail
+ *
  * @author Julien Deniau <julien.deniau@mapado.com>
  */
 class CartItemDetail
@@ -28,11 +29,13 @@ class CartItemDetail
      * Setter for id
      *
      * @param string $id
+     *
      * @return CartItemDetail
      */
     public function setId($id)
     {
         $this->id = $id;
+
         return $this;
     }
 
@@ -50,11 +53,13 @@ class CartItemDetail
      * Setter for name
      *
      * @param string $name
+     *
      * @return CartItemDetail
      */
     public function setName($name)
     {
         $this->name = $name;
+
         return $this;
     }
 
@@ -72,12 +77,14 @@ class CartItemDetail
      * Setter for cartItem
      *
      * @param CartItem $cartItem
+     *
      * @return CartItemDetail
      */
     public function setCartItem(CartItem $cartItem)
     {
         $this->cartItem = $cartItem;
         $cartItem->addCartItemDetailList($this);
+
         return $this;
     }
 }

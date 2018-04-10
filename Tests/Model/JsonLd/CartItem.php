@@ -7,6 +7,7 @@ use Mapado\RestClientSdk\Mapping\Annotations as Rest;
 
 /**
  * Class CartItem
+ *
  * @author Julien Deniau <julien.deniau@mapado.com>
  *
  * @Rest\Entity(key="cart_item")
@@ -17,7 +18,6 @@ class CartItem
      * id
      *
      * @var mixed
-     * @access private
      *
      * @Rest\Id
      * @Rest\Attribute(name="id", type="string")
@@ -28,7 +28,6 @@ class CartItem
      * amount
      *
      * @var mixed
-     * @access private
      *
      * @Rest\Attribute(name="amount", type="float")
      */
@@ -38,7 +37,6 @@ class CartItem
      * createdAt
      *
      * @var mixed
-     * @access private
      *
      * @Rest\Attribute(name="created_at", type="datetime")
      */
@@ -48,7 +46,6 @@ class CartItem
      * data
      *
      * @var mixed
-     * @access private
      *
      * @Rest\Attribute(name="data", type="array")
      */
@@ -58,7 +55,6 @@ class CartItem
      * cart
      *
      * @var mixed
-     * @access private
      *
      * @Rest\ManyToOne(name="cart", targetEntity="Cart")
      */
@@ -68,7 +64,6 @@ class CartItem
      * product
      *
      * @var mixed
-     * @access private
      */
     private $product;
 
@@ -76,7 +71,6 @@ class CartItem
      * cartItemDetailList
      *
      * @var mixed
-     * @access private
      */
     private $cartItemDetailList = [];
 
@@ -94,11 +88,13 @@ class CartItem
      * Setter for id
      *
      * @param string $id
+     *
      * @return CartItem
      */
     public function setId($id)
     {
         $this->id = $id;
+
         return $this;
     }
 
@@ -116,11 +112,13 @@ class CartItem
      * Setter for amount
      *
      * @param float $amount
+     *
      * @return CartItem
      */
     public function setAmount($amount)
     {
         $this->amount = $amount;
+
         return $this;
     }
 
@@ -138,11 +136,13 @@ class CartItem
      * Setter for createdAt
      *
      * @param DateTime $createdAt
+     *
      * @return CartItem
      */
     public function setCreatedAt(DateTime $createdAt)
     {
         $this->createdAt = $createdAt;
+
         return $this;
     }
 
@@ -160,11 +160,13 @@ class CartItem
      * Setter for data
      *
      * @param array $data
+     *
      * @return CartItem
      */
     public function setData(array $data)
     {
         $this->data = $data;
+
         return $this;
     }
 
@@ -182,6 +184,7 @@ class CartItem
      * Setter for cart
      *
      * @param Cart $cart
+     *
      * @return CartItem
      */
     public function setCart(Cart $cart)
@@ -206,11 +209,13 @@ class CartItem
      * Setter for product
      *
      * @param Product $product
+     *
      * @return CartItem
      */
     public function setProduct(Product $product)
     {
         $this->product = $product;
+
         return $this;
     }
 
@@ -228,17 +233,20 @@ class CartItem
      * Setter for cartItemDetailList
      *
      * @param array $cartItemDetailList
+     *
      * @return CartItem
      */
     public function setCartItemDetailList(array $cartItemDetailList)
     {
         $this->cartItemDetailList = $cartItemDetailList;
+
         return $this;
     }
 
     public function addCartItemDetailList($itemDetail)
     {
         $this->cartItemDetailList[] = $itemDetail;
+
         return $this;
     }
 }

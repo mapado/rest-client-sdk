@@ -11,16 +11,14 @@ use Mapado\RestClientSdk\UnitOfWork;
 /**
  * SdkClient
  *
- * @uses atoum
+ * @uses \atoum
+ *
  * @author Julien Deniau <julien.deniau@mapado.com>
  */
 class SdkClient extends atoum
 {
     /**
      * testGetRepository
-     *
-     * @access public
-     * @return void
      */
     public function testGetRepository()
     {
@@ -35,7 +33,7 @@ class SdkClient extends atoum
                 'orders',
                 'Mapado\RestClientSdk\Tests\Model\JsonLd\Model',
                 'Mapado\RestClientSdk\Tests\Model\JsonLd\ModelRepository'
-            )
+            ),
         ]);
 
         $unitOfWork = new UnitOfWork($mapping);

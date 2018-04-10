@@ -7,15 +7,13 @@ use Mapado\RestClientSdk\Mapping\Relation;
 
 /**
  * Class AnnotationDriver
+ *
  * @author Julien Deniau <julien.deniau@mapado.com>
  */
 class AnnotationDriver extends atoum
 {
     /**
      * testClassWithoutEntityAnnotation
-     *
-     * @access public
-     * @return void
      */
     public function testClassWithoutEntityAnnotation()
     {
@@ -30,9 +28,6 @@ class AnnotationDriver extends atoum
 
     /**
      * testAnnotationDriver
-     *
-     * @access public
-     * @return void
      */
     public function testAnnotationDriver()
     {
@@ -130,7 +125,6 @@ class AnnotationDriver extends atoum
     /**
      * getCacheDir
      *
-     * @access private
      * @return string
      */
     private function getCacheDir()

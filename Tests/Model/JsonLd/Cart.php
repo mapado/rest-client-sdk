@@ -7,6 +7,7 @@ use Mapado\RestClientSdk\Mapping\Annotations as Rest;
 
 /**
  * Class Cart
+ *
  * @author Julien Deniau <julien.deniau@mapado.com>
  *
  * @Rest\Entity(key="cart")
@@ -17,7 +18,6 @@ class Cart
      * id
      *
      * @var mixed
-     * @access private
      *
      * @Rest\Id
      * @Rest\Attribute(name="id", type="string")
@@ -28,7 +28,6 @@ class Cart
      * status
      *
      * @var mixed
-     * @access private
      *
      * @Rest\Attribute(name="status", type="string")
      */
@@ -38,7 +37,6 @@ class Cart
      * createdAt
      *
      * @var mixed
-     * @access private
      *
      * @Rest\Attribute(name="created_at", type="datetime")
      */
@@ -48,7 +46,6 @@ class Cart
      * cartItemList
      *
      * @var mixed
-     * @access private
      *
      * @Rest\OneToMany(name="cart_items", targetEntity="CartItem")
      */
@@ -58,7 +55,6 @@ class Cart
      * clientPhoneNumber
      *
      * @var string
-     * @access private
      *
      * @Rest\Attribute(name="clientPhoneNumber", type="phone_number")
      */
@@ -68,7 +64,6 @@ class Cart
      * order
      *
      * @var mixed
-     * @access private
      *
      * @Rest\ManyToOne(name="order", targetEntity="Order")
      */
@@ -88,6 +83,7 @@ class Cart
      * Setter for id
      *
      * @param string $id
+     *
      * @return Cart
      */
     public function setId($id)
@@ -111,6 +107,7 @@ class Cart
      * Setter for status
      *
      * @param string $status
+     *
      * @return Cart
      */
     public function setStatus($status)
@@ -134,6 +131,7 @@ class Cart
      * Setter for createdAt
      *
      * @param DateTime $createdAt
+     *
      * @return Cart
      */
     public function setCreatedAt(DateTime $createdAt)
@@ -157,6 +155,7 @@ class Cart
      * Setter for cartItemList
      *
      * @param array $cartItemList
+     *
      * @return Cart
      */
     public function setCartItemList($cartItemList)
@@ -168,7 +167,7 @@ class Cart
 
     public function addCartItemList($cartItem)
     {
-        $this->cartItemList[] =  $cartItem;
+        $this->cartItemList[] = $cartItem;
     }
 
     /**
@@ -185,6 +184,7 @@ class Cart
      * Setter for clientPhoneNumber
      *
      * @param string $clientPhoneNumber
+     *
      * @return Cart
      */
     public function setClientPhoneNumber($clientPhoneNumber)
@@ -208,6 +208,7 @@ class Cart
      * Setter for order
      *
      * @param string $order
+     *
      * @return Cart
      */
     public function setOrder($order)
