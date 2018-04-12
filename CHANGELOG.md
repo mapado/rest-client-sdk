@@ -5,6 +5,10 @@ Changelog
 ### Added 
   * Use php-cs-fixer and prettier-php to format code
 
+## 0.28.1
+### Changed
+  * fix issue with call on isset with id
+
 ## 0.28.0
 ### Changed
   * Upgrade to [ProxyManager](https://packagist.org/packages/ocramius/proxy-manager) `^2.0`

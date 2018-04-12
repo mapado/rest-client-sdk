@@ -234,7 +234,9 @@ class SdkClient
             array $properties
         ) use ($sdk, $classMetadata, $id, $proxyModelName) {
             $isAllowedMethod =
-                'jsonSerialize' === $method || '__set' === $method;
+                'jsonSerialize' === $method ||
+                '__set' === $method ||
+                '__isset' === $method && 'id' === $parameters['name'];
 
             if (!$isAllowedMethod) {
                 $initializer = null; // disable initialization
