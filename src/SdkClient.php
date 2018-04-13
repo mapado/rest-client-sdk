@@ -254,9 +254,9 @@ class SdkClient
                             'get' . ucfirst($attribute->getAttributeName());
                         $value = $model->{$getter}();
                         $properties[
-                            '\0' .
+                            "\0" .
                             $proxyModelName .
-                            '\0' .
+                            "\0" .
                             $attribute->getAttributeName()
                         ] = $value;
                     }
@@ -268,7 +268,7 @@ class SdkClient
 
         // initialize the proxy instance
         $instance = $factory->createProxy($modelName, $initializer, [
-            'skippedProperties' => [$proxyModelName . '\0id'],
+            'skippedProperties' => ["\0" . $proxyModelName . "\0id"],
         ]);
 
         // set the id of the object
