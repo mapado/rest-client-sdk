@@ -1,9 +1,12 @@
 Changelog
 ======================
 
-## Unreleased
+## 0.28.2
 ### Added 
   * Use php-cs-fixer and prettier-php to format code
+
+### Changed
+  * Fix issue when calling proxy id from twig which return an empty id instead of the real id
 
 ## 0.28.1
 ### Changed
