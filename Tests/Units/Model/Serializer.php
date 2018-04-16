@@ -12,6 +12,7 @@ use Mapado\RestClientSdk\Mapping\ClassMetadata;
 use Mapado\RestClientSdk\Mapping\Driver\AnnotationDriver;
 use Mapado\RestClientSdk\Mapping\Relation;
 use Mapado\RestClientSdk\Tests\Model\Issue46;
+use Mapado\RestClientSdk\Tests\Model\Issue75;
 use Mapado\RestClientSdk\UnitOfWork;
 
 /**
@@ -639,6 +640,35 @@ class Serializer extends atoum
                         ],
                     ],
                 ])
+        ;
+    }
+
+    public function testDeserializeEntityWithoutIri()
+    {
+        $annotationDriver = new AnnotationDriver(__DIR__ . '/../../cache/');
+        $mapping = new Mapping();
+        $mapping->setMapping($annotationDriver->loadDirectory(__DIR__ . '/../../Model/Issue75/'));
+
+        $tag = new Issue75\Tag();
+        $tag->setName('tag title');
+
+        $article = new Issue75\Article();
+        $article->setTag($tag);
+
+        $this->createNewInstance($mapping);
+        $this
+            ->given($data = [
+                '@id' => '/v1/articles/8',
+                'tag' => [
+                    'name' => 'tag name',
+                ],
+            ])
+
+            ->then
+                ->object($article = $this->testedInstance->deserialize($data, 'Mapado\RestClientSdk\Tests\Model\Issue75\Article'))
+                    ->isInstanceOf('Mapado\RestClientSdk\Tests\Model\Issue75\Article')
+                ->object($article->getTag())
+                    ->isInstanceOf('Mapado\RestClientSdk\Tests\Model\Issue75\Tag')
         ;
     }
 
