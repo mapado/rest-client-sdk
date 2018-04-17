@@ -16,9 +16,9 @@ class Article
     private $iri;
 
     /**
-     * @Rest\Attribute(name="id", type="string")
+     * @Rest\Attribute(name="title", type="string")
      */
-    private $id;
+    private $title;
 
     /**
      * @Rest\ManyToOne(name="tag", targetEntity="Tag")
@@ -30,14 +30,14 @@ class Article
      */
     private $tagList;
 
-    public function setId($id)
+    public function setTitle($title)
     {
-        $this->id = $id;
+        $this->title = $title;
     }
 
-    public function getId()
+    public function getTitle()
     {
-        return $this->id;
+        return $this->title;
     }
 
     /**

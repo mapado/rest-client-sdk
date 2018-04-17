@@ -212,10 +212,12 @@ class Serializer
 
         if ($level > 0 && empty($context['serializeRelation'])) {
             $idAttribute = $classMetadata->getIdentifierAttribute();
-            $getter = 'get' . ucfirst($idAttribute->getAttributeName());
-            $tmpId = $entity->{$getter}();
-            if ($tmpId) {
-                return $tmpId;
+            if ($idAttribute) {
+                $getter = 'get' . ucfirst($idAttribute->getAttributeName());
+                $tmpId = $entity->{$getter}();
+                if ($tmpId) {
+                    return $tmpId;
+                }
             }
         }
 
@@ -265,20 +267,32 @@ class Serializer
                 ) {
                     $idAttribute = $this->mapping->getClassMetadata(
                         $relation->getTargetEntity()
-                    )
-                        ->getIdentifierAttribute()
-                        ->getAttributeName();
-                    $idGetter = 'get' . ucfirst($idAttribute);
+                    )->getIdentifierAttribute();
 
-                    if (
-                        method_exists($data, $idGetter) && $data->{$idGetter}()
-                    ) {
-                        $data = $data->{$idGetter}();
-                    } elseif ($relation->isManyToOne()) {
-                        if ($level > 0) {
-                            continue;
-                        } else {
-                            throw new SdkException('Case not allowed for now');
+                    if (!$idAttribute) {
+                        $data = $this->recursiveSerialize(
+                            $data,
+                            $relation->getTargetEntity(),
+                            $level + 1,
+                            $context
+                        );
+                    } else {
+                        $idGetter =
+                            'get' . ucfirst($idAttribute->getAttributeName());
+
+                        if (
+                            method_exists($data, $idGetter) &&
+                            $data->{$idGetter}()
+                        ) {
+                            $data = $data->{$idGetter}();
+                        } elseif ($relation->isManyToOne()) {
+                            if ($level > 0) {
+                                continue;
+                            } else {
+                                throw new SdkException(
+                                    'Case not allowed for now'
+                                );
+                            }
                         }
                     }
                 } elseif (is_array($data)) {

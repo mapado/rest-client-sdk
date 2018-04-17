@@ -658,12 +658,6 @@ class Serializer extends atoum
         $mapping = new Mapping();
         $mapping->setMapping($annotationDriver->loadDirectory(__DIR__ . '/../../Model/Issue75/'));
 
-        $tag = new Issue75\Tag();
-        $tag->setName('tag title');
-
-        $article = new Issue75\Article();
-        $article->setTag($tag);
-
         $this->createNewInstance($mapping);
         $this
             ->given($data = [
@@ -704,6 +698,65 @@ class Serializer extends atoum
                     ->isInstanceOf(Issue75\Tag::class)
                 ->string($tagList[1]->getName())
                     ->isIdenticalTo('tag 2 name')
+        ;
+    }
+
+    public function testSerializeEntityWithoutIriAttribute()
+    {
+        $annotationDriver = new AnnotationDriver(__DIR__ . '/../../cache/');
+        $mapping = new Mapping();
+        $mapping->setMapping($annotationDriver->loadDirectory(__DIR__ . '/../../Model/Issue75/'));
+
+        $tag = new Issue75\Tag();
+        $tag->setName('tag title');
+
+        $article = new Issue75\Article();
+        $article->setTitle('article title');
+
+        $this->createNewInstance($mapping);
+        $this
+            ->then
+                ->array($data = $this->testedInstance->serialize($article, Issue75\Article::class))
+                ->isIdenticalTo([
+                    'title' => 'article title',
+                    'tag' => null,
+                    'tagList' => null,
+                ])
+
+            ->if($article->setTag($tag))
+                ->array($data = $this->testedInstance->serialize($article, Issue75\Article::class))
+                    ->isIdenticalTo([
+                        'title' => 'article title',
+                        'tag' => [
+                            'name' => 'tag title',
+                        ],
+                        'tagList' => null,
+                    ])
+
+            ->if($article->setTagList([(new Issue75\Tag())->setName('tag 1')]))
+                ->array($data = $this->testedInstance->serialize($article, Issue75\Article::class))
+                    ->isIdenticalTo([
+                        'title' => 'article title',
+                        'tag' => [
+                            'name' => 'tag title',
+                        ],
+                        'tagList' => [
+                            ['name' => 'tag 1'],
+                        ],
+                    ])
+
+            ->then
+                // as tags does not have an Attribute identifier, we ignore the serializeRelations context
+                ->array($data = $this->testedInstance->serialize($article, Issue75\Article::class, ['serializeRelations' => ['tag', 'tagList']]))
+                    ->isIdenticalTo([
+                        'title' => 'article title',
+                        'tag' => [
+                            'name' => 'tag title',
+                        ],
+                        'tagList' => [
+                            ['name' => 'tag 1'],
+                        ],
+                    ])
         ;
     }
 
