@@ -12,6 +12,8 @@ use Mapado\RestClientSdk\Mapping\ClassMetadata;
 use Mapado\RestClientSdk\Mapping\Driver\AnnotationDriver;
 use Mapado\RestClientSdk\Mapping\Relation;
 use Mapado\RestClientSdk\Tests\Model\Issue46;
+use Mapado\RestClientSdk\Tests\Model\Issue75;
+use Mapado\RestClientSdk\Tests\Model\JsonLd;
 use Mapado\RestClientSdk\UnitOfWork;
 
 /**
@@ -131,7 +133,7 @@ class Serializer extends atoum
                 ->array($cart->getCartItemList())
                     ->size->isEqualTo(1)
                 ->object($cartItem = current($cart->getCartItemList()))
-                    ->isInstanceOf('Mapado\RestClientSdk\Tests\Model\JsonLd\CartItem')
+                    ->isInstanceOf(JsonLd\CartItem::class)
                 ->string($cartItem->getId())
                     ->isEqualTo('/v1/cart_items/16')
             ;
@@ -173,8 +175,12 @@ class Serializer extends atoum
             // reverse the serialization
             ->then
                 ->object($cart = $this->testedInstance->deserialize($data, 'Mapado\RestClientSdk\Tests\Model\JsonLd\Cart'))
-                ->array($cart->getCartItemList()) // we can not uneserialize an unlinked entity
-                    ->isEmpty()
+                ->array($cartItemList = $cart->getCartItemList()) // we can not uneserialize an unlinked entity
+                    ->size->isEqualTo(1)
+                ->object($cartItemList[0])
+                    ->isInstanceOf(JsonLd\CartItem::class)
+                ->variable($cartItemList[0]->getId())
+                    ->isNull
         ;
     }
 
@@ -301,12 +307,16 @@ class Serializer extends atoum
             // reverse the serialization
             ->then
                 ->object($cart = $this->testedInstance->deserialize($data, 'Mapado\RestClientSdk\Tests\Model\JsonLd\Cart'))
-                ->array($cart->getCartItemList()) // we can not uneserialize an unlinked entity
-                    ->size->isEqualTo(1)
-                ->object($cartItem = current($cart->getCartItemList()))
+                ->array($cartItemList = $cart->getCartItemList()) // we can not uneserialize an unlinked entity
+                    ->size->isEqualTo(2)
+                ->object($cartItem = $cartItemList[0])
                     ->isInstanceOf('Mapado\RestClientSdk\Tests\Model\JsonLd\CartItem')
                 ->string($cartItem->getId())
                     ->isEqualTo('/v1/cart_items/16')
+                ->object($cartItem = $cartItemList[1])
+                    ->isInstanceOf('Mapado\RestClientSdk\Tests\Model\JsonLd\CartItem')
+                ->variable($cartItem->getId())
+                    ->isNull()
         ;
     }
 
@@ -639,6 +649,114 @@ class Serializer extends atoum
                         ],
                     ],
                 ])
+        ;
+    }
+
+    public function testDeserializeEntityWithoutIriAttribute()
+    {
+        $annotationDriver = new AnnotationDriver(__DIR__ . '/../../cache/');
+        $mapping = new Mapping();
+        $mapping->setMapping($annotationDriver->loadDirectory(__DIR__ . '/../../Model/Issue75/'));
+
+        $this->createNewInstance($mapping);
+        $this
+            ->given($data = [
+                '@id' => '/v1/articles/8',
+                'tag' => [
+                    'name' => 'tag name',
+                ],
+            ])
+
+            ->then
+                ->object($article = $this->testedInstance->deserialize($data, Issue75\Article::class))
+                    ->isInstanceOf(Issue75\Article::class)
+                ->object($article->getTag())
+                    ->isInstanceOf(Issue75\Tag::class)
+
+            ->given($data = [
+                '@id' => '/v1/articles/8',
+                'tagList' => [
+                    [
+                        'name' => 'tag 1 name',
+                    ],
+                    [
+                        'name' => 'tag 2 name',
+                    ],
+                ],
+            ])
+
+            ->then
+                ->object($article = $this->testedInstance->deserialize($data, Issue75\Article::class))
+                    ->isInstanceOf(Issue75\Article::class)
+                ->array($tagList = $article->getTagList())
+                    ->size->isEqualTo(2)
+                ->object($tagList[0])
+                    ->isInstanceOf(Issue75\Tag::class)
+                ->string($tagList[0]->getName())
+                    ->isIdenticalTo('tag 1 name')
+                ->object($tagList[1])
+                    ->isInstanceOf(Issue75\Tag::class)
+                ->string($tagList[1]->getName())
+                    ->isIdenticalTo('tag 2 name')
+        ;
+    }
+
+    public function testSerializeEntityWithoutIriAttribute()
+    {
+        $annotationDriver = new AnnotationDriver(__DIR__ . '/../../cache/');
+        $mapping = new Mapping();
+        $mapping->setMapping($annotationDriver->loadDirectory(__DIR__ . '/../../Model/Issue75/'));
+
+        $tag = new Issue75\Tag();
+        $tag->setName('tag title');
+
+        $article = new Issue75\Article();
+        $article->setTitle('article title');
+
+        $this->createNewInstance($mapping);
+        $this
+            ->then
+                ->array($data = $this->testedInstance->serialize($article, Issue75\Article::class))
+                ->isIdenticalTo([
+                    'title' => 'article title',
+                    'tag' => null,
+                    'tagList' => null,
+                ])
+
+            ->if($article->setTag($tag))
+                ->array($data = $this->testedInstance->serialize($article, Issue75\Article::class))
+                    ->isIdenticalTo([
+                        'title' => 'article title',
+                        'tag' => [
+                            'name' => 'tag title',
+                        ],
+                        'tagList' => null,
+                    ])
+
+            ->if($article->setTagList([(new Issue75\Tag())->setName('tag 1')]))
+                ->array($data = $this->testedInstance->serialize($article, Issue75\Article::class))
+                    ->isIdenticalTo([
+                        'title' => 'article title',
+                        'tag' => [
+                            'name' => 'tag title',
+                        ],
+                        'tagList' => [
+                            ['name' => 'tag 1'],
+                        ],
+                    ])
+
+            ->then
+                // as tags does not have an Attribute identifier, we ignore the serializeRelations context
+                ->array($data = $this->testedInstance->serialize($article, Issue75\Article::class, ['serializeRelations' => ['tag', 'tagList']]))
+                    ->isIdenticalTo([
+                        'title' => 'article title',
+                        'tag' => [
+                            'name' => 'tag title',
+                        ],
+                        'tagList' => [
+                            ['name' => 'tag 1'],
+                        ],
+                    ])
         ;
     }
 

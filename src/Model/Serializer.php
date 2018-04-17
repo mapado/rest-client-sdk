@@ -114,40 +114,31 @@ class Serializer
                     if (is_string($value)) {
                         $value = $this->sdk->createProxy($value);
                     } elseif (is_array($value)) {
-                        if (isset($value[$identifierAttrKey])) {
-                            $key = $this->mapping->getKeyFromId(
-                                $value[$identifierAttrKey]
-                            );
-                            $subClassMetadata = $this->getClassMetadataFromId(
-                                $value[$identifierAttrKey]
-                            );
+                        $targetEntity = $relation->getTargetEntity();
+                        $relationClassMetadata = $this->mapping->getClassMetadata(
+                            $targetEntity
+                        );
+
+                        $relationIdentifierAttribute = $relationClassMetadata->getIdentifierAttribute();
+                        $relationIdentifierAttrKey = $relationIdentifierAttribute
+                            ? $relationIdentifierAttribute->getSerializedKey()
+                            : null;
+
+                        if ($relation->isManyToOne()) {
                             $value = $this->deserialize(
                                 $value,
-                                $subClassMetadata->getModelName()
+                                $relationClassMetadata->getModelName()
                             );
                         } else {
+                            // One-To-Many association
                             $list = [];
                             foreach ($value as $item) {
                                 if (is_string($item)) {
                                     $list[] = $this->sdk->createProxy($item);
-                                } elseif (
-                                    is_array($item) &&
-                                    isset($item[$identifierAttrKey])
-                                ) {
-                                    // not tested for now
-                                    // /the $identifierAttrKey is not the real identifier, as it is
-                                    // the main object identifier, but we do not have the metadada for now
-                                    // the thing we assume now is that every entity "may" have the same key
-                                    // as identifier
-                                    $key = $this->mapping->getKeyFromId(
-                                        $item[$identifierAttrKey]
-                                    );
-                                    $subClassMetadata = $this->getClassMetadataFromId(
-                                        $item[$identifierAttrKey]
-                                    );
+                                } elseif (is_array($item)) {
                                     $list[] = $this->deserialize(
                                         $item,
-                                        $subClassMetadata->getModelName()
+                                        $relationClassMetadata->getModelName()
                                     );
                                 }
                             }
@@ -167,9 +158,8 @@ class Serializer
             }
         }
 
-        $identifier = $instance->{$this->getClassMetadata(
-            $instance
-        )->getIdGetter()}();
+        $idGetter = $this->getClassMetadata($instance)->getIdGetter();
+        $identifier = $idGetter ?? $instance->{$idGetter}();
         if ($identifier) {
             $this->unitOfWork->registerClean($identifier, $instance);
         }
@@ -222,10 +212,12 @@ class Serializer
 
         if ($level > 0 && empty($context['serializeRelation'])) {
             $idAttribute = $classMetadata->getIdentifierAttribute();
-            $getter = 'get' . ucfirst($idAttribute->getAttributeName());
-            $tmpId = $entity->{$getter}();
-            if ($tmpId) {
-                return $tmpId;
+            if ($idAttribute) {
+                $getter = 'get' . ucfirst($idAttribute->getAttributeName());
+                $tmpId = $entity->{$getter}();
+                if ($tmpId) {
+                    return $tmpId;
+                }
             }
         }
 
@@ -275,20 +267,32 @@ class Serializer
                 ) {
                     $idAttribute = $this->mapping->getClassMetadata(
                         $relation->getTargetEntity()
-                    )
-                        ->getIdentifierAttribute()
-                        ->getAttributeName();
-                    $idGetter = 'get' . ucfirst($idAttribute);
+                    )->getIdentifierAttribute();
 
-                    if (
-                        method_exists($data, $idGetter) && $data->{$idGetter}()
-                    ) {
-                        $data = $data->{$idGetter}();
-                    } elseif ($relation->isManyToOne()) {
-                        if ($level > 0) {
-                            continue;
-                        } else {
-                            throw new SdkException('Case not allowed for now');
+                    if (!$idAttribute) {
+                        $data = $this->recursiveSerialize(
+                            $data,
+                            $relation->getTargetEntity(),
+                            $level + 1,
+                            $context
+                        );
+                    } else {
+                        $idGetter =
+                            'get' . ucfirst($idAttribute->getAttributeName());
+
+                        if (
+                            method_exists($data, $idGetter) &&
+                            $data->{$idGetter}()
+                        ) {
+                            $data = $data->{$idGetter}();
+                        } elseif ($relation->isManyToOne()) {
+                            if ($level > 0) {
+                                continue;
+                            } else {
+                                throw new SdkException(
+                                    'Case not allowed for now'
+                                );
+                            }
                         }
                     }
                 } elseif (is_array($data)) {

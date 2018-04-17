@@ -1,5 +1,12 @@
 # Changelog
 
+## Unreleased
+
+### Changed
+
+* [Might break] The deserialization process (response → object) now accept object without an identifier.
+  These object might be partial object OR entity without an identifier attribute at all
+
 ## 0.28.2
 
 ### Added
