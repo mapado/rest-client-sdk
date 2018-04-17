@@ -118,14 +118,11 @@ class Serializer
                         $relationClassMetadata = $this->mapping->getClassMetadata(
                             $targetEntity
                         );
-                        if ($this->mapping->hasClassMetadata($targetEntity)) {
-                            $relationIdentifierAttribute = $relationClassMetadata->getIdentifierAttribute();
-                            $relationIdentifierAttrKey = $relationIdentifierAttribute
-                                ? $relationIdentifierAttribute->getSerializedKey()
-                                : null;
-                        } else {
-                            $relationIdentifierAttrKey = null;
-                        }
+
+                        $relationIdentifierAttribute = $relationClassMetadata->getIdentifierAttribute();
+                        $relationIdentifierAttrKey = $relationIdentifierAttribute
+                            ? $relationIdentifierAttribute->getSerializedKey()
+                            : null;
 
                         if ($relation->isManyToOne()) {
                             $value = $this->deserialize(
@@ -138,10 +135,7 @@ class Serializer
                             foreach ($value as $item) {
                                 if (is_string($item)) {
                                     $list[] = $this->sdk->createProxy($item);
-                                } elseif (
-                                    is_array($item) &&
-                                    isset($item[$relationIdentifierAttrKey])
-                                ) {
+                                } elseif (is_array($item)) {
                                     $list[] = $this->deserialize(
                                         $item,
                                         $relationClassMetadata->getModelName()

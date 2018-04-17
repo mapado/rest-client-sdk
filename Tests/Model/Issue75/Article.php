@@ -25,6 +25,11 @@ class Article
      */
     private $tag;
 
+    /**
+     * @Rest\OneToMany(name="tagList", targetEntity="Tag")
+     */
+    private $tagList;
+
     public function setId($id)
     {
         $this->id = $id;
@@ -67,5 +72,25 @@ class Article
     public function getTag()
     {
         return $this->tag;
+    }
+
+    /**
+     * Getter for tagList
+     *
+     * @return array
+     */
+    public function getTagList()
+    {
+        return $this->tagList;
+    }
+
+    /**
+     * Setter for tagList
+     */
+    public function setTagList($tagList)
+    {
+        $this->tagList = $tagList;
+
+        return $this;
     }
 }
