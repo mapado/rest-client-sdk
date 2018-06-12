@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.29.1
+
+### Changed
+
+* `$unitOfWork` in SdkClient constructor is optionnal
+
 ## 0.29.0
 
 ### Changed
