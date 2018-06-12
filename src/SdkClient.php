@@ -72,16 +72,20 @@ class SdkClient
      *
      * @param RestClient      $restClient
      * @param Mapping         $mapping
+     * @param UnitOfWork|null $unitOfWork
      * @param Serializer|null $serializer
      */
     public function __construct(
         RestClient $restClient,
         Mapping $mapping,
-        UnitOfWork $unitOfWork,
+        UnitOfWork $unitOfWork = null,
         Serializer $serializer = null
     ) {
         $this->restClient = $restClient;
         $this->mapping = $mapping;
+        if (!$unitOfWork) {
+            $unitOfWork = new UnitOfWork($this->mapping);
+        }
         $this->unitOfWork = $unitOfWork;
         if (!$serializer) {
             $serializer = new Serializer($this->mapping, $this->unitOfWork);
