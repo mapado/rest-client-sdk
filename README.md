@@ -191,7 +191,9 @@ $repostory->update($cart, [ 'serializeRelations' => [ 'cartItems' ] ]);
 If you need to extend the [EntityRepository](https://github.com/mapado/rest-client-sdk/blob/master/src/EntityRepository.php), you can just do something like that:
 
 ```php
-use \Mapado\RestClientSdk\EntityRepository;
+namespace Acme\Foo\Bar\Repository;
+
+use Mapado\RestClientSdk\EntityRepository;
 
 class CartRepository extends EntityRepository
 {
@@ -202,6 +204,19 @@ class CartRepository extends EntityRepository
         return $this->sdk->getModelHydrator()->hydrate($data, $this->entityName); // hydrate for an entity, hydrateList for a list
     }
 }
+```
+
+Update your entity `@Rest` annotation to let the entity be aware of it's repository:
+
+```php
+namespace Acme\Foo\Bar;
+
+use Mapado\RestClientSdk\Mapping\Annotations as Rest;
+
+/**
+ * @Rest\Entity(key="carts", repository="Acme\Foo\Bar\Repository\CartRepository")
+ */
+class Cart {
 ```
 
 ## Handling exceptions
