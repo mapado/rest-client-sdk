@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.29.2
+
+### Changed
+
+* log response in case of `RequestException`
+
 ## 0.29.1
 
 ### Changed

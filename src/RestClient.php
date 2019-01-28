@@ -4,6 +4,7 @@ namespace Mapado\RestClientSdk;
 
 use GuzzleHttp\ClientInterface;
 use GuzzleHttp\Exception\ClientException;
+use GuzzleHttp\Exception\RequestException;
 use GuzzleHttp\Exception\TransferException;
 use Mapado\RestClientSdk\Exception\RestClientException;
 use Mapado\RestClientSdk\Exception\RestException;
@@ -127,7 +128,7 @@ class RestClient
             return $this->executeRequest('GET', $requestUrl, $parameters);
         } catch (ClientException $e) {
             if (404 === $e->getResponse()->getStatusCode()) {
-                return null;
+                return;
             }
             throw new RestClientException(
                 'Error while getting resource',
@@ -311,6 +312,15 @@ class RestClient
                 $parameters,
                 $response
             );
+        } catch (RequestException $e) {
+            $this->logRequest(
+                $startTime,
+                $method,
+                $url,
+                $parameters,
+                $e->getResponse()
+            );
+            throw $e;
         } catch (TransferException $e) {
             $this->logRequest($startTime, $method, $url, $parameters);
             throw $e;
