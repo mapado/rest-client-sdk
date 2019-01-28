@@ -128,7 +128,7 @@ class RestClient
             return $this->executeRequest('GET', $requestUrl, $parameters);
         } catch (ClientException $e) {
             if (404 === $e->getResponse()->getStatusCode()) {
-                return;
+                return  null;
             }
             throw new RestClientException(
                 'Error while getting resource',
