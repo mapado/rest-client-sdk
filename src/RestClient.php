@@ -28,7 +28,7 @@ class RestClient
     /**
      * baseUrl
      *
-     * @var string
+     * @var ?string
      */
     private $baseUrl;
 
@@ -49,7 +49,7 @@ class RestClient
     /**
      * currentRequest
      *
-     * @var Request
+     * @var ?Request
      */
     private $currentRequest;
 
@@ -128,7 +128,7 @@ class RestClient
             return $this->executeRequest('GET', $requestUrl, $parameters);
         } catch (ClientException $e) {
             if (404 === $e->getResponse()->getStatusCode()) {
-                return  null;
+                return null;
             }
             throw new RestClientException(
                 'Error while getting resource',
@@ -261,10 +261,7 @@ class RestClient
         $request = $this->getCurrentRequest();
 
         $defaultParameters = ['version' => '1.0'];
-
-        if ($request) {
-            $defaultParameters['headers'] = ['Referer' => $request->getUri()];
-        }
+        $defaultParameters['headers'] = ['Referer' => $request->getUri()];
 
         return array_replace_recursive($defaultParameters, $parameters);
     }
