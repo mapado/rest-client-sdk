@@ -2,6 +2,8 @@
 
 namespace Mapado\RestClientSdk\Mapping;
 
+use Mapado\RestClientSdk\Exception\MissingIdentifierException;
+
 /**
  * Class ClassMetadata
  *
@@ -47,7 +49,7 @@ class ClassMetadata
     /**
      * identifierAttribute
      *
-     * @var Attribute
+     * @var ?Attribute
      */
     private $identifierAttribute;
 
@@ -127,6 +129,11 @@ class ClassMetadata
             : null;
     }
 
+    public function hasIdentifierAttribute(): bool
+    {
+        return (bool) $this->identifierAttribute;
+    }
+
     /**
      * getIdentifierAttribute
      *
@@ -134,6 +141,16 @@ class ClassMetadata
      */
     public function getIdentifierAttribute()
     {
+        if (!$this->identifierAttribute) {
+            throw new MissingIdentifierException(
+                sprintf(
+                    'Ressource "%s" does not contains an identifier. You can not call %s. You may want to call `hasIdentifierAttribute` before.',
+                    $this->modelName,
+                    __METHOD__
+                )
+            );
+        }
+
         return $this->identifierAttribute;
     }
 
@@ -157,6 +174,7 @@ class ClassMetadata
     public function setAttributeList($attributeList)
     {
         $this->attributeList = [];
+
         foreach ($attributeList as $attribute) {
             $this->attributeList[$attribute->getSerializedKey()] = $attribute;
 
@@ -241,13 +259,7 @@ class ClassMetadata
 
     public function getIdSerializeKey()
     {
-        if ($this->getIdentifierAttribute()) {
-            $idAttr = $this->getIdentifierAttribute()->getSerializedKey();
-
-            return $idAttr;
-        } else {
-            return 'id';
-        }
+        return $this->getIdentifierAttribute()->getSerializedKey();
     }
 
     /**
@@ -279,12 +291,6 @@ class ClassMetadata
 
     private function getIdKey()
     {
-        if ($this->getIdentifierAttribute()) {
-            $idAttr = $this->getIdentifierAttribute()->getAttributeName();
-
-            return $idAttr;
-        } else {
-            return 'id';
-        }
+        return $this->getIdentifierAttribute()->getAttributeName();
     }
 }

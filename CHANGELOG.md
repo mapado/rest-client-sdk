@@ -4,6 +4,11 @@
 
 ### Changed
 
+* [MIGHT BREAK] the identifier attribute (`@Rest\Id`) is mandatory to call `ClassMetadata::getIdentifierAttribute()`
+  It previously defaulted to `id`. It was more to avoid BC break in Mapado codebase more than a real feature.
+  It now throws an instance of [MissingIdentifierException](https://github.com/mapado/rest-client-sdk/blob/v0.30.0/src/Exception/MissingIdentifierException.php)
+  This way is is less magic and more understandable.
+
 * Fix issue with `UnitOfWork::registerClean` when we call `EntityRepository::find()`
 
 ## 0.29.2
