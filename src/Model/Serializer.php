@@ -159,9 +159,16 @@ class Serializer
         }
 
         $idGetter = $this->getClassMetadata($instance)->getIdGetter();
-        $identifier = $idGetter ?? $instance->{$idGetter}();
-        if ($identifier) {
-            $this->unitOfWork->registerClean($identifier, $instance);
+
+        if ($idGetter) {
+            $callable = [$instance, $idGetter];
+            $identifier = is_callable($callable)
+                ? call_user_func($callable)
+                : null;
+
+            if ($identifier) {
+                $this->unitOfWork->registerClean($identifier, $instance);
+            }
         }
 
         return $instance;

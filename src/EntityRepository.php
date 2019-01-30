@@ -174,7 +174,7 @@ class EntityRepository
 
         // cache entity
         $this->saveToCache($id, $entity);
-        $this->unitOfWork->registerClean($id, $entity);
+        $this->unitOfWork->registerClean($id, $entity); // another register clean will be made in the Serializer if the id different from the called uri
 
         return $entity;
     }
