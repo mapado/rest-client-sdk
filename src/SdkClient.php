@@ -22,7 +22,7 @@ class SdkClient
     /**
      * Cache item pool.
      *
-     * @var CacheItemPoolInterface
+     * @var ?CacheItemPoolInterface
      */
     protected $cacheItemPool;
 
@@ -56,7 +56,7 @@ class SdkClient
     /**
      * proxyManagerConfig
      *
-     * @var Configuration
+     * @var ?Configuration
      */
     private $proxyManagerConfig;
 
