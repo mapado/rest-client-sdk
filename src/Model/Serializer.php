@@ -88,10 +88,6 @@ class Serializer
         $className = $this->resolveRealClassName($data, $className);
 
         $classMetadata = $this->mapping->getClassMetadata($className);
-        $identifierAttribute = $classMetadata->getIdentifierAttribute();
-        $identifierAttrKey = $identifierAttribute
-            ? $identifierAttribute->getSerializedKey()
-            : null;
 
         $attributeList = $classMetadata->getAttributeList();
 
@@ -118,11 +114,6 @@ class Serializer
                         $relationClassMetadata = $this->mapping->getClassMetadata(
                             $targetEntity
                         );
-
-                        $relationIdentifierAttribute = $relationClassMetadata->getIdentifierAttribute();
-                        $relationIdentifierAttrKey = $relationIdentifierAttribute
-                            ? $relationIdentifierAttribute->getSerializedKey()
-                            : null;
 
                         if ($relation->isManyToOne()) {
                             $value = $this->deserialize(
@@ -158,16 +149,19 @@ class Serializer
             }
         }
 
-        $idGetter = $this->getClassMetadata($instance)->getIdGetter();
+        $classMetadata = $this->getClassMetadata($instance);
+        if ($classMetadata->hasIdentifierAttribute()) {
+            $idGetter = $classMetadata->getIdGetter();
 
-        if ($idGetter) {
-            $callable = [$instance, $idGetter];
-            $identifier = is_callable($callable)
-                ? call_user_func($callable)
-                : null;
+            if ($idGetter) {
+                $callable = [$instance, $idGetter];
+                $identifier = is_callable($callable)
+                    ? call_user_func($callable)
+                    : null;
 
-            if ($identifier) {
-                $this->unitOfWork->registerClean($identifier, $instance);
+                if ($identifier) {
+                    $this->unitOfWork->registerClean($identifier, $instance);
+                }
             }
         }
 
@@ -218,8 +212,8 @@ class Serializer
         $classMetadata = $this->mapping->getClassMetadata($modelName);
 
         if ($level > 0 && empty($context['serializeRelation'])) {
-            $idAttribute = $classMetadata->getIdentifierAttribute();
-            if ($idAttribute) {
+            if ($classMetadata->hasIdentifierAttribute()) {
+                $idAttribute = $classMetadata->getIdentifierAttribute();
                 $getter = 'get' . ucfirst($idAttribute->getAttributeName());
                 $tmpId = $entity->{$getter}();
                 if ($tmpId) {
@@ -272,11 +266,11 @@ class Serializer
                         $relation->getTargetEntity()
                     )
                 ) {
-                    $idAttribute = $this->mapping->getClassMetadata(
+                    $relationClassMetadata = $this->mapping->getClassMetadata(
                         $relation->getTargetEntity()
-                    )->getIdentifierAttribute();
+                    );
 
-                    if (!$idAttribute) {
+                    if (!$relationClassMetadata->hasIdentifierAttribute()) {
                         $data = $this->recursiveSerialize(
                             $data,
                             $relation->getTargetEntity(),
@@ -284,6 +278,7 @@ class Serializer
                             $context
                         );
                     } else {
+                        $idAttribute = $relationClassMetadata->getIdentifierAttribute();
                         $idGetter =
                             'get' . ucfirst($idAttribute->getAttributeName());
 

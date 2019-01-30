@@ -45,11 +45,11 @@ class EntityRepository extends atoum
 
         $this->mapping = new RestMapping('v12');
         $this->mapping->setMapping([
-            new ClassMetadata(
+            (new ClassMetadata(
                 'orders',
                 'Mapado\RestClientSdk\Tests\Model\JsonLd\Model',
                 'mock\Mapado\RestClientSdk\EntityRepository'
-            ),
+            ))->setAttributeList([new Attribute('id', null, null, true)]),
         ]);
         $this->unitOfWork = new UnitOfWork($this->mapping);
 
@@ -237,11 +237,13 @@ class EntityRepository extends atoum
     {
         $mapping = new RestMapping('/v12');
         $mapping->setMapping([
-            new ClassMetadata(
+            (new ClassMetadata(
                 'products',
                 'Mapado\RestClientSdk\Tests\Model\JsonLd\Product',
                 'mock\Mapado\RestClientSdk\EntityRepository'
-            ),
+            ))->setAttributeList([
+                new Attribute('id', null, null, true),
+            ]),
         ]);
 
         $this->calling($this->mockedSdk)->getMapping = $mapping;
@@ -411,11 +413,13 @@ class EntityRepository extends atoum
     {
         $mapping = new RestMapping('v12');
         $mapping->setMapping([
-            new ClassMetadata(
+            (new ClassMetadata(
                 'carts',
                 'Mapado\RestClientSdk\Tests\Model\JsonLd\Cart',
                 'mock\Mapado\RestClientSdk\EntityRepository'
-            ),
+            ))->setAttributeList([
+                new Attribute('id', null, null, true),
+            ]),
             new ClassMetadata(
                 'cart_items',
                 'Mapado\RestClientSdk\Tests\Model\JsonLd\CartItem',
