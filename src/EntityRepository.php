@@ -272,8 +272,7 @@ class EntityRepository
         );
 
         $this->removeFromCache($identifier);
-        $this->unitOfWork->registerClean($identifier, $newSerializedModel);
-
+        $this->unitOfWork->registerClean($identifier, $data);
         $hydrator = $this->sdk->getModelHydrator();
 
         return $hydrator->hydrate($data, $this->entityName);
@@ -419,20 +418,11 @@ class EntityRepository
                 $classname = get_class($item);
 
                 if ($mapping->hasClassMetadata($classname)) {
-                    $idAttr = $mapping->getClassMetadata(
+                    $idGetter = $mapping->getClassMetadata(
                         $classname
-                    )->getIdentifierAttribute();
+                    )->getIdGetter();
 
-                    if ($idAttr) {
-                        $idGetter =
-                            'get' . ucfirst($idAttr->getAttributeName());
-
-                        return $item->{$idGetter}();
-                    }
-                }
-
-                if (method_exists($item, 'getId')) {
-                    return call_user_func([$item, 'getId']);
+                    return $item->{$idGetter}();
                 }
             }
 
