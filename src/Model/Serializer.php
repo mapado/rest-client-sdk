@@ -140,7 +140,7 @@ class Serializer
                 }
 
                 if (isset($value)) {
-                    if ($attribute && 'datetime' === $attribute->getType()) {
+                    if ('datetime' === $attribute->getType()) {
                         $value = new \DateTime($value);
                     }
 
