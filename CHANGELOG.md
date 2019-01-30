@@ -1,5 +1,11 @@
 # Changelog
 
+## Unreleased
+
+### Changed
+
+* Fix issue with `UnitOfWork::registerClean` when we call `EntityRepository::find()`
+
 ## 0.29.2
 
 ### Changed
