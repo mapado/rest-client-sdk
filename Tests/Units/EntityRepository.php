@@ -607,7 +607,7 @@ class EntityRepository extends atoum
         $mapping = new RestMapping();
         $mapping->setMapping($annotationDriver->loadDirectory(__DIR__ . '/../Model/JsonLd/'));
 
-        $unitOfWork = new UnitOfWork($mapping);
+        $unitOfWork = $this->newMockInstance(UnitOfWork::class, null, null, [$mapping]);
 
         $this->calling($this->mockedSdk)->getMapping = $mapping;
         $this->calling($this->mockedSdk)->getSerializer = new \Mapado\RestClientSdk\Model\Serializer($mapping, $unitOfWork);
@@ -657,6 +657,128 @@ class EntityRepository extends atoum
                             ]
                         )
                         ->once()
+        ;
+    }
+
+    public function testUpdatingInstanceDoesGetDataFromUnitOfWork()
+    {
+        $annotationDriver = new AnnotationDriver(__DIR__ . '/../cache/');
+        $mapping = new RestMapping();
+        $mapping->setMapping($annotationDriver->loadDirectory(__DIR__ . '/../Model/JsonLd/'));
+
+        $unitOfWork = $this->newMockInstance(UnitOfWork::class, null, null, [$mapping]);
+
+        $this->calling($this->mockedSdk)->getMapping = $mapping;
+        $this->calling($this->mockedSdk)->getSerializer = new \Mapado\RestClientSdk\Model\Serializer($mapping, $unitOfWork);
+
+        $cartRepository = new \mock\Mapado\RestClientSdk\EntityRepository(
+            $this->mockedSdk,
+            $this->mockedRestClient,
+            $unitOfWork,
+            'Mapado\RestClientSdk\Tests\Model\JsonLd\Cart'
+        );
+
+        $this->calling($this->mockedRestClient)->get = [
+            'id' => '/v1/carts/1',
+            'status' => 'pending',
+            'created_at' => '2019-01-01',
+        ];
+
+        $this->calling($this->mockedRestClient)->put = [
+            'id' => '/v1/carts/1',
+            'status' => 'payed',
+            'created_at' => '2019-01-01',
+        ];
+
+        $this
+            ->if($cart = $cartRepository->find('/v1/carts/1'))
+            ->then
+                ->mock($this->mockedRestClient)
+                    ->call('get')
+                        ->withArguments(
+                            '/v1/carts/1'
+                        )
+                        ->once()
+                ->mock($unitOfWork)
+                    ->call('registerClean')
+                        ->withArguments('/v1/carts/1')->exactly(2)
+                        ->withAnyArguments()->exactly(2)
+
+            ->if($cart->setStatus('payed'))
+            ->if($cartRepository->update($cart))
+            ->then
+                ->mock($this->mockedRestClient)
+                    ->call('put')
+                        ->withArguments(
+                            '/v1/carts/1',
+                            ['status' => 'payed']
+                        )
+                        ->once()
+                ->mock($unitOfWork)
+                    ->call('registerClean')
+                        ->withArguments('/v1/carts/1')->exactly(4)
+                        ->withAnyArguments()->exactly(4)
+        ;
+    }
+
+    public function testUpdatingInstanceDoesGetDataFromUnitOfWorkWithQueryParam()
+    {
+        $annotationDriver = new AnnotationDriver(__DIR__ . '/../cache/');
+        $mapping = new RestMapping();
+        $mapping->setMapping($annotationDriver->loadDirectory(__DIR__ . '/../Model/JsonLd/'));
+
+        $unitOfWork = $this->newMockInstance(UnitOfWork::class, null, null, [$mapping]);
+
+        $this->calling($this->mockedSdk)->getMapping = $mapping;
+        $this->calling($this->mockedSdk)->getSerializer = new \Mapado\RestClientSdk\Model\Serializer($mapping, $unitOfWork);
+
+        $cartRepository = new \mock\Mapado\RestClientSdk\EntityRepository(
+            $this->mockedSdk,
+            $this->mockedRestClient,
+            $unitOfWork,
+            'Mapado\RestClientSdk\Tests\Model\JsonLd\Cart'
+        );
+
+        $this->calling($this->mockedRestClient)->get = [
+            'id' => '/v1/carts/1',
+            'status' => 'pending',
+        ];
+
+        $this->calling($this->mockedRestClient)->put = [
+            'id' => '/v1/carts/1',
+            'status' => 'payed',
+        ];
+
+        $this
+            ->if($cart = $cartRepository->find('/v1/carts/1', ['fields' => 'id,status']))
+            ->then
+                ->mock($this->mockedRestClient)
+                    ->call('get')
+                        ->withArguments(
+                            '/v1/carts/1?fields=id%2Cstatus'
+                        )
+                        ->once()
+                ->mock($unitOfWork)
+                    ->call('registerClean')
+                        ->withArguments('/v1/carts/1')->exactly(1)
+                        ->withArguments('/v1/carts/1?fields=id%2Cstatus')->exactly(1)
+                        ->withAnyArguments()->exactly(2)
+
+            ->if($cart->setStatus('payed'))
+            ->if($cartRepository->update($cart, [], ['fields' => 'id']))
+            ->then
+                ->mock($this->mockedRestClient)
+                    ->call('put')
+                        ->withArguments(
+                            '/v1/carts/1?fields=id',
+                            ['status' => 'payed']
+                        )
+                        ->once()
+                ->mock($unitOfWork)
+                    ->call('registerClean')
+                        ->withArguments('/v1/carts/1')->exactly(3)
+                        ->withArguments('/v1/carts/1?fields=id%2Cstatus')->exactly(1)
+                        ->withAnyArguments()->exactly(4)
         ;
     }
 }
