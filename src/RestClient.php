@@ -60,7 +60,7 @@ class RestClient
     public function __construct(ClientInterface $httpClient, $baseUrl = null)
     {
         $this->httpClient = $httpClient;
-        $this->baseUrl = '/' === substr($baseUrl, -1)
+        $this->baseUrl = (null !== $baseUrl && '/' === substr($baseUrl, -1))
             ? substr($baseUrl, 0, -1)
             : $baseUrl;
         $this->logHistory = false;
@@ -127,7 +127,8 @@ class RestClient
         try {
             return $this->executeRequest('GET', $requestUrl, $parameters);
         } catch (ClientException $e) {
-            if (404 === $e->getResponse()->getStatusCode()) {
+            $response = $e->getResponse();
+            if (null !== $response && 404 === $response->getStatusCode()) {
                 return null;
             }
             throw new RestClientException(

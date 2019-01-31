@@ -100,7 +100,8 @@ class AnnotationDriver
 
         $mapping = [];
         foreach ($classes as $class) {
-            if ($metadata = $this->getClassMetadataForClassname($class)) {
+            $metadata = $this->getClassMetadataForClassname($class);
+            if ($metadata) {
                 $mapping[] = $metadata;
             }
         }

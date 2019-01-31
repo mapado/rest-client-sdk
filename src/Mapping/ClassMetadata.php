@@ -120,7 +120,7 @@ class ClassMetadata
      *
      * @param string $name
      *
-     * @return Attribute
+     * @return ?Attribute
      */
     public function getAttribute($name)
     {

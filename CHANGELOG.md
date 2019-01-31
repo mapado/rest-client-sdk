@@ -9,6 +9,8 @@
   It now throws an instance of [MissingIdentifierException](https://github.com/mapado/rest-client-sdk/blob/v0.30.0/src/Exception/MissingIdentifierException.php)
   This way is is less magic and more understandable.
 
+* [MIGHT BREAK] Throw a lot more exception than before in different case that should not really happen (like calling `getMetadata` with a wrong model name for example).
+
 * Fix issue with `UnitOfWork::registerClean` when we call `EntityRepository::find()`
 
 ## 0.29.2

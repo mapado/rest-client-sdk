@@ -33,8 +33,6 @@ class EntityRepository extends atoum
     {
         $this->mockGenerator->orphanize('__construct');
         $this->mockedSdk = new \mock\Mapado\RestClientSdk\SdkClient();
-        $mockedHydrator = new \mock\Mapado\RestClientSdk\Model\ModelHydrator($this->mockedSdk);
-        $this->calling($this->mockedSdk)->getModelHydrator = $mockedHydrator;
 
         $this->mockGenerator->orphanize('__construct');
         $this->mockedRestClient = new \mock\Mapado\RestClientSdk\RestClient();
@@ -54,6 +52,10 @@ class EntityRepository extends atoum
         $this->unitOfWork = new UnitOfWork($this->mapping);
 
         $this->calling($this->mockedSdk)->getMapping = $this->mapping;
+
+        $serializer = new \Mapado\RestClientSdk\Model\Serializer($this->mapping, $this->unitOfWork);
+        $serializer->setSdk($this->mockedSdk);
+        $this->calling($this->mockedSdk)->getSerializer = $serializer;
 
         $this->repository = new \mock\Mapado\RestClientSdk\EntityRepository(
             $this->mockedSdk,
@@ -263,8 +265,8 @@ class EntityRepository extends atoum
         $this->calling($this->mockedSdk)->getCacheItemPool = $arrayAdapter;
         $this->calling($this->mockedSdk)->getCachePrefix = 'test_prefix_';
 
-        $this->calling($this->mockedRestClient)->get = $product1;
-        $this->calling($this->mockedRestClient)->put = $product1;
+        $this->calling($this->mockedRestClient)->get = ['id' => '/v12/products/1'];
+        $this->calling($this->mockedRestClient)->put = ['id' => '/v12/products/1'];
         $this->calling($this->mockedRestClient)->delete = null;
 
         $repository = new \mock\Mapado\RestClientSdk\EntityRepository(
@@ -344,8 +346,8 @@ class EntityRepository extends atoum
         $this->calling($this->mockedSdk)->getCacheItemPool = $arrayAdapter;
         $this->calling($this->mockedSdk)->getCachePrefix = 'test_prefix_';
 
-        $this->calling($this->mockedRestClient)->get = $section1;
-        $this->calling($this->mockedRestClient)->put = $section1;
+        $this->calling($this->mockedRestClient)->get = ['id' => '/sections/1'];
+        $this->calling($this->mockedRestClient)->put = ['id' => '/sections/1'];
         $this->calling($this->mockedRestClient)->delete = null;
 
         $repository = new \mock\Mapado\RestClientSdk\EntityRepository(
@@ -477,7 +479,9 @@ class EntityRepository extends atoum
             ),
         ]);
 
-        $this->calling($this->mockedSdk)->getSerializer = new \Mapado\RestClientSdk\Model\Serializer($mapping, $this->unitOfWork);
+        $serializer = new \Mapado\RestClientSdk\Model\Serializer($mapping, $this->unitOfWork);
+        $serializer->setSdk($this->mockedSdk);
+        $this->calling($this->mockedSdk)->getSerializer = $serializer;
         $this->calling($this->mockedSdk)->getMapping = $mapping;
 
         $this->calling($this->mockedRestClient)->get = [];
@@ -720,8 +724,8 @@ class EntityRepository extends atoum
                         ->once()
                 ->mock($unitOfWork)
                     ->call('registerClean')
-                        ->withArguments('/v1/carts/1')->exactly(4)
-                        ->withAnyArguments()->exactly(4)
+                        ->withArguments('/v1/carts/1')->exactly(3)
+                        ->withAnyArguments()->exactly(3)
         ;
     }
 
@@ -780,9 +784,9 @@ class EntityRepository extends atoum
                         ->once()
                 ->mock($unitOfWork)
                     ->call('registerClean')
-                        ->withArguments('/v1/carts/1')->exactly(3)
+                        ->withArguments('/v1/carts/1')->exactly(2)
                         ->withArguments('/v1/carts/1?fields=id%2Cstatus')->exactly(1)
-                        ->withAnyArguments()->exactly(4)
+                        ->withAnyArguments()->exactly(3)
         ;
     }
 }
