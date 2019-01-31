@@ -1,12 +1,16 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Mapado\RestClientSdk;
 
+use Mapado\RestClientSdk\Collection\Collection;
 use Mapado\RestClientSdk\Exception\HydratorException;
 use Mapado\RestClientSdk\Exception\RestException;
 use Mapado\RestClientSdk\Exception\SdkException;
 use Mapado\RestClientSdk\Exception\UnexpectedTypeException;
 use Mapado\RestClientSdk\Helper\ArrayHelper;
+use Mapado\RestClientSdk\Mapping\ClassMetadata;
 
 class EntityRepository
 {
@@ -32,7 +36,7 @@ class EntityRepository
     /**
      * classMetadataCache
      *
-     * @var \Mapado\RestClientSdk\Mapping\ClassMetadata
+     * @var ClassMetadata
      */
     private $classMetadataCache;
 
@@ -54,7 +58,7 @@ class EntityRepository
         SdkClient $sdkClient,
         RestClient $restClient,
         UnitOfWork $unitOfWork,
-        $entityName
+        string $entityName
     ) {
         $this->sdk = $sdkClient;
         $this->restClient = $restClient;
@@ -65,21 +69,18 @@ class EntityRepository
     /**
      * Adds support for magic finders.
      *
-     * @param string $method
-     * @param mixed  $arguments
-     *
      * @return array|object|null the found entity/entities
      */
-    public function __call($method, $arguments)
+    public function __call(string $method, array $arguments)
     {
         switch (true) {
-            case 0 === strpos($method, 'findBy'):
-                $fieldName = strtolower(substr($method, 6));
+            case 0 === mb_strpos($method, 'findBy'):
+                $fieldName = mb_strtolower(mb_substr($method, 6));
                 $methodName = 'findBy';
                 break;
 
-            case 0 === strpos($method, 'findOneBy'):
-                $fieldName = strtolower(substr($method, 9));
+            case 0 === mb_strpos($method, 'findOneBy'):
+                $fieldName = mb_strtolower(mb_substr($method, 9));
                 $methodName = 'findOneBy';
                 break;
 
@@ -162,12 +163,10 @@ class EntityRepository
     /**
      * find - finds one item of the entity based on the @REST\Id field in the entity
      *
-     * @param string $id          id of the element to fetch
+     * @param string|int|mixed $id          id of the element to fetch
      * @param array  $queryParams query parameters to add to the query
-     *
-     * @return object|null
      */
-    public function find($id, $queryParams = [])
+    public function find($id, array $queryParams = []): ?object
     {
         $hydrator = $this->sdk->getModelHydrator();
         $id = $hydrator->convertId($id, $this->entityName);
@@ -194,12 +193,7 @@ class EntityRepository
         return $entity;
     }
 
-    /**
-     * findAll
-     *
-     * @return array|object
-     */
-    public function findAll()
+    public function findAll(): Collection
     {
         $mapping = $this->sdk->getMapping();
         $key = $this->getClassMetadata()->getKey();
@@ -210,6 +204,14 @@ class EntityRepository
 
         // if entityList is found in cache, return it
         if (false !== $entityListFromCache) {
+            if (!$entityListFromCache instanceof Collection) {
+                throw new \RuntimeException(
+                    'Entity list in cache should be an instance of ' .
+                    Collection::class .
+                    '. This should not happen.'
+                );
+            }
+
             return $entityListFromCache;
         }
 
@@ -233,13 +235,11 @@ class EntityRepository
     }
 
     /**
-     * remove
-     *
-     * @param object $model
+     * remove entity
      *
      * @TODO STILL NEEDS TO BE CONVERTED TO ENTITY MODEL
      */
-    public function remove($model)
+    public function remove(object $model): void
     {
         $identifier = $model->{$this->getClassMetadata()->getIdGetter()}();
         $this->removeFromCache($identifier);
@@ -248,18 +248,11 @@ class EntityRepository
         $this->restClient->delete($identifier);
     }
 
-    /**
-     * update
-     *
-     * @param object $model
-     *
-     * @return object
-     */
     public function update(
-        $model,
-        $serializationContext = [],
-        $queryParams = []
-    ) {
+        object $model,
+        array $serializationContext = [],
+        array $queryParams = []
+    ): object {
         $identifier = $model->{$this->getClassMetadata()->getIdGetter()}();
         $serializer = $this->sdk->getSerializer();
         $newSerializedModel = $serializer->serialize(
@@ -302,18 +295,11 @@ class EntityRepository
         return $out;
     }
 
-    /**
-     * persist
-     *
-     * @param object $model
-     *
-     * @return object
-     */
     public function persist(
-        $model,
-        $serializationContext = [],
-        $queryParams = []
-    ) {
+        object $model,
+        array $serializationContext = [],
+        array $queryParams = []
+    ): object {
         $mapping = $this->sdk->getMapping();
         $prefix = $mapping->getIdPrefix();
         $key = $mapping->getKeyFromModel($this->entityName);
@@ -361,13 +347,9 @@ class EntityRepository
     }
 
     /**
-     * fetchFromCache
-     *
-     * @param string $key
-     *
      * @return object|false
      */
-    protected function fetchFromCache($key)
+    protected function fetchFromCache(string $key)
     {
         $key = $this->normalizeCacheKey($key);
         $cacheItemPool = $this->sdk->getCacheItemPool();
@@ -384,15 +366,7 @@ class EntityRepository
         return false;
     }
 
-    /**
-     * saveToCache
-     *
-     * @param string $key
-     * @param object|null $value
-     *
-     * @return object
-     */
-    protected function saveToCache($key, $value)
+    protected function saveToCache(string $key, ?object $value): void
     {
         $key = $this->normalizeCacheKey($key);
         $cacheItemPool = $this->sdk->getCacheItemPool();
@@ -408,13 +382,11 @@ class EntityRepository
     }
 
     /**
-     * removeFromCache
-     *
-     * @param string $key
+     * remove from cache
      *
      * @return bool true if no cache or cache successfully cleared, false otherwise
      */
-    protected function removeFromCache($key)
+    protected function removeFromCache(string $key): bool
     {
         $key = $this->normalizeCacheKey($key);
         $cacheItemPool = $this->sdk->getCacheItemPool();
@@ -429,16 +401,10 @@ class EntityRepository
         return true;
     }
 
-    /**
-     * addQueryParameter
-     *
-     * @param string $path path to call
-     * @param array $params query parameters to add
-     *
-     * @return string
-     */
-    protected function addQueryParameter($path, $params = [])
-    {
+    protected function addQueryParameter(
+        string $path,
+        array $params = []
+    ): string {
         if (empty($params)) {
             return $path;
         }
@@ -446,14 +412,7 @@ class EntityRepository
         return $path . '?' . http_build_query($params);
     }
 
-    /**
-     * convertQueryParameters
-     *
-     * @param array $queryParameters
-     *
-     * @return array
-     */
-    private function convertQueryParameters($queryParameters)
+    private function convertQueryParameters(array $queryParameters): array
     {
         $mapping = $this->sdk->getMapping();
 
@@ -474,14 +433,7 @@ class EntityRepository
         }, $queryParameters);
     }
 
-    /**
-     * normalizeCacheKey
-     *
-     * @param string $key
-     *
-     * @return string
-     */
-    private function normalizeCacheKey($key)
+    private function normalizeCacheKey(string $key): string
     {
         $out = preg_replace('~[\\/\{\}@:\(\)]~', '_', $key);
 
@@ -494,7 +446,7 @@ class EntityRepository
         return $out;
     }
 
-    private function getClassMetadata()
+    private function getClassMetadata(): ClassMetadata
     {
         if (!isset($this->classMetadata)) {
             $this->classMetadataCache = $this->sdk->getMapping()->getClassMetadata(

@@ -4,12 +4,10 @@ sudo: false
 language: php
 matrix:
     include:
+        - php: 7.3
         - php: 7.2
-        - php: 7.1
-          env: PROXY_MANAGER_VERSION="^2.1"
 
 install:
-    - if [ $PROXY_MANAGER_VERSION ]; then composer require ocramius/proxy-manager:${PROXY_MANAGER_VERSION} --prefer-dist --no-interaction; fi
     - composer install
 
 script:

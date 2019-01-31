@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Mapado\RestClientSdk\Collection;
 
 use ArrayIterator;
@@ -42,10 +44,8 @@ class Collection implements \IteratorAggregate, \Serializable, \Countable, \Arra
 
     /**
      * Returns inner elements collection.
-     *
-     * @return array
      */
-    public function toArray()
+    public function toArray(): array
     {
         return $this->elements;
     }
@@ -76,10 +76,8 @@ class Collection implements \IteratorAggregate, \Serializable, \Countable, \Arra
 
     /**
      * Returns element count in collection.
-     *
-     * @return int
      */
-    public function getTotalItems()
+    public function getTotalItems(): int
     {
         return $this->count();
     }
@@ -89,7 +87,7 @@ class Collection implements \IteratorAggregate, \Serializable, \Countable, \Arra
      */
     public function offsetSet($offset, $value)
     {
-        if (is_null($offset)) {
+        if (null === $offset) {
             $this->elements[] = $value;
         } else {
             $this->elements[$offset] = $value;
@@ -125,17 +123,15 @@ class Collection implements \IteratorAggregate, \Serializable, \Countable, \Arra
     /**
      * {@inheritdoc}
      */
-    public function getIterator()
+    public function getIterator(): ArrayIterator
     {
         return new ArrayIterator($this->elements);
     }
 
     /**
      * getExtraProperties
-     *
-     * @return array
      */
-    public function getExtraProperties()
+    public function getExtraProperties(): array
     {
         return $this->extraProperties;
     }
@@ -143,11 +139,9 @@ class Collection implements \IteratorAggregate, \Serializable, \Countable, \Arra
     /**
      * return the value of an extra property
      *
-     * @param string $key
-     *
      * @return mixed
      */
-    public function getExtraProperty($key)
+    public function getExtraProperty(string $key)
     {
         if (isset($this->extraProperties[$key])) {
             return $this->extraProperties[$key];

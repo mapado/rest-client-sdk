@@ -1,7 +1,10 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Mapado\RestClientSdk\Mapping;
 
+use Mapado\RestClientSdk\EntityRepository;
 use Mapado\RestClientSdk\Exception\MissingIdentifierException;
 use Mapado\RestClientSdk\Exception\MoreThanOneIdentifierException;
 
@@ -36,14 +39,14 @@ class ClassMetadata
     /**
      * attributeList
      *
-     * @var Attribute[]
+     * @var array<Attribute>
      */
     private $attributeList;
 
     /**
      * relationList
      *
-     * @var Relation[]
+     * @var array<Relation>
      */
     private $relationList;
 
@@ -54,80 +57,45 @@ class ClassMetadata
      */
     private $identifierAttribute;
 
-    /**
-     * Constructor.
-     *
-     * @param string $key
-     * @param string $modelName
-     * @param string $repositoryName
-     */
-    public function __construct($key, $modelName, $repositoryName)
-    {
+    public function __construct(
+        string $key,
+        string $modelName,
+        ?string $repositoryName = null
+    ) {
         $this->key = $key;
         $this->modelName = $modelName;
-        $this->repositoryName = $repositoryName;
+        $this->repositoryName = $repositoryName ?? EntityRepository::class;
+        $this->attributeList = [];
+        $this->relationList = [];
     }
 
-    /**
-     * Getter for modelName
-     *
-     * @return string
-     */
-    public function getModelName()
+    public function getModelName(): string
     {
         return $this->modelName;
     }
 
-    /**
-     * Setter for modelName
-     *
-     * @param string $modelName
-     *
-     * @return ClassMetadata
-     */
-    public function setModelName($modelName)
+    public function setModelName(string $modelName): self
     {
         $this->modelName = $modelName;
 
         return $this;
     }
 
-    /**
-     * Getter for key
-     *
-     * @return string
-     */
-    public function getKey()
+    public function getKey(): string
     {
         return $this->key;
     }
 
-    /**
-     * Setter for key
-     *
-     * @param string $key
-     *
-     * @return ClassMetadata
-     */
-    public function setKey($key)
+    public function setKey(string $key): self
     {
         $this->key = $key;
 
         return $this;
     }
 
-    /**
-     * getAttribute
-     *
-     * @param string $name
-     *
-     * @return ?Attribute
-     */
-    public function getAttribute($name)
+    public function getAttribute(string $name): ?Attribute
     {
-        return isset($this->attributeList[$name])
-            ? $this->attributeList[$name]
-            : null;
+        return $this->attributeList[$name] ?? null;
     }
 
     public function hasIdentifierAttribute(): bool
@@ -136,11 +104,9 @@ class ClassMetadata
     }
 
     /**
-     * getIdentifierAttribute
-     *
-     * @return Attribute
+     * @throws MissingIdentifierException
      */
-    public function getIdentifierAttribute()
+    public function getIdentifierAttribute(): Attribute
     {
         if (!$this->identifierAttribute) {
             throw new MissingIdentifierException(
@@ -156,11 +122,9 @@ class ClassMetadata
     }
 
     /**
-     * Getter for attributeList
-     *
-     * @return Attribute[]
+     * @return array<Attribute>
      */
-    public function getAttributeList()
+    public function getAttributeList(): array
     {
         return $this->attributeList;
     }
@@ -168,11 +132,9 @@ class ClassMetadata
     /**
      * Setter for attributeList
      *
-     * @param Attribute[] $attributeList
-     *
-     * @return ClassMetadata
+     * @param  iterable<Attribute> $attributeList
      */
-    public function setAttributeList($attributeList)
+    public function setAttributeList($attributeList): self
     {
         $this->attributeList = [];
 
@@ -200,9 +162,9 @@ class ClassMetadata
     /**
      * Getter for relationList
      *
-     * @return Relation[]
+     * @return array<Relation>
      */
-    public function getRelationList()
+    public function getRelationList(): array
     {
         return $this->relationList;
     }
@@ -210,25 +172,16 @@ class ClassMetadata
     /**
      * Setter for relationList
      *
-     * @param Relation[] $relationList
-     *
-     * @return ClassMetadata
+     * @param array<Relation> $relationList
      */
-    public function setRelationList($relationList)
+    public function setRelationList($relationList): self
     {
         $this->relationList = $relationList;
 
         return $this;
     }
 
-    /**
-     * getRelation
-     *
-     * @param string $key
-     *
-     * @return Relation|null
-     */
-    public function getRelation($key)
+    public function getRelation(string $key): ?Relation
     {
         if (!empty($this->relationList)) {
             foreach ($this->relationList as $relation) {
@@ -237,38 +190,28 @@ class ClassMetadata
                 }
             }
         }
+
+        return null;
     }
 
-    /**
-     * Getter for repositoryName
-     *
-     * @return string
-     */
-    public function getRepositoryName()
+    public function getRepositoryName(): string
     {
         return $this->repositoryName;
     }
 
-    /**
-     * Setter for repositoryName
-     *
-     * @param string $repositoryName
-     *
-     * @return ClassMetadata
-     */
-    public function setRepositoryName($repositoryName)
+    public function setRepositoryName(string $repositoryName): self
     {
         $this->repositoryName = $repositoryName;
 
         return $this;
     }
 
-    public function getIdGetter()
+    public function getIdGetter(): string
     {
         return 'get' . ucfirst($this->getIdKey());
     }
 
-    public function getIdSerializeKey()
+    public function getIdSerializeKey(): string
     {
         return $this->getIdentifierAttribute()->getSerializedKey();
     }
@@ -276,9 +219,9 @@ class ClassMetadata
     /**
      * return default serialize model with null value or empty array on relations
      *
-     * @return array
+     * @return array<string, array|null>
      */
-    public function getDefaultSerializedModel()
+    public function getDefaultSerializedModel(): array
     {
         $out = [];
         $attributeList = $this->getAttributeList();
@@ -300,7 +243,7 @@ class ClassMetadata
         return $out;
     }
 
-    private function getIdKey()
+    private function getIdKey(): string
     {
         return $this->getIdentifierAttribute()->getAttributeName();
     }

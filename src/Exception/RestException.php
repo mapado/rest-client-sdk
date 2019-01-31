@@ -1,7 +1,10 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Mapado\RestClientSdk\Exception;
 
+use Exception;
 use GuzzleHttp\Exception\RequestException;
 use Psr\Http\Message\ResponseInterface;
 
@@ -27,21 +30,12 @@ class RestException extends \RuntimeException
      */
     private $response;
 
-    /**
-     * RestException constructor.
-     *
-     * @param string          $message
-     * @param string          $path
-     * @param array           $params
-     * @param int             $code
-     * @param \Exception|null $previous
-     */
     public function __construct(
-        $message,
-        $path,
+        string $message,
+        string $path,
         array $params = [],
-        $code = 0,
-        \Exception $previous = null
+        int $code = 0,
+        ?Exception $previous = null
     ) {
         parent::__construct($message, $code, $previous);
         $this->path = $path;
@@ -51,26 +45,17 @@ class RestException extends \RuntimeException
         }
     }
 
-    /**
-     * @return string
-     */
-    public function getPath()
+    public function getPath(): string
     {
         return $this->path;
     }
 
-    /**
-     * @return array
-     */
-    public function getParams()
+    public function getParams(): array
     {
         return $this->params;
     }
 
-    /**
-     * @return ResponseInterface|null
-     */
-    public function getResponse()
+    public function getResponse(): ?ResponseInterface
     {
         return $this->response;
     }

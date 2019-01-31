@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Mapado\RestClientSdk\Helper;
 
 /**
@@ -13,14 +15,15 @@ class ArrayHelper
     /**
      * Get an item from an array using "dot" notation.
      *
-     * @param  array   $array
-     * @param  ?string  $key
      * @param  mixed   $default
      *
      * @return mixed
      */
-    public static function arrayGet($array, $key, $default = null)
-    {
+    public static function arrayGet(
+        array $array,
+        ?string $key,
+        $default = null
+    ) {
         if (null === $key) {
             return $array;
         }
@@ -41,13 +44,8 @@ class ArrayHelper
 
     /**
      * Check if an item exists in an array using "dot" notation.
-     *
-     * @param  array   $array
-     * @param  ?string  $key
-     *
-     * @return bool
      */
-    public static function arrayHas($array, $key)
+    public static function arrayHas(array $array, ?string $key): bool
     {
         if (empty($array) || null === $key) {
             return false;
@@ -70,13 +68,8 @@ class ArrayHelper
 
     /**
      * Flatten a multi-dimensional associative array with dots.
-     *
-     * @param  array   $array
-     * @param  string  $prepend
-     *
-     * @return array
      */
-    public static function arrayDot($array, $prepend = '')
+    public static function arrayDot(array $array, string $prepend = ''): array
     {
         $results = [];
         foreach ($array as $key => $value) {
@@ -93,15 +86,17 @@ class ArrayHelper
         return $results;
     }
 
-    public static function arrayDiffAssocRecursive($array1, $array2)
-    {
+    public static function arrayDiffAssocRecursive(
+        array $array1,
+        array $array2
+    ): array {
         return array_diff_assoc(
             static::arrayDot($array1),
             static::arrayDot($array2)
         );
     }
 
-    public static function arraySame($array1, $array2)
+    public static function arraySame(array $array1, array $array2): bool
     {
         return empty(static::arrayDiffAssocRecursive($array1, $array2));
     }

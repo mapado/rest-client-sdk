@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Mapado\RestClientSdk\Mapping\Annotations;
 
 use Mapado\RestClientSdk\Mapping\Relation as RelationMapping;

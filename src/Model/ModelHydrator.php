@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Mapado\RestClientSdk\Model;
 
 use Mapado\RestClientSdk\Collection\Collection;
@@ -16,36 +18,24 @@ use Mapado\RestClientSdk\SdkClient;
 class ModelHydrator
 {
     /**
-     * sdk
-     *
      * @var SdkClient
      */
     protected $sdk;
 
-    /**
-     * Constructor.
-     *
-     * @param SdkClient $sdk
-     */
     public function __construct(SdkClient $sdk)
     {
         $this->sdk = $sdk;
     }
 
     /**
-     * convertId
-     *
-     * @param mixed $id
-     * @param string $modelName
-     *
-     * @return string
+     * @param string|int|mixed $id
      */
-    public function convertId($id, $modelName)
+    public function convertId($id, string $modelName): string
     {
         $id = (string) $id;
 
         // add slash if needed to have a valid hydra id
-        if (false === strpos($id, '/')) {
+        if (false === mb_strpos($id, '/')) {
             $mapping = $this->sdk->getMapping();
             $key = $mapping->getKeyFromModel($modelName);
             $id = '/' . $key . '/' . $id;
@@ -60,13 +50,8 @@ class ModelHydrator
 
     /**
      * convert data as array to entity
-     *
-     * @param array|null $data
-     * @param string $modelName
-     *
-     * @return object|null
      */
-    public function hydrate($data, $modelName)
+    public function hydrate(?array $data, string $modelName): ?object
     {
         $mapping = $this->sdk->getMapping();
         $key = $mapping->getKeyFromModel($modelName);
@@ -77,13 +62,8 @@ class ModelHydrator
 
     /**
      * convert API response to Collection containing entities
-     *
-     * @param array|null $data
-     * @param string $modelName
-     *
-     * @return Collection
      */
-    public function hydrateList($data, $modelName)
+    public function hydrateList(?array $data, string $modelName): Collection
     {
         $collectionKey = $this->sdk->getMapping()->getConfig()['collectionKey'];
 
@@ -96,13 +76,8 @@ class ModelHydrator
 
     /**
      * convert list of data as array to Collection containing entities
-     *
-     * @param array  $data
-     * @param string $modelName
-     *
-     * @return Collection
      */
-    private function deserializeAll($data, $modelName)
+    private function deserializeAll(array $data, string $modelName): Collection
     {
         $collectionKey = $this->sdk->getMapping()->getConfig()['collectionKey'];
 
@@ -125,15 +100,10 @@ class ModelHydrator
 
     /**
      * convert array to entity
-     *
-     * @param array|null $data
-     * @param string $modelName
-     *
-     * @return object|null
      */
-    private function deserialize($data, $modelName)
+    private function deserialize(?array $data, string $modelName): ?object
     {
-        if (!is_array($data)) {
+        if (null === $data) {
             return null;
         }
 
@@ -142,12 +112,8 @@ class ModelHydrator
 
     /**
      * guess collection classname according to response data
-     *
-     * @param array $data
-     *
-     * @return string
      */
-    private function guessCollectionClassname($data)
+    private function guessCollectionClassname(array $data): string
     {
         switch (true) {
             case !empty($data['@type']) &&

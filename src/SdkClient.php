@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Mapado\RestClientSdk;
 
 use Mapado\RestClientSdk\Model\ModelHydrator;
@@ -67,27 +69,19 @@ class SdkClient
      */
     private $unitOfWork;
 
-    /**
-     * Constructor.
-     *
-     * @param RestClient      $restClient
-     * @param Mapping         $mapping
-     * @param UnitOfWork|null $unitOfWork
-     * @param Serializer|null $serializer
-     */
     public function __construct(
         RestClient $restClient,
         Mapping $mapping,
-        UnitOfWork $unitOfWork = null,
-        Serializer $serializer = null
+        ?UnitOfWork $unitOfWork = null,
+        ?Serializer $serializer = null
     ) {
         $this->restClient = $restClient;
         $this->mapping = $mapping;
-        if (!$unitOfWork) {
+        if (null === $unitOfWork) {
             $unitOfWork = new UnitOfWork($this->mapping);
         }
         $this->unitOfWork = $unitOfWork;
-        if (!$serializer) {
+        if (null === $serializer) {
             $serializer = new Serializer($this->mapping, $this->unitOfWork);
         }
         $this->serializer = $serializer;
@@ -96,51 +90,27 @@ class SdkClient
         $this->modelHydrator = new ModelHydrator($this);
     }
 
-    /**
-     * setCacheItemPool
-     *
-     * @param CacheItemPoolInterface $cacheItemPool
-     *
-     * @return SdkClient
-     */
     public function setCacheItemPool(
         CacheItemPoolInterface $cacheItemPool,
-        $cachePrefix = ''
-    ) {
+        string $cachePrefix = ''
+    ): self {
         $this->cacheItemPool = $cacheItemPool;
         $this->cachePrefix = $cachePrefix;
 
         return $this;
     }
 
-    /**
-     * getCacheItemPool
-     *
-     * @return ?CacheItemPoolInterface
-     */
-    public function getCacheItemPool()
+    public function getCacheItemPool(): ?CacheItemPoolInterface
     {
         return $this->cacheItemPool;
     }
 
-    /**
-     * getCachePrefix
-     *
-     * @return string
-     */
-    public function getCachePrefix()
+    public function getCachePrefix(): string
     {
         return $this->cachePrefix;
     }
 
-    /**
-     * getRepository
-     *
-     * @param string $modelName
-     *
-     * @return EntityRepository
-     */
-    public function getRepository($modelName)
+    public function getRepository(string $modelName): EntityRepository
     {
         // get repository by key
         $metadata = $this->mapping->getClassMetadataByKey($modelName);
@@ -152,9 +122,8 @@ class SdkClient
         $modelName = $metadata->getModelName();
 
         if (!isset($this->repositoryList[$modelName])) {
-            $repositoryName =
-                $metadata->getRepositoryName()
-                ?: '\Mapado\RestClientSdk\EntityRepository';
+            $repositoryName = $metadata->getRepositoryName();
+
             $this->repositoryList[$modelName] = new $repositoryName(
                 $this,
                 $this->restClient,
@@ -166,54 +135,27 @@ class SdkClient
         return $this->repositoryList[$modelName];
     }
 
-    /**
-     * getRestClient
-     *
-     * @return RestClient
-     */
-    public function getRestClient()
+    public function getRestClient(): RestClient
     {
         return $this->restClient;
     }
 
-    /**
-     * getMapping
-     *
-     * @return Mapping
-     */
-    public function getMapping()
+    public function getMapping(): Mapping
     {
         return $this->mapping;
     }
 
-    /**
-     * getSerializer
-     *
-     * @return Serializer
-     */
-    public function getSerializer()
+    public function getSerializer(): Serializer
     {
         return $this->serializer;
     }
 
-    /**
-     * getModelHydrator
-     *
-     * @return ModelHydrator
-     */
-    public function getModelHydrator()
+    public function getModelHydrator(): ModelHydrator
     {
         return $this->modelHydrator;
     }
 
-    /**
-     * createProxy
-     *
-     * @param string $id
-     *
-     * @return \ProxyManager\Proxy\GhostObjectInterface
-     */
-    public function createProxy($id)
+    public function createProxy(string $id): GhostObjectInterface
     {
         $key = $this->mapping->getKeyFromId($id);
         $classMetadata = $this->mapping->getClassMetadataByKey($key);
@@ -292,14 +234,7 @@ class SdkClient
         return $instance;
     }
 
-    /**
-     * Setter for fileCachePath
-     *
-     * @param string $fileCachePath
-     *
-     * @return SdkClient
-     */
-    public function setFileCachePath($fileCachePath)
+    public function setFileCachePath(string $fileCachePath): self
     {
         $this->proxyManagerConfig = new Configuration();
         $this->proxyManagerConfig->setProxiesTargetDir($fileCachePath);
