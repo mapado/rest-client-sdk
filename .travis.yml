@@ -9,7 +9,7 @@ matrix:
           env: PROXY_MANAGER_VERSION="^2.1"
 
 install:
-    - if [ $PROXY_MANAGER_VERSION ]; then composer require ocramius/proxy-manager:${PROXY_MANAGER_VERSION}; fi
+    - if [ $PROXY_MANAGER_VERSION ]; then composer require ocramius/proxy-manager:${PROXY_MANAGER_VERSION} --prefer-dist --no-interaction; fi
     - composer install
 
 script:
