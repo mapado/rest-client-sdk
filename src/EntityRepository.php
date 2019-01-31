@@ -2,7 +2,10 @@
 
 namespace Mapado\RestClientSdk;
 
+use Mapado\RestClientSdk\Exception\HydratorException;
+use Mapado\RestClientSdk\Exception\RestException;
 use Mapado\RestClientSdk\Exception\SdkException;
+use Mapado\RestClientSdk\Exception\UnexpectedTypeException;
 use Mapado\RestClientSdk\Helper\ArrayHelper;
 
 class EntityRepository
@@ -65,7 +68,7 @@ class EntityRepository
      * @param string $method
      * @param mixed  $arguments
      *
-     * @return array|object the found entity/entities
+     * @return array|object|null the found entity/entities
      */
     public function __call($method, $arguments)
     {
@@ -115,24 +118,32 @@ class EntityRepository
         }
 
         $data = $this->restClient->get($path);
-
+        // $data = $this->assertArray($data, $methodName);
         $hydrator = $this->sdk->getModelHydrator();
 
         if ('findOneBy' == $methodName) {
             // If more results are found but one is requested return the first hit.
             $collectionKey = $mapping->getConfig()['collectionKey'];
+
+            $data = $this->assertArray($data, __METHOD__);
             $entityList = ArrayHelper::arrayGet($data, $collectionKey);
             if (!empty($entityList)) {
                 $data = current($entityList);
                 $hydratedData = $hydrator->hydrate($data, $this->entityName);
 
                 $identifier = $hydratedData->{$this->getClassMetadata()->getIdGetter()}();
-                $this->unitOfWork->registerClean($identifier, $hydratedData);
+                if (null !== $hydratedData) {
+                    $this->unitOfWork->registerClean(
+                        $identifier,
+                        $hydratedData
+                    );
+                }
                 $this->saveToCache($identifier, $hydratedData);
             } else {
                 $hydratedData = null;
             }
         } else {
+            $data = $this->assertNotObject($data, __METHOD__);
             $hydratedData = $hydrator->hydrateList($data, $this->entityName);
 
             // then cache each entity from list
@@ -154,7 +165,7 @@ class EntityRepository
      * @param string $id          id of the element to fetch
      * @param array  $queryParams query parameters to add to the query
      *
-     * @return object
+     * @return object|null
      */
     public function find($id, $queryParams = [])
     {
@@ -170,11 +181,15 @@ class EntityRepository
         }
 
         $data = $this->restClient->get($id);
+        $data = $this->assertNotObject($data, __METHOD__);
+
         $entity = $hydrator->hydrate($data, $this->entityName);
 
         // cache entity
         $this->saveToCache($id, $entity);
-        $this->unitOfWork->registerClean($id, $entity); // another register clean will be made in the Serializer if the id different from the called uri
+        if (null !== $entity) {
+            $this->unitOfWork->registerClean($id, $entity); // another register clean will be made in the Serializer if the id different from the called uri
+        }
 
         return $entity;
     }
@@ -199,6 +214,7 @@ class EntityRepository
         }
 
         $data = $this->restClient->get($path);
+        $data = $this->assertNotObject($data, __METHOD__);
 
         $hydrator = $this->sdk->getModelHydrator();
         $entityList = $hydrator->hydrateList($data, $this->entityName);
@@ -266,17 +282,24 @@ class EntityRepository
             );
         }
 
-        $data = $this->restClient->put(
-            $this->addQueryParameter($identifier, $queryParams),
-            $newSerializedModel
-        );
+        $path = $this->addQueryParameter($identifier, $queryParams);
+
+        $data = $this->restClient->put($path, $newSerializedModel);
+        $data = $this->assertArray($data, __METHOD__);
 
         $this->removeFromCache($identifier);
-        $this->unitOfWork->registerClean($identifier, $newSerializedModel);
-
+        // $this->unitOfWork->registerClean($identifier, $data);
         $hydrator = $this->sdk->getModelHydrator();
+        $out = $hydrator->hydrate($data, $this->entityName);
 
-        return $hydrator->hydrate($data, $this->entityName);
+        if (null === $out) {
+            throw new HydratorException(
+                "Unable to convert data from PUT request ({$path}) to an instance of {$this->
+                    entityName}. Maybe you have a custom hydrator returning null?"
+            );
+        }
+
+        return $out;
     }
 
     /**
@@ -314,10 +337,27 @@ class EntityRepository
             $this->addQueryParameter($path, $queryParams),
             $diff
         );
+        $data = $this->assertNotObject($data, __METHOD__);
+
+        if (null === $data) {
+            throw new RestException(
+                "No data found after sending a `POST` request to {$path}. Did the server returned a 4xx or 5xx status code?",
+                $path
+            );
+        }
 
         $hydrator = $this->sdk->getModelHydrator();
 
-        return $hydrator->hydrate($data, $this->entityName);
+        $out = $hydrator->hydrate($data, $this->entityName);
+
+        if (null === $out) {
+            throw new HydratorException(
+                "Unable to convert data from POST request ({$path}) to an instance of {$this->
+                    entityName}. Maybe you have a custom hydrator returning null?"
+            );
+        }
+
+        return $out;
     }
 
     /**
@@ -346,6 +386,9 @@ class EntityRepository
 
     /**
      * saveToCache
+     *
+     * @param string $key
+     * @param object|null $value
      *
      * @return object
      */
@@ -419,20 +462,11 @@ class EntityRepository
                 $classname = get_class($item);
 
                 if ($mapping->hasClassMetadata($classname)) {
-                    $idAttr = $mapping->getClassMetadata(
+                    $idGetter = $mapping->getClassMetadata(
                         $classname
-                    )->getIdentifierAttribute();
+                    )->getIdGetter();
 
-                    if ($idAttr) {
-                        $idGetter =
-                            'get' . ucfirst($idAttr->getAttributeName());
-
-                        return $item->{$idGetter}();
-                    }
-                }
-
-                if (method_exists($item, 'getId')) {
-                    return call_user_func([$item, 'getId']);
+                    return $item->{$idGetter}();
                 }
             }
 
@@ -443,11 +477,21 @@ class EntityRepository
     /**
      * normalizeCacheKey
      *
+     * @param string $key
+     *
      * @return string
      */
     private function normalizeCacheKey($key)
     {
-        return preg_replace('~[\\/\{\}@:\(\)]~', '_', $key);
+        $out = preg_replace('~[\\/\{\}@:\(\)]~', '_', $key);
+
+        if (null === $out) {
+            throw new \RuntimeException(
+                'Unable to normalize cache key. This should not happen.'
+            );
+        }
+
+        return $out;
     }
 
     private function getClassMetadata()
@@ -459,5 +503,39 @@ class EntityRepository
         }
 
         return $this->classMetadataCache;
+    }
+
+    /**
+     * @var array|ResponseInterface|null
+     */
+    private function assertArray($data, string $methodName): array
+    {
+        if (is_array($data)) {
+            return $data;
+        }
+
+        $type = null === $data ? 'null' : get_class($data);
+
+        throw new UnexpectedTypeException(
+            "Return of method {$methodName} should be an array. {$type} given."
+        );
+    }
+
+    /**
+     * @var array|ResponseInterface|null
+     *
+     * @return array|null
+     */
+    private function assertNotObject($data, string $methodName)
+    {
+        if (!is_object($data)) {
+            return $data;
+        }
+
+        $type = get_class($data);
+
+        throw new UnexpectedTypeException(
+            "Return of method {$methodName} should be an array. {$type} given."
+        );
     }
 }

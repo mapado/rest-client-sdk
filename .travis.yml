@@ -9,9 +9,9 @@ matrix:
           env: PROXY_MANAGER_VERSION="^2.1"
 
 install:
-    - if [ $PROXY_MANAGER_VERSION ]; then composer require ocramius/proxy-manager:${PROXY_MANAGER_VERSION}; fi
+    - if [ $PROXY_MANAGER_VERSION ]; then composer require ocramius/proxy-manager:${PROXY_MANAGER_VERSION} --prefer-dist --no-interaction; fi
     - composer install
 
 script:
-    - vendor/bin/phpstan analyse -c phpstan.neon --level 4 src/
+    - vendor/bin/phpstan analyse -c phpstan.neon src/
     - vendor/bin/atoum

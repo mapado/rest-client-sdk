@@ -27,7 +27,7 @@ class Serializer
     private $mapping;
 
     /**
-     * @var SdkClient|null
+     * @var SdkClient
      */
     private $sdk;
 
@@ -49,6 +49,8 @@ class Serializer
 
     /**
      * setSdk
+     *
+     * @required
      *
      * @param SdkClient $sdk
      *
@@ -88,86 +90,84 @@ class Serializer
         $className = $this->resolveRealClassName($data, $className);
 
         $classMetadata = $this->mapping->getClassMetadata($className);
-        $identifierAttribute = $classMetadata->getIdentifierAttribute();
-        $identifierAttrKey = $identifierAttribute
-            ? $identifierAttribute->getSerializedKey()
-            : null;
 
         $attributeList = $classMetadata->getAttributeList();
 
         $instance = new $className();
 
-        foreach ($attributeList as $attribute) {
-            $key = $attribute->getSerializedKey();
+        if ($attributeList) {
+            foreach ($attributeList as $attribute) {
+                $key = $attribute->getSerializedKey();
 
-            if (!ArrayHelper::arrayHas($data, $key)) {
-                continue;
-            }
-
-            $value = ArrayHelper::arrayGet($data, $key);
-
-            $setter = 'set' . ucfirst($attribute->getAttributeName());
-
-            if (method_exists($instance, $setter)) {
-                $relation = $classMetadata->getRelation($key);
-                if ($relation) {
-                    if (is_string($value)) {
-                        $value = $this->sdk->createProxy($value);
-                    } elseif (is_array($value)) {
-                        $targetEntity = $relation->getTargetEntity();
-                        $relationClassMetadata = $this->mapping->getClassMetadata(
-                            $targetEntity
-                        );
-
-                        $relationIdentifierAttribute = $relationClassMetadata->getIdentifierAttribute();
-                        $relationIdentifierAttrKey = $relationIdentifierAttribute
-                            ? $relationIdentifierAttribute->getSerializedKey()
-                            : null;
-
-                        if ($relation->isManyToOne()) {
-                            $value = $this->deserialize(
-                                $value,
-                                $relationClassMetadata->getModelName()
-                            );
-                        } else {
-                            // One-To-Many association
-                            $list = [];
-                            foreach ($value as $item) {
-                                if (is_string($item)) {
-                                    $list[] = $this->sdk->createProxy($item);
-                                } elseif (is_array($item)) {
-                                    $list[] = $this->deserialize(
-                                        $item,
-                                        $relationClassMetadata->getModelName()
-                                    );
-                                }
-                            }
-
-                            $value = $list;
-                        }
-                    }
+                if (!ArrayHelper::arrayHas($data, $key)) {
+                    continue;
                 }
 
-                if (isset($value)) {
-                    if ($attribute && 'datetime' === $attribute->getType()) {
-                        $value = new \DateTime($value);
+                $value = ArrayHelper::arrayGet($data, $key);
+
+                $setter = 'set' . ucfirst($attribute->getAttributeName());
+
+                if (method_exists($instance, $setter)) {
+                    $relation = $classMetadata->getRelation($key);
+                    if ($relation) {
+                        if (is_string($value)) {
+                            $value = $this->sdk->createProxy($value);
+                        } elseif (is_array($value)) {
+                            $targetEntity = $relation->getTargetEntity();
+                            $relationClassMetadata = $this->mapping->getClassMetadata(
+                                $targetEntity
+                            );
+
+                            if ($relation->isManyToOne()) {
+                                $value = $this->deserialize(
+                                    $value,
+                                    $relationClassMetadata->getModelName()
+                                );
+                            } else {
+                                // One-To-Many association
+                                $list = [];
+                                foreach ($value as $item) {
+                                    if (is_string($item)) {
+                                        $list[] = $this->sdk->createProxy(
+                                            $item
+                                        );
+                                    } elseif (is_array($item)) {
+                                        $list[] = $this->deserialize(
+                                            $item,
+                                            $relationClassMetadata->getModelName()
+                                        );
+                                    }
+                                }
+
+                                $value = $list;
+                            }
+                        }
                     }
 
-                    $instance->{$setter}($value);
+                    if (isset($value)) {
+                        if ('datetime' === $attribute->getType()) {
+                            $value = new \DateTime($value);
+                        }
+
+                        $instance->{$setter}($value);
+                    }
                 }
             }
         }
 
-        $idGetter = $this->getClassMetadata($instance)->getIdGetter();
+        $classMetadata = $this->getClassMetadata($instance);
+        if ($classMetadata->hasIdentifierAttribute()) {
+            $idGetter = $classMetadata->getIdGetter();
 
-        if ($idGetter) {
-            $callable = [$instance, $idGetter];
-            $identifier = is_callable($callable)
-                ? call_user_func($callable)
-                : null;
+            if ($idGetter) {
+                $callable = [$instance, $idGetter];
+                $identifier = is_callable($callable)
+                    ? call_user_func($callable)
+                    : null;
 
-            if ($identifier) {
-                $this->unitOfWork->registerClean($identifier, $instance);
+                if ($identifier) {
+                    $this->unitOfWork->registerClean($identifier, $instance);
+                }
             }
         }
 
@@ -218,8 +218,8 @@ class Serializer
         $classMetadata = $this->mapping->getClassMetadata($modelName);
 
         if ($level > 0 && empty($context['serializeRelation'])) {
-            $idAttribute = $classMetadata->getIdentifierAttribute();
-            if ($idAttribute) {
+            if ($classMetadata->hasIdentifierAttribute()) {
+                $idAttribute = $classMetadata->getIdentifierAttribute();
                 $getter = 'get' . ucfirst($idAttribute->getAttributeName());
                 $tmpId = $entity->{$getter}();
                 if ($tmpId) {
@@ -272,11 +272,11 @@ class Serializer
                         $relation->getTargetEntity()
                     )
                 ) {
-                    $idAttribute = $this->mapping->getClassMetadata(
+                    $relationClassMetadata = $this->mapping->getClassMetadata(
                         $relation->getTargetEntity()
-                    )->getIdentifierAttribute();
+                    );
 
-                    if (!$idAttribute) {
+                    if (!$relationClassMetadata->hasIdentifierAttribute()) {
                         $data = $this->recursiveSerialize(
                             $data,
                             $relation->getTargetEntity(),
@@ -284,6 +284,7 @@ class Serializer
                             $context
                         );
                     } else {
+                        $idAttribute = $relationClassMetadata->getIdentifierAttribute();
                         $idGetter =
                             'get' . ucfirst($idAttribute->getAttributeName());
 

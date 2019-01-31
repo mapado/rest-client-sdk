@@ -132,9 +132,7 @@ class UnitOfWork
 
             $oldValue = $oldSerializedModel[$key];
 
-            $currentRelation = $classMetadata
-                ? $classMetadata->getRelation($key)
-                : null;
+            $currentRelation = $classMetadata->getRelation($key);
 
             if (!$currentRelation) {
                 if (
@@ -151,9 +149,7 @@ class UnitOfWork
                 $currentRelation->getTargetEntity()
             );
 
-            $idSerializedKey = $currentClassMetadata
-                ? $currentClassMetadata->getIdSerializeKey()
-                : null;
+            $idSerializedKey = $currentClassMetadata->getIdSerializeKey();
 
             if (Relation::MANY_TO_ONE === $currentRelation->getType()) {
                 if ($value !== $oldValue) {

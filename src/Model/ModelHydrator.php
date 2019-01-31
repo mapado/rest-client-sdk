@@ -61,10 +61,10 @@ class ModelHydrator
     /**
      * convert data as array to entity
      *
-     * @param array $data
+     * @param array|null $data
      * @param string $modelName
      *
-     * @return object
+     * @return object|null
      */
     public function hydrate($data, $modelName)
     {
@@ -78,7 +78,7 @@ class ModelHydrator
     /**
      * convert API response to Collection containing entities
      *
-     * @param array $data
+     * @param array|null $data
      * @param string $modelName
      *
      * @return Collection
@@ -126,17 +126,13 @@ class ModelHydrator
     /**
      * convert array to entity
      *
-     * @param array  $data
+     * @param array|null $data
      * @param string $modelName
      *
      * @return object|null
      */
     private function deserialize($data, $modelName)
     {
-        if (empty($data)) {
-            return null;
-        }
-
         if (!is_array($data)) {
             return null;
         }

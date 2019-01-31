@@ -22,7 +22,7 @@ class SdkClient
     /**
      * Cache item pool.
      *
-     * @var CacheItemPoolInterface
+     * @var ?CacheItemPoolInterface
      */
     protected $cacheItemPool;
 
@@ -56,7 +56,7 @@ class SdkClient
     /**
      * proxyManagerConfig
      *
-     * @var Configuration
+     * @var ?Configuration
      */
     private $proxyManagerConfig;
 
@@ -217,6 +217,12 @@ class SdkClient
     {
         $key = $this->mapping->getKeyFromId($id);
         $classMetadata = $this->mapping->getClassMetadataByKey($key);
+
+        if (null === $classMetadata) {
+            throw new \RuntimeException(
+                "Unable to get classMetadata for key {$key}. This should not happen."
+            );
+        }
 
         $modelName = $classMetadata->getModelName();
 

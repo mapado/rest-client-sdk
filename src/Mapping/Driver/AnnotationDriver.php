@@ -100,7 +100,8 @@ class AnnotationDriver
 
         $mapping = [];
         foreach ($classes as $class) {
-            if ($metadata = $this->getClassMetadataForClassname($class)) {
+            $metadata = $this->getClassMetadataForClassname($class);
+            if ($metadata) {
                 $mapping[] = $metadata;
             }
         }
@@ -138,7 +139,7 @@ class AnnotationDriver
         );
 
         $reflClass = new \ReflectionClass($classname);
-        /** @var Annotations\Entity */
+        /** @var Annotations\Entity|null */
         $classAnnotation = $reader->getClassAnnotation(
             $reflClass,
             Annotations\Entity::class
@@ -152,7 +153,7 @@ class AnnotationDriver
         $relationList = [];
         foreach ($reflClass->getProperties() as $property) {
             // manage attributes
-            /** @var Annotations\Attribute */
+            /** @var Annotations\Attribute|null */
             $propertyAnnotation = $this->getPropertyAnnotation(
                 $reader,
                 $property,
@@ -170,14 +171,14 @@ class AnnotationDriver
                 );
             } else {
                 // manage relations
-                /** @var Annotations\OneToMany */
+                /** @var Annotations\OneToMany|null */
                 $relation = $this->getPropertyAnnotation(
                     $reader,
                     $property,
                     'OneToMany'
                 );
                 if (!$relation) {
-                    /** @var Annotations\ManyToOne */
+                    /** @var Annotations\ManyToOne|null */
                     $relation = $this->getPropertyAnnotation(
                         $reader,
                         $property,
@@ -229,7 +230,7 @@ class AnnotationDriver
      * @param \ReflectionProperty $property
      * @param string              $classname
      *
-     * @return null|object
+     * @return object|null
      */
     private function getPropertyAnnotation(
         Reader $reader,
