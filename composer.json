@@ -46,7 +46,8 @@
   "repositories": [
     {
       "type": "vcs",
-      "url": "https://github.com/jdeniau/config-extension"
+      "url": "https://github.com/jdeniau/config-extension",
+      "no-api": true
     }
   ]
 }
