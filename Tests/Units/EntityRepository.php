@@ -3,6 +3,7 @@
 namespace Mapado\RestClientSdk\Tests\Units;
 
 use atoum;
+use Mapado\RestClientSdk\Collection\Collection;
 use Mapado\RestClientSdk\Mapping as RestMapping;
 use Mapado\RestClientSdk\Mapping\Attribute;
 use Mapado\RestClientSdk\Mapping\ClassMetadata;
@@ -141,7 +142,7 @@ class EntityRepository extends atoum
         $this->calling($mockOrder3)->getId = 'v12/orders/3';
 
         $this->calling($this->mockedHydrator)->hydrate = $mockOrder1;
-        $this->calling($this->mockedHydrator)->hydrateList = [$mockOrder1, $mockOrder2, $mockOrder3];
+        $this->calling($this->mockedHydrator)->hydrateList = new Collection([$mockOrder1, $mockOrder2, $mockOrder3]);
 
         $arrayAdapter = new ArrayAdapter(0, false);
         $this->calling($this->mockedSdk)->getCacheItemPool = $arrayAdapter;
@@ -340,7 +341,7 @@ class EntityRepository extends atoum
         $section1->setIri('/sections/1');
 
         $this->calling($this->mockedHydrator)->hydrate = $section1;
-        $this->calling($this->mockedHydrator)->hydrateList = [$section1];
+        $this->calling($this->mockedHydrator)->hydrateList = new Collection([$section1]);
 
         $arrayAdapter = new ArrayAdapter(0, false);
         $this->calling($this->mockedSdk)->getCacheItemPool = $arrayAdapter;

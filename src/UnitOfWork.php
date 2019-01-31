@@ -21,7 +21,7 @@ class UnitOfWork
     /**
      * storage for every entity retrieved
      *
-     * @var array
+     * @var array<string, object>
      */
     private $storage;
 
@@ -35,21 +35,13 @@ class UnitOfWork
     }
 
     /**
-     * getDirtyData
-     *
      * return the new serialized model with only needed fields to update
-     *
-     * @param array $newSerializedModel
-     * @param array $oldSerializedModel
-     * @param ClassMetadata $classMetadata
-     *
-     * @return array
      */
     public function getDirtyData(
         array $newSerializedModel,
         array $oldSerializedModel,
         ClassMetadata $classMetadata
-    ) {
+    ): array {
         return $this->getDirtyFields(
             $newSerializedModel,
             $oldSerializedModel,
@@ -58,47 +50,22 @@ class UnitOfWork
     }
 
     /**
-     * registerClean
-     *
-     * @param string $id
-     * @param object $entity
-     *
-     * @return UnitOfWork
+     * Register a net entity in the UnitOfWork storage
      */
-    public function registerClean($id, $entity)
+    public function registerClean(string $id, object $entity): self
     {
-        if (is_object($entity)) {
-            $entityStored = clone $entity;
-            $this->storage[$id] = $entityStored;
-        }
+        $entityStored = clone $entity;
+        $this->storage[$id] = $entityStored;
 
         return $this;
     }
 
-    /**
-     * getDirtyEntity
-     *
-     * @param string $id
-     *
-     * @return mixed
-     */
-    public function getDirtyEntity($id)
+    public function getDirtyEntity(string $id): ?object
     {
-        if (isset($this->storage[$id])) {
-            return $this->storage[$id];
-        }
-
-        return;
+        return $this->storage[$id] ?? null;
     }
 
-    /**
-     * clear
-     *
-     * @param string $id
-     *
-     * @return UnitOfWork
-     */
-    public function clear($id)
+    public function clear(string $id): self
     {
         unset($this->storage[$id]);
 
@@ -106,21 +73,13 @@ class UnitOfWork
     }
 
     /**
-     * getDirtyFields
-     *
-     * compares serialize object and returns only modified fields
-     *
-     * @param array $newSerializedModel
-     * @param array $oldSerializedModel
-     * @param ClassMetadata $classMetadata
-     *
-     * @return array
+     * Compare serialize object and returns only modified fields
      */
     private function getDirtyFields(
         array $newSerializedModel,
         array $oldSerializedModel,
         ClassMetadata $classMetadata
-    ) {
+    ): array {
         $dirtyFields = [];
 
         foreach ($newSerializedModel as $key => $value) {
@@ -231,20 +190,15 @@ class UnitOfWork
     }
 
     /**
-     * addIdentifiers
-     *
      * add defined identifiers to given model
      *
-     * @param array $newSerializedModel
-     * @param array $dirtyFields
-     *
-     * @return array
+     * @param ?mixed $idSerializedKey
      */
     private function addIdentifiers(
         $newSerializedModel,
-        $dirtyFields,
+        array $dirtyFields,
         $idSerializedKey = null
-    ) {
+    ): array {
         foreach ($newSerializedModel as $key => $value) {
             if ($idSerializedKey && isset($value[$idSerializedKey])) {
                 $dirtyFields[$key][$idSerializedKey] = $value[$idSerializedKey];
@@ -256,6 +210,11 @@ class UnitOfWork
         return $dirtyFields;
     }
 
+    /**
+     * @param string|array $relationValue
+     *
+     * @return array|string
+     */
     private function findOldRelation(
         $relationValue,
         array $oldValue,
@@ -282,11 +241,15 @@ class UnitOfWork
     /**
      * get entity id from string or array
      *
-     * @param mixed $stringOrEntity
+     * @param string|array $stringOrEntity
      * @param string $idSerializedKey
+     *
+     * @return ?mixed
      */
-    private static function getEntityId($stringOrEntity, $idSerializedKey)
-    {
+    private static function getEntityId(
+        $stringOrEntity,
+        string $idSerializedKey
+    ) {
         if (!is_array($stringOrEntity)) {
             return $stringOrEntity;
         }

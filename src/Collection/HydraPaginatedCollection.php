@@ -11,41 +11,33 @@ class HydraPaginatedCollection extends Collection
 {
     /**
      * Returns first page URI.
-     *
-     * @return string|null
      */
-    public function getFirstPage()
+    public function getFirstPage(): ?string
     {
         return $this->getExtraProperty('hydra:firstPage');
     }
 
     /**
      * Returns last page URI.
-     *
-     * @return string|null
      */
-    public function getLastPage()
+    public function getLastPage(): ?string
     {
         return $this->getExtraProperty('hydra:lastPage');
     }
 
     /**
      * Returns next page URI.
-     *
-     * @return string|null
      */
-    public function getNextPage()
+    public function getNextPage(): ?string
     {
         return $this->getExtraProperty('hydra:nextPage');
     }
 
     /**
      * Returns total item count.
-     *
-     * @return int
      */
-    public function getTotalItems()
+    public function getTotalItems(): int
     {
-        return $this->getExtraProperty('hydra:totalItems') ?: 0;
+        return $this->getExtraProperty('hydra:totalItems') ?? 0;
     }
 }

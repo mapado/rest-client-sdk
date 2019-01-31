@@ -20,7 +20,7 @@ class Mapping extends atoum
         $this
             // no key given
             ->given($this->newTestedInstance)
-                ->and($this->testedInstance->setMapping([new ClassMetadata('foo', null, null)]))
+                ->and($this->testedInstance->setMapping([new ClassMetadata('foo', 'foo', null)]))
             ->then($testedInstance = $this->testedInstance)
             ->exception(function () use ($testedInstance) {
                 $testedInstance->getModelName('');
@@ -30,7 +30,7 @@ class Mapping extends atoum
 
             // no mapping found
             ->given($this->newTestedInstance)
-                ->and($this->testedInstance->setMapping([new ClassMetadata('foo', null, null)]))
+                ->and($this->testedInstance->setMapping([new ClassMetadata('foo', 'foo', null)]))
             ->then($testedInstance = $this->testedInstance)
             ->exception(function () use ($testedInstance) {
                 $testedInstance->getModelName('orders');
@@ -40,13 +40,13 @@ class Mapping extends atoum
 
             // wrong mapping array
             ->given($this->newTestedInstance)
-            ->and($this->testedInstance->setMapping([new ClassMetadata('orders', null, null)]))
+            ->and($this->testedInstance->setMapping([new ClassMetadata('orders', '', null)]))
             ->then($testedInstance = $this->testedInstance)
             ->exception(function () use ($testedInstance) {
                 $testedInstance->getModelName('orders');
             })
                 ->isInstanceOf('Mapado\RestClientSdk\Exception\MappingException')
-                ->hasMessage('orders key is mapped but no modelName found')
+                ->hasMessage('orders key is mapped but the model name is empty')
 
             // model found
             ->given($this->newTestedInstance)

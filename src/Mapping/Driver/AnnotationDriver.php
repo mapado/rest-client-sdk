@@ -20,26 +20,16 @@ use Mapado\RestClientSdk\Mapping\Relation;
 class AnnotationDriver
 {
     /**
-     * cachePath
-     *
      * @var string
      */
     private $cachePath;
 
     /**
-     * debug
-     *
      * @var bool
      */
     private $debug;
 
-    /**
-     * Constructor.
-     *
-     * @param string $cachePath
-     * @param bool   $debug
-     */
-    public function __construct($cachePath, $debug = false)
+    public function __construct(string $cachePath, bool $debug = false)
     {
         $this->cachePath = $cachePath;
         $this->debug = $debug;
@@ -50,15 +40,11 @@ class AnnotationDriver
     }
 
     /**
-     * loadDirectory
-     *
-     * @param string $path
-     *
-     * @return ClassMetadata[]
+     * @return array<ClassMetadata>
      *
      * @throws MappingException
      */
-    public function loadDirectory($path)
+    public function loadDirectory(string $path): array
     {
         if (!is_dir($path)) {
             throw new MappingException($path . ' is not a valid directory');
@@ -110,28 +96,18 @@ class AnnotationDriver
     }
 
     /**
-     * loadClassname
-     *
-     * @param string $classname
-     *
-     * @return ClassMetadata[]
+     * @return array<ClassMetadata>
      */
-    public function loadClassname($classname)
+    public function loadClassname(string $classname): array
     {
         $metadata = $this->getClassMetadataForClassname($classname);
 
         return $metadata ? [$metadata] : [];
     }
 
-    /**
-     * getClassMetadataForClassname
-     *
-     * @param string $classname
-     *
-     * @return ClassMetadata|null
-     */
-    private function getClassMetadataForClassname($classname)
-    {
+    private function getClassMetadataForClassname(
+        string $classname
+    ): ?ClassMetadata {
         $reader = new FileCacheReader(
             new AnnotationReader(),
             $this->cachePath,
@@ -223,20 +199,11 @@ class AnnotationDriver
         return $classMetadata;
     }
 
-    /**
-     * getPropertyAnnotation
-     *
-     * @param Reader              $reader
-     * @param \ReflectionProperty $property
-     * @param string              $classname
-     *
-     * @return object|null
-     */
     private function getPropertyAnnotation(
         Reader $reader,
         \ReflectionProperty $property,
-        $classname
-    ) {
+        string $classname
+    ): ?object {
         return $reader->getPropertyAnnotation(
             $property,
             'Mapado\\RestClientSdk\\Mapping\\Annotations\\' . $classname

@@ -19,46 +19,34 @@ use Symfony\Component\HttpFoundation\Request;
 class RestClient
 {
     /**
-     * httpClient
-     *
      * @var ClientInterface
      */
     private $httpClient;
 
     /**
-     * baseUrl
-     *
      * @var ?string
      */
     private $baseUrl;
 
     /**
-     * logHistory
-     *
      * @var bool
      */
     private $logHistory;
 
     /**
-     * requestHistory
-     *
      * @var array
      */
     private $requestHistory;
 
     /**
-     * currentRequest
-     *
      * @var ?Request
      */
     private $currentRequest;
 
-    /**
-     * @param ClientInterface $httpClient
-     * @param string|null     $baseUrl
-     */
-    public function __construct(ClientInterface $httpClient, $baseUrl = null)
-    {
+    public function __construct(
+        ClientInterface $httpClient,
+        ?string $baseUrl = null
+    ) {
         $this->httpClient = $httpClient;
         $this->baseUrl = (null !== $baseUrl && '/' === substr($baseUrl, -1))
             ? substr($baseUrl, 0, -1)
@@ -67,46 +55,26 @@ class RestClient
         $this->requestHistory = [];
     }
 
-    /**
-     * @return bool
-     */
-    public function isHistoryLogged()
+    public function isHistoryLogged(): bool
     {
         return $this->logHistory;
     }
 
-    /**
-     * setCurrentRequest
-     *
-     * @param Request $currentRequest
-     *
-     * @return RestClient
-     */
-    public function setCurrentRequest(Request $currentRequest)
+    public function setCurrentRequest(Request $currentRequest): self
     {
         $this->currentRequest = $currentRequest;
 
         return $this;
     }
 
-    /**
-     * setLogHistory
-     *
-     * @param bool $logHistory
-     *
-     * @return RestClient
-     */
-    public function setLogHistory($logHistory)
+    public function setLogHistory(bool $logHistory): self
     {
         $this->logHistory = $logHistory;
 
         return $this;
     }
 
-    /**
-     * @return array
-     */
-    public function getRequestHistory()
+    public function getRequestHistory(): array
     {
         return $this->requestHistory;
     }
@@ -114,14 +82,11 @@ class RestClient
     /**
      * get a path
      *
-     * @param string $path
-     * @param array  $parameters
-     *
      * @return array|ResponseInterface|null
      *
      * @throws RestException
      */
-    public function get($path, $parameters = [])
+    public function get(string $path, array $parameters = [])
     {
         $requestUrl = $this->baseUrl . $path;
         try {
@@ -150,13 +115,9 @@ class RestClient
     }
 
     /**
-     * delete
-     *
-     * @param string $path
-     *
      * @throws RestException
      */
-    public function delete($path)
+    public function delete(string $path): void
     {
         try {
             $this->executeRequest('DELETE', $this->baseUrl . $path);
@@ -174,16 +135,12 @@ class RestClient
     }
 
     /**
-     * @param string $path
-     * @param mixed  $data
-     * @param array  $parameters
-     *
      * @return array|ResponseInterface
      *
      * @throws RestClientException
      * @throws RestException
      */
-    public function post($path, $data, $parameters = [])
+    public function post(string $path, array $data, array $parameters = [])
     {
         $parameters['json'] = $data;
         try {
@@ -212,16 +169,12 @@ class RestClient
     }
 
     /**
-     * @param string $path
-     * @param mixed  $data
-     * @param array  $parameters
-     *
      * @return array|ResponseInterface
      *
      * @throws RestClientException
      * @throws RestException
      */
-    public function put($path, $data, $parameters = [])
+    public function put(string $path, array $data, array $parameters = [])
     {
         $parameters['json'] = $data;
 
@@ -252,12 +205,8 @@ class RestClient
 
     /**
      * Merge default parameters.
-     *
-     * @param array $parameters
-     *
-     * @return array
      */
-    protected function mergeDefaultParameters(array $parameters)
+    protected function mergeDefaultParameters(array $parameters): array
     {
         $request = $this->getCurrentRequest();
 
@@ -267,12 +216,7 @@ class RestClient
         return array_replace_recursive($defaultParameters, $parameters);
     }
 
-    /**
-     * getCurrentRequest
-     *
-     * @return Request
-     */
-    protected function getCurrentRequest()
+    protected function getCurrentRequest(): Request
     {
         if (!$this->currentRequest) {
             $this->currentRequest = Request::createFromGlobals();
@@ -284,16 +228,15 @@ class RestClient
     /**
      * Executes request.
      *
-     * @param string $method
-     * @param string $url
-     * @param array  $parameters
-     *
      * @return ResponseInterface|array
      *
      * @throws TransferException
      */
-    private function executeRequest($method, $url, $parameters = [])
-    {
+    private function executeRequest(
+        string $method,
+        string $url,
+        array $parameters = []
+    ) {
         $parameters = $this->mergeDefaultParameters($parameters);
 
         $startTime = null;
@@ -347,22 +290,13 @@ class RestClient
         }
     }
 
-    /**
-     * Logs request.
-     *
-     * @param float|null             $startTime
-     * @param string                 $method
-     * @param string                 $url
-     * @param array                  $parameters
-     * @param ResponseInterface|null $response
-     */
     private function logRequest(
-        $startTime,
-        $method,
-        $url,
-        $parameters,
-        ResponseInterface $response = null
-    ) {
+        ?float $startTime,
+        string $method,
+        string $url,
+        array $parameters,
+        ?ResponseInterface $response = null
+    ): void {
         if ($this->isHistoryLogged()) {
             $queryTime = microtime(true) - $startTime;
 

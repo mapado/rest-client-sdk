@@ -13,125 +13,70 @@ class Relation
     public const ONE_TO_MANY = 'OneToMany';
 
     /**
-     * key
-     *
      * @var string
      */
     private $serializedKey;
 
     /**
-     * type
-     *
      * @var string
      */
     private $type;
 
     /**
-     * targetEntity
-     *
      * @var string
      */
     private $targetEntity;
 
-    /**
-     * __construct
-     *
-     * @param string $serializedKey
-     * @param string $type
-     */
-    public function __construct($serializedKey, $type, $targetEntity)
-    {
+    public function __construct(
+        string $serializedKey,
+        string $type,
+        string $targetEntity
+    ) {
         $this->serializedKey = $serializedKey;
         $this->type = $type;
         $this->targetEntity = $targetEntity;
     }
 
-    /**
-     * Getter for serializedKey
-     *
-     * @return string
-     */
-    public function getSerializedKey()
+    public function getSerializedKey(): string
     {
         return $this->serializedKey;
     }
 
-    /**
-     * Setter for serializedKey
-     *
-     * @param string $serializedKey
-     *
-     * @return Relation
-     */
-    public function setSerializedKey($serializedKey)
+    public function setSerializedKey(string $serializedKey): self
     {
         $this->serializedKey = $serializedKey;
 
         return $this;
     }
 
-    /**
-     * Getter for type
-     *
-     * @return string
-     */
-    public function getType()
+    public function getType(): string
     {
         return $this->type;
     }
 
-    /**
-     * Setter for type
-     *
-     * @param string $type
-     *
-     * @return Relation
-     */
-    public function setType($type)
+    public function setType(string $type): self
     {
         $this->type = $type;
 
         return $this;
     }
 
-    /**
-     * isOneToMany
-     *
-     * @return bool
-     */
-    public function isOneToMany()
+    public function isOneToMany(): bool
     {
-        return self::ONE_TO_MANY == $this->getType();
+        return self::ONE_TO_MANY === $this->getType();
     }
 
-    /**
-     * isManyToOne
-     *
-     * @return bool
-     */
-    public function isManyToOne()
+    public function isManyToOne(): bool
     {
-        return self::MANY_TO_ONE == $this->getType();
+        return self::MANY_TO_ONE === $this->getType();
     }
 
-    /**
-     * Getter for targetEntity
-     *
-     * @return string
-     */
-    public function getTargetEntity()
+    public function getTargetEntity(): string
     {
         return $this->targetEntity;
     }
 
-    /**
-     * Setter for targetEntity
-     *
-     * @param string $targetEntity
-     *
-     * @return Relation
-     */
-    public function setTargetEntity($targetEntity)
+    public function setTargetEntity(string $targetEntity): self
     {
         $this->targetEntity = $targetEntity;
 

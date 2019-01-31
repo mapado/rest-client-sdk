@@ -36,11 +36,6 @@ class Serializer
      */
     private $unitOfWork;
 
-    /**
-     * Constructor.
-     *
-     * @param Mapping $mapping
-     */
     public function __construct(Mapping $mapping, UnitOfWork $unitOfWork)
     {
         $this->mapping = $mapping;
@@ -48,15 +43,9 @@ class Serializer
     }
 
     /**
-     * setSdk
-     *
      * @required
-     *
-     * @param SdkClient $sdk
-     *
-     * @return Serializer
      */
-    public function setSdk(SdkClient $sdk)
+    public function setSdk(SdkClient $sdk): self
     {
         $this->sdk = $sdk;
 
@@ -65,27 +54,24 @@ class Serializer
 
     /**
      * serialize entity for POST and PUT
-     *
-     * @param object $entity
-     * @param string $modelName
-     * @param array  $context
-     *
-     * @return array
      */
-    public function serialize($entity, $modelName, $context = [])
-    {
-        return $this->recursiveSerialize($entity, $modelName, 0, $context);
+    public function serialize(
+        object $entity,
+        string $modelName,
+        array $context = []
+    ): array {
+        $out = $this->recursiveSerialize($entity, $modelName, 0, $context);
+
+        if (is_string($out)) {
+            throw new \RuntimeException(
+                'recursiveSerialize should return an array for level 0 of serialization. This should not happen.'
+            );
+        }
+
+        return $out;
     }
 
-    /**
-     * deserialize
-     *
-     * @param array  $data
-     * @param string $className
-     *
-     * @return object
-     */
-    public function deserialize(array $data, $className)
+    public function deserialize(array $data, string $className): object
     {
         $className = $this->resolveRealClassName($data, $className);
 
@@ -177,14 +163,11 @@ class Serializer
     /**
      * If provided class name is abstract (a base class), the real class name (child class)
      * may be available in some data fields.
-     *
-     * @param array  $data
-     * @param string $className
-     *
-     * @return string
      */
-    private function resolveRealClassName(array $data, $className)
-    {
+    private function resolveRealClassName(
+        array $data,
+        string $className
+    ): string {
         if (!empty($data['@id'])) {
             $classMetadata = $this->mapping->tryGetClassMetadataById(
                 $data['@id']
@@ -200,28 +183,19 @@ class Serializer
     }
 
     /**
-     * recursiveSerialize
-     *
-     * @param object $entity
-     * @param string $modelName
-     * @param int    $level
-     * @param array  $context
-     *
-     * @return array|mixed
+     * @return array|string
      */
     private function recursiveSerialize(
-        $entity,
-        $modelName,
-        $level = 0,
-        $context = []
+        object $entity,
+        string $modelName,
+        int $level = 0,
+        array $context = []
     ) {
         $classMetadata = $this->mapping->getClassMetadata($modelName);
 
         if ($level > 0 && empty($context['serializeRelation'])) {
             if ($classMetadata->hasIdentifierAttribute()) {
-                $idAttribute = $classMetadata->getIdentifierAttribute();
-                $getter = 'get' . ucfirst($idAttribute->getAttributeName());
-                $tmpId = $entity->{$getter}();
+                $tmpId = $entity->{$classMetadata->getIdGetter()}();
                 if ($tmpId) {
                     return $tmpId;
                 }
@@ -344,22 +318,14 @@ class Serializer
         return $out;
     }
 
-    /**
-     * getClassMetadataFromId
-     *
-     * @param string $id
-     *
-     * @return ClassMetadata|null
-     */
-    private function getClassMetadataFromId($id)
+    private function getClassMetadataFromId(string $id): ?ClassMetadata
     {
         $key = $this->mapping->getKeyFromId($id);
-        $classMetadata = $this->mapping->getClassMetadataByKey($key);
 
-        return $classMetadata;
+        return $this->mapping->getClassMetadataByKey($key);
     }
 
-    private function getClassMetadata($entity)
+    private function getClassMetadata(object $entity): ClassMetadata
     {
         return $this->mapping->getClassMetadata(get_class($entity));
     }

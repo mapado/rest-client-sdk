@@ -25,57 +25,33 @@ class Mapping
     private $idPrefixLength;
 
     /**
-     * @var ClassMetadata[]
+     * @var array<ClassMetadata>
      */
     private $classMetadataList = [];
 
     /**
-     * config
-     *
      * @var array
      */
     private $config;
 
-    /**
-     * Constructor.
-     *
-     * @param string $idPrefix
-     */
-    public function __construct($idPrefix = '', $config = [])
+    public function __construct(string $idPrefix = '', array $config = [])
     {
         $this->idPrefix = $idPrefix;
         $this->idPrefixLength = strlen($idPrefix);
         $this->setConfig($config);
     }
 
-    /**
-     * getIdPrefix
-     *
-     * @return string
-     */
-    public function getIdPrefix()
+    public function getIdPrefix(): string
     {
         return $this->idPrefix;
     }
 
-    /**
-     * Getter for config
-     *
-     * @return array
-     */
-    public function getConfig()
+    public function getConfig(): array
     {
         return $this->config;
     }
 
-    /**
-     * Setter for config
-     *
-     * @param array $config
-     *
-     * @return Mapping
-     */
-    public function setConfig(array $config)
+    public function setConfig(array $config): self
     {
         $this->config = array_merge(self::DEFAULT_CONFIG, $config);
 
@@ -83,13 +59,9 @@ class Mapping
     }
 
     /**
-     * setMapping
-     *
-     * @param ClassMetadata[] $classMetadataList
-     *
-     * @return Mapping
+     * @param array<ClassMetadata> $classMetadataList
      */
-    public function setMapping(array $classMetadataList)
+    public function setMapping(array $classMetadataList): self
     {
         $this->classMetadataList = $classMetadataList;
 
@@ -98,14 +70,10 @@ class Mapping
 
     /**
      * return a model class name for a given key
-     *
-     * @param string $key
-     *
-     * @return string
      */
-    public function getModelName($key)
+    public function getModelName(string $key): string
     {
-        $this->checkMappingExistence($key, 'modelName');
+        $this->checkMappingExistence($key, true);
 
         /** @var ClassMetadata */
         $classMetadata = $this->getClassMetadataByKey($key);
@@ -116,9 +84,9 @@ class Mapping
     /**
      * return the list of mapping keys
      *
-     * @return string[]
+     * @return array<string>
      */
-    public function getMappingKeys()
+    public function getMappingKeys(): array
     {
         return array_map(function (ClassMetadata $classMetadata) {
             return $classMetadata->getKey();
@@ -127,12 +95,8 @@ class Mapping
 
     /**
      * get the key from an id (path)
-     *
-     * @param string $id
-     *
-     * @return string
      */
-    public function getKeyFromId($id)
+    public function getKeyFromId(string $id): string
     {
         $key = $this->parseKeyFromId($id);
         if (null === $key) {
@@ -145,15 +109,11 @@ class Mapping
     }
 
     /**
-     * getKeyFromModel
-     *
      * @param string $modelName model name
-     *
-     * @return string
      *
      * @throws MappingException
      */
-    public function getKeyFromModel($modelName)
+    public function getKeyFromModel(string $modelName): string
     {
         foreach ($this->classMetadataList as $classMetadata) {
             if ($modelName === $classMetadata->getModelName()) {
@@ -169,13 +129,9 @@ class Mapping
     /**
      * getClassMetadata for model name
      *
-     * @param string $modelName
-     *
-     * @return ClassMetadata
-     *
      * @throws MappingException
      */
-    public function getClassMetadata($modelName)
+    public function getClassMetadata(string $modelName): ClassMetadata
     {
         foreach ($this->classMetadataList as $classMetadata) {
             if ($modelName === $classMetadata->getModelName()) {
@@ -188,12 +144,8 @@ class Mapping
 
     /**
      * getClassMetadata for id
-     *
-     * @param string $id
-     *
-     * @return ClassMetadata|null
      */
-    public function tryGetClassMetadataById($id)
+    public function tryGetClassMetadataById(string $id): ?ClassMetadata
     {
         $key = $this->parseKeyFromId($id);
 
@@ -202,16 +154,11 @@ class Mapping
                 return $classMetadata;
             }
         }
+
+        return null;
     }
 
-    /**
-     * hasClassMetadata
-     *
-     * @param string $modelName
-     *
-     * @return bool
-     */
-    public function hasClassMetadata($modelName)
+    public function hasClassMetadata(string $modelName): bool
     {
         foreach ($this->classMetadataList as $classMetadata) {
             if ($modelName === $classMetadata->getModelName()) {
@@ -222,30 +169,21 @@ class Mapping
         return false;
     }
 
-    /**
-     * getMappingByKey
-     *
-     * @param string $key
-     *
-     * @return ClassMetadata|null
-     */
-    public function getClassMetadataByKey($key)
+    public function getClassMetadataByKey(string $key): ?ClassMetadata
     {
         foreach ($this->classMetadataList as $classMetadata) {
             if ($key === $classMetadata->getKey()) {
                 return $classMetadata;
             }
         }
+
+        return null;
     }
 
     /**
      * Parse the key from an id (path)
-     *
-     * @param string $id
-     *
-     * @return string|null
      */
-    private function parseKeyFromId($id)
+    private function parseKeyFromId(string $id): ?string
     {
         $id = $this->removePrefix($id);
 
@@ -253,16 +191,14 @@ class Mapping
         if (1 === preg_match('|/([^/]+)/[^/]+$|', $id, $matches)) {
             return $matches[1];
         }
+
+        return null;
     }
 
-    /**
-     * checkMappingExistence
-     *
-     * @param string $key
-     * @param string|null $subKey
-     */
-    private function checkMappingExistence($key, $subKey = null)
-    {
+    private function checkMappingExistence(
+        string $key,
+        bool $checkModelName = false
+    ): void {
         if (empty($key)) {
             throw new MappingException('key is not set');
         }
@@ -272,24 +208,16 @@ class Mapping
             throw new MappingException($key . ' key is not mapped');
         }
 
-        if (!empty($subKey)) {
-            $methodName = 'get' . ucfirst($subKey);
-            if (!$metadata->{$methodName}()) {
+        if ($checkModelName) {
+            if ('' === $metadata->getModelName()) {
                 throw new MappingException(
-                    $key . ' key is mapped but no ' . $subKey . ' found'
+                    $key . ' key is mapped but the model name is empty'
                 );
             }
         }
     }
 
-    /**
-     * removePrefix
-     *
-     * @param mixed $value
-     *
-     * @return string
-     */
-    private function removePrefix($value)
+    private function removePrefix(string $value): string
     {
         if (
             ($this->idPrefixLength > 0) &&
