@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Mapado\RestClientSdk;
 
 use Mapado\RestClientSdk\Collection\Collection;
@@ -72,13 +74,13 @@ class EntityRepository
     public function __call(string $method, array $arguments)
     {
         switch (true) {
-            case 0 === strpos($method, 'findBy'):
-                $fieldName = strtolower(substr($method, 6));
+            case 0 === mb_strpos($method, 'findBy'):
+                $fieldName = mb_strtolower(mb_substr($method, 6));
                 $methodName = 'findBy';
                 break;
 
-            case 0 === strpos($method, 'findOneBy'):
-                $fieldName = strtolower(substr($method, 9));
+            case 0 === mb_strpos($method, 'findOneBy'):
+                $fieldName = mb_strtolower(mb_substr($method, 9));
                 $methodName = 'findOneBy';
                 break;
 
@@ -161,10 +163,10 @@ class EntityRepository
     /**
      * find - finds one item of the entity based on the @REST\Id field in the entity
      *
-     * @param string $id          id of the element to fetch
+     * @param string|int|mixed $id          id of the element to fetch
      * @param array  $queryParams query parameters to add to the query
      */
-    public function find(string $id, array $queryParams = []): ?object
+    public function find($id, array $queryParams = []): ?object
     {
         $hydrator = $this->sdk->getModelHydrator();
         $id = $hydrator->convertId($id, $this->entityName);

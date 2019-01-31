@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Mapado\RestClientSdk;
 
 use Mapado\RestClientSdk\Exception\MappingException;
@@ -37,7 +39,7 @@ class Mapping
     public function __construct(string $idPrefix = '', array $config = [])
     {
         $this->idPrefix = $idPrefix;
-        $this->idPrefixLength = strlen($idPrefix);
+        $this->idPrefixLength = mb_strlen($idPrefix);
         $this->setConfig($config);
     }
 
@@ -221,9 +223,9 @@ class Mapping
     {
         if (
             ($this->idPrefixLength > 0) &&
-            (0 === strpos($value, $this->idPrefix))
+            (0 === mb_strpos($value, $this->idPrefix))
         ) {
-            return substr($value, $this->idPrefixLength);
+            return mb_substr($value, $this->idPrefixLength);
         }
 
         return $value;

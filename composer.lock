@@ -876,7 +876,7 @@
             "version": "dev-patch-1",
             "source": {
                 "type": "git",
-                "url": "https://github.com/jdeniau/config-extension.git",
+                "url": "https://github.com/jdeniau/config-extension",
                 "reference": "7482b9fa4350b749786f00012f5dd7af29b1b6f2"
             },
             "dist": {

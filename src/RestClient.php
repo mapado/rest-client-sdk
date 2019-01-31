@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Mapado\RestClientSdk;
 
 use GuzzleHttp\ClientInterface;
@@ -48,8 +50,8 @@ class RestClient
         ?string $baseUrl = null
     ) {
         $this->httpClient = $httpClient;
-        $this->baseUrl = (null !== $baseUrl && '/' === substr($baseUrl, -1))
-            ? substr($baseUrl, 0, -1)
+        $this->baseUrl = (null !== $baseUrl && '/' === mb_substr($baseUrl, -1))
+            ? mb_substr($baseUrl, 0, -1)
             : $baseUrl;
         $this->logHistory = false;
         $this->requestHistory = [];
@@ -275,7 +277,8 @@ class RestClient
         if (isset($headers['Content-Type'])) {
             foreach ($jsonContentTypeList as $contentType) {
                 if (
-                    false !== stripos($headers['Content-Type'][0], $contentType)
+                    false !==
+                    mb_stripos($headers['Content-Type'][0], $contentType)
                 ) {
                     $requestIsJson = true;
                     break;
@@ -284,7 +287,7 @@ class RestClient
         }
 
         if ($requestIsJson) {
-            return json_decode($response->getBody(), true);
+            return json_decode((string) $response->getBody(), true);
         } else {
             return $response;
         }
@@ -306,7 +309,7 @@ class RestClient
                 'parameters' => $parameters,
                 'response' => $response,
                 'responseBody' => $response
-                    ? json_decode($response->getBody(), true)
+                    ? json_decode((string) $response->getBody(), true)
                     : null,
                 'queryTime' => $queryTime,
                 'backtrace' => debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS),

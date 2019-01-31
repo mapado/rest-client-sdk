@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Mapado\RestClientSdk\Model;
 
 use Mapado\RestClientSdk\Collection\Collection;
@@ -25,12 +27,15 @@ class ModelHydrator
         $this->sdk = $sdk;
     }
 
-    public function convertId(string $id, string $modelName): string
+    /**
+     * @param string|int|mixed $id
+     */
+    public function convertId($id, string $modelName): string
     {
         $id = (string) $id;
 
         // add slash if needed to have a valid hydra id
-        if (false === strpos($id, '/')) {
+        if (false === mb_strpos($id, '/')) {
             $mapping = $this->sdk->getMapping();
             $key = $mapping->getKeyFromModel($modelName);
             $id = '/' . $key . '/' . $id;

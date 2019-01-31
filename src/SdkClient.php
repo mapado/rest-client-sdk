@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Mapado\RestClientSdk;
 
 use Mapado\RestClientSdk\Model\ModelHydrator;

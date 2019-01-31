@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Mapado\RestClientSdk\Tests\Model\Issue46;
 
 use Mapado\RestClientSdk\Mapping\Annotations as Rest;

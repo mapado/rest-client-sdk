@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Mapado\RestClientSdk\Collection;
 
 use ArrayIterator;
@@ -85,7 +87,7 @@ class Collection implements \IteratorAggregate, \Serializable, \Countable, \Arra
      */
     public function offsetSet($offset, $value)
     {
-        if (is_null($offset)) {
+        if (null === $offset) {
             $this->elements[] = $value;
         } else {
             $this->elements[$offset] = $value;

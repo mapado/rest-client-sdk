@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Mapado\RestClientSdk\Mapping\Driver;
 
 use Doctrine\Common\Annotations\AnnotationReader;
@@ -169,12 +171,12 @@ class AnnotationDriver
                     );
 
                     $targetEntity = $relation->targetEntity;
-                    if (false === strpos($targetEntity, '/')) {
+                    if (false === mb_strpos($targetEntity, '/')) {
                         $targetEntity =
-                            substr(
+                            mb_substr(
                                 $classname,
                                 0,
-                                strrpos($classname, '\\') + 1
+                                mb_strrpos($classname, '\\') + 1
                             ) .
                             $targetEntity;
                     }
