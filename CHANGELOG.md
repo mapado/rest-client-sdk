@@ -11,11 +11,17 @@
 * [MIGHT BREAK] Throw a lot more exception than before in different case that should not really happen (like calling `getMetadata` with a wrong model name for example).
 * Throw an exception if two identifier attributes are set for an entity
 
-## 0.29.3
+## 0.29.4
 
 ### Changed
 
 * Fix issue with `UnitOfWork::registerClean` when we call `EntityRepository::find()`
+
+## 0.29.3
+
+### Changed
+
+Fix issue with return type introduced in 0.29.2
 
 ## 0.29.2
 
