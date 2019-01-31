@@ -3,6 +3,7 @@
 namespace Mapado\RestClientSdk\Mapping;
 
 use Mapado\RestClientSdk\Exception\MissingIdentifierException;
+use Mapado\RestClientSdk\Exception\MoreThanOneIdentifierException;
 
 /**
  * Class ClassMetadata
@@ -179,6 +180,16 @@ class ClassMetadata
             $this->attributeList[$attribute->getSerializedKey()] = $attribute;
 
             if ($attribute->isIdentifier()) {
+                if ($this->identifierAttribute) {
+                    throw new MoreThanOneIdentifierException(
+                        sprintf(
+                            'Class metadata for model "%s" already has an identifier named "%s". Only one identifier is allowed.',
+                            $this->modelName,
+                            $this->identifierAttribute->getSerializedKey()
+                        )
+                    );
+                }
+
                 $this->identifierAttribute = $attribute;
             }
         }
