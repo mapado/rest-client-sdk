@@ -27,7 +27,7 @@ class Serializer
     private $mapping;
 
     /**
-     * @var SdkClient|null
+     * @var SdkClient
      */
     private $sdk;
 
@@ -49,6 +49,8 @@ class Serializer
 
     /**
      * setSdk
+     *
+     * @required
      *
      * @param SdkClient $sdk
      *
@@ -93,58 +95,62 @@ class Serializer
 
         $instance = new $className();
 
-        foreach ($attributeList as $attribute) {
-            $key = $attribute->getSerializedKey();
+        if ($attributeList) {
+            foreach ($attributeList as $attribute) {
+                $key = $attribute->getSerializedKey();
 
-            if (!ArrayHelper::arrayHas($data, $key)) {
-                continue;
-            }
-
-            $value = ArrayHelper::arrayGet($data, $key);
-
-            $setter = 'set' . ucfirst($attribute->getAttributeName());
-
-            if (method_exists($instance, $setter)) {
-                $relation = $classMetadata->getRelation($key);
-                if ($relation) {
-                    if (is_string($value)) {
-                        $value = $this->sdk->createProxy($value);
-                    } elseif (is_array($value)) {
-                        $targetEntity = $relation->getTargetEntity();
-                        $relationClassMetadata = $this->mapping->getClassMetadata(
-                            $targetEntity
-                        );
-
-                        if ($relation->isManyToOne()) {
-                            $value = $this->deserialize(
-                                $value,
-                                $relationClassMetadata->getModelName()
-                            );
-                        } else {
-                            // One-To-Many association
-                            $list = [];
-                            foreach ($value as $item) {
-                                if (is_string($item)) {
-                                    $list[] = $this->sdk->createProxy($item);
-                                } elseif (is_array($item)) {
-                                    $list[] = $this->deserialize(
-                                        $item,
-                                        $relationClassMetadata->getModelName()
-                                    );
-                                }
-                            }
-
-                            $value = $list;
-                        }
-                    }
+                if (!ArrayHelper::arrayHas($data, $key)) {
+                    continue;
                 }
 
-                if (isset($value)) {
-                    if ('datetime' === $attribute->getType()) {
-                        $value = new \DateTime($value);
+                $value = ArrayHelper::arrayGet($data, $key);
+
+                $setter = 'set' . ucfirst($attribute->getAttributeName());
+
+                if (method_exists($instance, $setter)) {
+                    $relation = $classMetadata->getRelation($key);
+                    if ($relation) {
+                        if (is_string($value)) {
+                            $value = $this->sdk->createProxy($value);
+                        } elseif (is_array($value)) {
+                            $targetEntity = $relation->getTargetEntity();
+                            $relationClassMetadata = $this->mapping->getClassMetadata(
+                                $targetEntity
+                            );
+
+                            if ($relation->isManyToOne()) {
+                                $value = $this->deserialize(
+                                    $value,
+                                    $relationClassMetadata->getModelName()
+                                );
+                            } else {
+                                // One-To-Many association
+                                $list = [];
+                                foreach ($value as $item) {
+                                    if (is_string($item)) {
+                                        $list[] = $this->sdk->createProxy(
+                                            $item
+                                        );
+                                    } elseif (is_array($item)) {
+                                        $list[] = $this->deserialize(
+                                            $item,
+                                            $relationClassMetadata->getModelName()
+                                        );
+                                    }
+                                }
+
+                                $value = $list;
+                            }
+                        }
                     }
 
-                    $instance->{$setter}($value);
+                    if (isset($value)) {
+                        if ('datetime' === $attribute->getType()) {
+                            $value = new \DateTime($value);
+                        }
+
+                        $instance->{$setter}($value);
+                    }
                 }
             }
         }

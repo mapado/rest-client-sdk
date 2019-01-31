@@ -107,7 +107,10 @@ class Mapping
     {
         $this->checkMappingExistence($key, 'modelName');
 
-        return $this->getClassMetadataByKey($key)->getModelName();
+        /** @var ClassMetadata */
+        $classMetadata = $this->getClassMetadataByKey($key);
+
+        return $classMetadata->getModelName();
     }
 
     /**
@@ -132,6 +135,10 @@ class Mapping
     public function getKeyFromId($id)
     {
         $key = $this->parseKeyFromId($id);
+        if (null === $key) {
+            throw new MappingException("Unable to parse key from id {$id}.");
+        }
+
         $this->checkMappingExistence($key);
 
         return $key;
