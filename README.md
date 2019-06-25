@@ -111,11 +111,11 @@ $sdkClient = $this->get('mapado.rest_client_sdk.foo');
 You need to configure client this way:
 ```php
 use Mapado\RestClientSdk\Mapping;
-use Mapado\RestClientSdk\RestClient
+use Mapado\RestClientSdk\RestClient;
 use Mapado\RestClientSdk\SdkClient;
 use Mapado\RestClientSdk\Mapping\Driver\AnnotationDriver;
 
-$restClient = new RestClient(new GuzzleHttp\Client, 'http://path-to-your-api.root');
+$restClient = new RestClient(new GuzzleHttp\Client(), 'http://path-to-your-api.root');
 
 $annotationDriver = new AnnotationDriver($cachePath, $debug = true);
 
