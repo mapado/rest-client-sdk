@@ -117,6 +117,13 @@ use Mapado\RestClientSdk\Mapping\Driver\AnnotationDriver;
 
 $restClient = new RestClient(new GuzzleHttp\Client(), 'http://path-to-your-api.root');
 
+// if you need to pass some headers to the client, you can do something like this:
+// $restClient = new RestClient(
+//   new GuzzleHttp\Client(['headers' => [ 'Authorization' => 'Bearer foobar' ]]),
+//   'http://path-to-your-api.root'
+// );
+// See guzzle documentation for more informations
+
 $annotationDriver = new AnnotationDriver($cachePath, $debug = true);
 
 $mapping = new Mapping('/v2'); // /v2 is the prefix of your routes
@@ -136,14 +143,17 @@ $repository = $sdkClient->getRepository('Acme\Foo\Bar\Cart');
 // Find entity based on ID as defined in the entity by @Rest\Id
 $cart = $repository->find(1);
 
+// If you need to pass extra query parameters : 
+$cart = $repository->find(1, ['foo' => 'bar']); // will call /v2/carts/1?foo=bar
+
 // Find all entities in the database
 $cart = $repository->findAll();
 
 // Find one entity based on the fielddefined in the function name (in this case <Name>)
-$cart = $repository->findOneByName('username');
+$cart = $repository->findOneByName('username'); // will call /v2/carts?name=username
 
 // Find one entity based on the criteria defined in the array
-$cart = $repository->findOneBy(array('name'=>'username','date'=>'1-1-2016'));
+$cart = $repository->findOneBy(array('name'=>'username','date'=>'1-1-2016')); // will call /v2/carts?name=username&date=1-1-2016
 
 // To find all matches for the two examples above replace findOneByName() with findByName() and findOneBy() with findBy()
 ```
