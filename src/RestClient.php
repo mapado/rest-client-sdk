@@ -213,13 +213,20 @@ class RestClient
         $request = $this->getCurrentRequest();
 
         $defaultParameters = ['version' => '1.0'];
-        $defaultParameters['headers'] = ['Referer' => $request->getUri()];
+        if (null !== $request) {
+            $defaultParameters['headers'] = ['Referer' => $request->getUri()];
+        }
 
         return array_replace_recursive($defaultParameters, $parameters);
     }
 
-    protected function getCurrentRequest(): Request
+    protected function getCurrentRequest(): ?Request
     {
+        if ('cli' === \PHP_SAPI) {
+            // we are in cli mode, do not bother to get request
+            return null;
+        }
+
         if (!$this->currentRequest) {
             $this->currentRequest = Request::createFromGlobals();
         }
@@ -276,10 +283,7 @@ class RestClient
 
         if (isset($headers['Content-Type'])) {
             foreach ($jsonContentTypeList as $contentType) {
-                if (
-                    false !==
-                    mb_stripos($headers['Content-Type'][0], $contentType)
-                ) {
+                if (false !== mb_stripos($headers['Content-Type'][0], $contentType)) {
                     $requestIsJson = true;
                     break;
                 }

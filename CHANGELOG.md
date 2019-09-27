@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.31.0
+
+### Changed
+
+* [MINOR BC] `Mapado\RestClientSdk\RestClient::getCurrentRequest(): Request` changed to `Mapado\RestClientSdk\RestClient::getCurrentRequest(): ?Request`. The call can now return null if we are in a `cli` execution mode.
+  It will not break if you do not extend the `RestClient` class (the function is protected).
+
 ## 0.30.0
 
 ### Changed
