@@ -117,7 +117,7 @@ class ModelHydrator
     {
         switch (true) {
             case !empty($data['@type']) &&
-            'hydra:PagedCollection' === $data['@type']:
+                'hydra:PagedCollection' === $data['@type']:
                 return HydraPaginatedCollection::class;
 
             case array_key_exists('_embedded', $data):

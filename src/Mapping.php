@@ -222,8 +222,8 @@ class Mapping
     private function removePrefix(string $value): string
     {
         if (
-            ($this->idPrefixLength > 0) &&
-            (0 === mb_strpos($value, $this->idPrefix))
+            $this->idPrefixLength > 0 &&
+            0 === mb_strpos($value, $this->idPrefix)
         ) {
             return mb_substr($value, $this->idPrefixLength);
         }

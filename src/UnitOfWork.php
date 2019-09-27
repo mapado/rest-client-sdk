@@ -97,8 +97,8 @@ class UnitOfWork
 
             if (!$currentRelation) {
                 if (
-                    is_array($value) &&
-                    !ArrayHelper::arraySame($value, $oldValue ?: []) ||
+                    (is_array($value) &&
+                        !ArrayHelper::arraySame($value, $oldValue ?: [])) ||
                     $value !== $oldValue
                 ) {
                     $dirtyFields[$key] = $value;

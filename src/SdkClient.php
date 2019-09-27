@@ -188,7 +188,7 @@ class SdkClient
             $isAllowedMethod =
                 'jsonSerialize' === $method ||
                 '__set' === $method ||
-                '__isset' === $method && 'id' === $parameters['name'];
+                ('__isset' === $method && 'id' === $parameters['name']);
 
             if (!$isAllowedMethod) {
                 $initializer = null; // disable initialization
@@ -207,9 +207,9 @@ class SdkClient
                         $value = $model->{$getter}();
                         $properties[
                             "\0" .
-                            $proxyModelName .
-                            "\0" .
-                            $attribute->getAttributeName()
+                                $proxyModelName .
+                                "\0" .
+                                $attribute->getAttributeName()
                         ] = $value;
                     }
                 }

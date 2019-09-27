@@ -50,9 +50,10 @@ class RestClient
         ?string $baseUrl = null
     ) {
         $this->httpClient = $httpClient;
-        $this->baseUrl = (null !== $baseUrl && '/' === mb_substr($baseUrl, -1))
-            ? mb_substr($baseUrl, 0, -1)
-            : $baseUrl;
+        $this->baseUrl =
+            null !== $baseUrl && '/' === mb_substr($baseUrl, -1)
+                ? mb_substr($baseUrl, 0, -1)
+                : $baseUrl;
         $this->logHistory = false;
         $this->requestHistory = [];
     }
@@ -217,7 +218,18 @@ class RestClient
             $defaultParameters['headers'] = ['Referer' => $request->getUri()];
         }
 
-        return array_replace_recursive($defaultParameters, $parameters);
+        $out = array_replace_recursive($defaultParameters, $parameters);
+
+        if (null === $out) {
+            throw new \RuntimeException(
+                sprintf(
+                    'Error while calling array_replace_recursive in %s. This should not happen.',
+                    __METHOD__
+                )
+            );
+        }
+
+        return $out;
     }
 
     protected function getCurrentRequest(): ?Request
@@ -283,7 +295,10 @@ class RestClient
 
         if (isset($headers['Content-Type'])) {
             foreach ($jsonContentTypeList as $contentType) {
-                if (false !== mb_stripos($headers['Content-Type'][0], $contentType)) {
+                if (
+                    false !==
+                    mb_stripos($headers['Content-Type'][0], $contentType)
+                ) {
                     $requestIsJson = true;
                     break;
                 }

@@ -19,11 +19,8 @@ class ArrayHelper
      *
      * @return mixed
      */
-    public static function arrayGet(
-        array $array,
-        ?string $key,
-        $default = null
-    ) {
+    public static function arrayGet(array $array, ?string $key, $default = null)
+    {
         if (null === $key) {
             return $array;
         }

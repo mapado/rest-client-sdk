@@ -87,8 +87,8 @@ class EntityRepository
             default:
                 throw new \BadMethodCallException(
                     'Undefined method \'' .
-                    $method .
-                    '\'. The method name must start with
+                        $method .
+                        '\'. The method name must start with
                     either findBy or findOneBy!'
                 );
         }
@@ -207,8 +207,8 @@ class EntityRepository
             if (!$entityListFromCache instanceof Collection) {
                 throw new \RuntimeException(
                     'Entity list in cache should be an instance of ' .
-                    Collection::class .
-                    '. This should not happen.'
+                        Collection::class .
+                        '. This should not happen.'
                 );
             }
 
@@ -287,8 +287,7 @@ class EntityRepository
 
         if (null === $out) {
             throw new HydratorException(
-                "Unable to convert data from PUT request ({$path}) to an instance of {$this->
-                    entityName}. Maybe you have a custom hydrator returning null?"
+                "Unable to convert data from PUT request ({$path}) to an instance of {$this->entityName}. Maybe you have a custom hydrator returning null?"
             );
         }
 
@@ -307,11 +306,9 @@ class EntityRepository
         $path = empty($prefix) ? '/' . $key : $prefix . '/' . $key;
 
         $oldSerializedModel = $this->getClassMetadata()->getDefaultSerializedModel();
-        $newSerializedModel = $this->sdk->getSerializer()->serialize(
-            $model,
-            $this->entityName,
-            $serializationContext
-        );
+        $newSerializedModel = $this->sdk
+            ->getSerializer()
+            ->serialize($model, $this->entityName, $serializationContext);
 
         $diff = $this->unitOfWork->getDirtyData(
             $newSerializedModel,
@@ -338,8 +335,7 @@ class EntityRepository
 
         if (null === $out) {
             throw new HydratorException(
-                "Unable to convert data from POST request ({$path}) to an instance of {$this->
-                    entityName}. Maybe you have a custom hydrator returning null?"
+                "Unable to convert data from POST request ({$path}) to an instance of {$this->entityName}. Maybe you have a custom hydrator returning null?"
             );
         }
 
@@ -421,9 +417,9 @@ class EntityRepository
                 $classname = get_class($item);
 
                 if ($mapping->hasClassMetadata($classname)) {
-                    $idGetter = $mapping->getClassMetadata(
-                        $classname
-                    )->getIdGetter();
+                    $idGetter = $mapping
+                        ->getClassMetadata($classname)
+                        ->getIdGetter();
 
                     return $item->{$idGetter}();
                 }
@@ -449,9 +445,9 @@ class EntityRepository
     private function getClassMetadata(): ClassMetadata
     {
         if (!isset($this->classMetadata)) {
-            $this->classMetadataCache = $this->sdk->getMapping()->getClassMetadata(
-                $this->entityName
-            );
+            $this->classMetadataCache = $this->sdk
+                ->getMapping()
+                ->getClassMetadata($this->entityName);
         }
 
         return $this->classMetadataCache;

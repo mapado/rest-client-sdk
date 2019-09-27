@@ -177,8 +177,7 @@ class AnnotationDriver
                                 $classname,
                                 0,
                                 mb_strrpos($classname, '\\') + 1
-                            ) .
-                            $targetEntity;
+                            ) . $targetEntity;
                     }
 
                     $relationList[] = new Relation(
