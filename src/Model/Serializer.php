@@ -154,7 +154,10 @@ class Serializer
                     : null;
 
                 if ($identifier) {
-                    $this->unitOfWork->registerClean($identifier, $instance);
+                    $this->unitOfWork->registerClean(
+                        (string) $identifier,
+                        $instance
+                    );
                 }
             }
         }
