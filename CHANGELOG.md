@@ -4,6 +4,33 @@
 
 - Leverage [Symfony Property Access](https://symfony.com/doc/current/components/property_access.html) component instead of homemade `$setter` and `$getter` methods (#92)
 - Throw an exception if the `setter` method does not exists on entity (#91)
+- PSR-7 and PSR-18 usage
+- [Breaking Change] Guzzle removed from dependencies. You need to add a PSR-18 provider in your dependencies.
+- [Breaking Change] Due to the differencences between Guzzle and the PSR-18, and if you (still) want to use Guzzle, you must configure it to _not_ throw exception on 400 and 500 http status code
+
+### Migrate from guzzle to PSR-18
+
+#### Before
+
+````
+# compo
+```php
+$restClient = new RestClient(new GuzzleHttp\Client(), 'http://path-to-your-api.root');
+````
+
+after :
+
+```sh
+composer require php-http/guzzle6-adapter
+```
+
+```php
+use Http\Adapter\Guzzle6\Client as GuzzleAdapter;
+$restClient = new RestClient(
+  GuzzleAdapter::createWithConfig(['http_errors' => false]),
+  'http://path-to-your-api.root'
+);
+```
 
 ## 0.31.1
 
