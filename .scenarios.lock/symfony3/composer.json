@@ -1,0 +1,77 @@
+{
+    "name": "mapado/rest-client-sdk",
+    "description": "Rest Client SDK for hydra API",
+    "autoload": {
+        "psr-4": {
+            "Mapado\\RestClientSdk\\": "../../src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Mapado\\RestClientSdk\\Tests\\": "../../Tests/"
+        }
+    },
+    "require": {
+        "php": "^7.2",
+        "guzzlehttp/guzzle": "^6.2.2",
+        "ocramius/proxy-manager": "^2.0",
+        "doctrine/annotations": "^1.2",
+        "symfony/http-foundation": "^2.7 || ^3.3 || ^4.0",
+        "symfony/property-access": "^2.7 || ^3.3 || ^4.0",
+        "psr/cache": "^1.0"
+    },
+    "require-dev": {
+        "atoum/atoum": "^3.0.0",
+        "atoum/config-extension": "dev-patch-1 as 0.3.1",
+        "misd/phone-number-bundle": "^1.1",
+        "symfony/cache": "^4.0",
+        "phpstan/phpstan": "^0.11.16",
+        "mapado/php-cs-fixer-config": "^2.1",
+        "g1a/composer-test-scenarios": "^3.0"
+    },
+    "suggest": {
+        "giggsey/libphonenumber-for-php": "^1.1 to manage integration with phone number bundle"
+    },
+    "scripts": {
+        "test": [
+            "vendor/bin/phpstan analyze src/",
+            "vendor/bin/atoum"
+        ],
+        "post-install-cmd": [
+            "yarn install"
+        ],
+        "post-update-cmd": [
+            "yarn install"
+        ]
+    },
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Julien Deniau",
+            "email": "julien.deniau@gmail.com"
+        },
+        {
+            "name": "Dimitri Allegoet",
+            "email": "dallegoet@gmail.com"
+        }
+    ],
+    "repositories": [
+        {
+            "type": "vcs",
+            "url": "https://github.com/jdeniau/config-extension",
+            "no-api": true
+        }
+    ],
+    "extra": {
+        "scenario-options": {
+            "dependency-licenses": false
+        }
+    },
+    "conflict": {
+        "symfony/http-foundation": ">=4.0.0",
+        "symfony/property-access": ">=4.0.0"
+    },
+    "config": {
+        "vendor-dir": "../../vendor"
+    }
+}

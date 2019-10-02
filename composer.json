@@ -25,10 +25,11 @@
     "atoum/config-extension": "dev-patch-1 as 0.3.1",
     "misd/phone-number-bundle": "^1.1",
     "symfony/cache": "^4.0",
-    "phpstan/phpstan": "^0.11.1",
-    "mapado/php-cs-fixer-config": "^2.1"
+    "phpstan/phpstan": "^0.11.16",
+    "mapado/php-cs-fixer-config": "^2.1",
+    "g1a/composer-test-scenarios": "^3.0"
   },
-  "suggests": {
+  "suggest": {
     "giggsey/libphonenumber-for-php": "^1.1 to manage integration with phone number bundle"
   },
   "scripts": {
@@ -60,5 +61,30 @@
       "url": "https://github.com/jdeniau/config-extension",
       "no-api": true
     }
-  ]
+  ],
+  "extra": {
+    "scenarios": {
+      "symfony4": {
+        "conflict": {
+          "symfony/http-foundation": ">=5.0.0",
+          "symfony/property-access": ">=5.0.0"
+        }
+      },
+      "symfony3": {
+        "conflict": {
+          "symfony/http-foundation": ">=4.0.0",
+          "symfony/property-access": ">=4.0.0"
+        }
+      },
+      "symfony2": {
+        "conflict": {
+          "symfony/http-foundation": ">=3.0.0",
+          "symfony/property-access": ">=3.0.0"
+        }
+      }
+    },
+    "scenario-options": {
+      "dependency-licenses": false
+    }
+  }
 }

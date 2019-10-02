@@ -5,10 +5,16 @@ language: php
 matrix:
     include:
         - php: 7.3
+          env: 'SCENARIO=symfony4'
+        - php: 7.3
+          env: 'SCENARIO=symfony3'
+        - php: 7.3
+          env: 'SCENARIO=symfony2 DEPENDENCIES=lowest'
         - php: 7.2
+          env: 'SCENARIO=symfony4 DEPENDENCIES=lowest'
 
 install:
-    - composer install
+  - '.scenarios.lock/install "${SCENARIO}" "${DEPENDENCIES}"'
 
 script:
     - vendor/bin/phpstan analyse -c phpstan.neon src/
