@@ -17,6 +17,7 @@ use Mapado\RestClientSdk\Mapping\Relation;
 use Mapado\RestClientSdk\Tests\Model\Issue46;
 use Mapado\RestClientSdk\Tests\Model\Issue75;
 use Mapado\RestClientSdk\Tests\Model\Issue80;
+use Mapado\RestClientSdk\Tests\Model\Issue89;
 use Mapado\RestClientSdk\Tests\Model\Issue90;
 use Mapado\RestClientSdk\Tests\Model\JsonLd;
 use Mapado\RestClientSdk\UnitOfWork;
@@ -809,6 +810,33 @@ class Serializer extends atoum
                     $article = $this->testedInstance->deserialize($data, Issue80\Article::class);
                 })
                     ->isInstanceOf(MissingSetterException::class)
+        ;
+    }
+
+    public function testDeserializeEntityWithPublicProperty()
+    {
+        $annotationDriver = new AnnotationDriver(__DIR__ . '/../../cache/');
+        $mapping = new Mapping();
+        $mapping->setMapping($annotationDriver->loadDirectory(__DIR__ . '/../../Model/Issue89/'));
+
+        $this->createNewInstance($mapping);
+        $this
+            ->given($data = [
+                'id' => 8,
+                'title' => 'some title',
+                'tagList' => ['/tags/2'],
+            ])
+            ->and($testedInstance = $this->testedInstance)
+
+            ->then
+                ->object($article = $this->testedInstance->deserialize($data, Issue89\Article::class))
+                    ->isInstanceOf(Issue89\Article::class)
+
+                ->integer($article->id)
+                    ->isIdenticalTo(8)
+
+                ->string($article->title)
+                    ->isEqualTo('some title')
         ;
     }
 

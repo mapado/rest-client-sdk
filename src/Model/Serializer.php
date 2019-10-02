@@ -14,6 +14,8 @@ use Mapado\RestClientSdk\Mapping;
 use Mapado\RestClientSdk\Mapping\ClassMetadata;
 use Mapado\RestClientSdk\SdkClient;
 use Mapado\RestClientSdk\UnitOfWork;
+use Symfony\Component\PropertyAccess\PropertyAccess;
+use Symfony\Component\PropertyAccess\PropertyAccessor;
 
 /**
  * Class Serializer
@@ -39,10 +41,16 @@ class Serializer
      */
     private $unitOfWork;
 
+    /**
+     * @var PropertyAccessor
+     */
+    private $propertyAccessor;
+
     public function __construct(Mapping $mapping, UnitOfWork $unitOfWork)
     {
         $this->mapping = $mapping;
         $this->unitOfWork = $unitOfWork;
+        $this->propertyAccessor = PropertyAccess::createPropertyAccessor();
     }
 
     /**
@@ -94,9 +102,8 @@ class Serializer
 
                 $value = ArrayHelper::arrayGet($data, $key);
 
-                $setter = 'set' . ucfirst($attribute->getAttributeName());
-
-                $this->throwIfInstanceDoesNotHasSetter($instance, $setter);
+                $attributeName = $attribute->getAttributeName();
+                $this->throwIfAttributeIsNotWritable($instance, $attributeName);
 
                 $relation = $classMetadata->getRelation($key);
                 if ($relation) {
@@ -118,6 +125,7 @@ class Serializer
                             $list = [];
                             foreach ($value as $item) {
                                 if (is_string($item)) {
+                                    var_dump(__METHOD__, $item);
                                     $list[] = $this->sdk->createProxy($item);
                                 } elseif (is_array($item)) {
                                     $list[] = $this->deserialize(
@@ -137,7 +145,11 @@ class Serializer
                         $value = new \DateTime($value);
                     }
 
-                    $instance->{$setter}($value);
+                    $this->propertyAccessor->setValue(
+                        $instance,
+                        $attributeName,
+                        $value
+                    );
                 }
             }
         }
@@ -334,16 +346,16 @@ class Serializer
         return $this->mapping->getClassMetadata(get_class($entity));
     }
 
-    private function throwIfInstanceDoesNotHasSetter(
+    private function throwIfAttributeIsNotWritable(
         object $instance,
-        string $setter
+        string $attribute
     ): void {
-        if (!method_exists($instance, $setter)) {
+        if (!$this->propertyAccessor->isWritable($instance, $attribute)) {
             throw new MissingSetterException(
                 sprintf(
-                    'Class %s does not have the %s setter method. Please implement this method.',
-                    get_class($instance),
-                    $setter
+                    'Property %s is not writable for class %s. Please make it writable. You can check the property-access documentation here : https://symfony.com/doc/current/components/property_access.html#writing-to-objects',
+                    $attribute,
+                    get_class($instance)
                 )
             );
         }
