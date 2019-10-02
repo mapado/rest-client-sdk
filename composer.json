@@ -2,10 +2,14 @@
   "name": "mapado/rest-client-sdk",
   "description": "Rest Client SDK for hydra API",
   "autoload": {
-    "psr-4": { "Mapado\\RestClientSdk\\": "src/" }
+    "psr-4": {
+      "Mapado\\RestClientSdk\\": "src/"
+    }
   },
   "autoload-dev": {
-    "psr-4": { "Mapado\\RestClientSdk\\Tests\\": "Tests/" }
+    "psr-4": {
+      "Mapado\\RestClientSdk\\Tests\\": "Tests/"
+    }
   },
   "require": {
     "php": "^7.2",
@@ -13,6 +17,7 @@
     "ocramius/proxy-manager": "^2.0",
     "doctrine/annotations": "^1.2",
     "symfony/http-foundation": "^2.7 || ^3.3 || ^4.0",
+    "symfony/property-access": "^2.7 || ^3.3 || ^4.0",
     "psr/cache": "^1.0"
   },
   "require-dev": {
@@ -24,13 +29,19 @@
     "mapado/php-cs-fixer-config": "^2.1"
   },
   "suggests": {
-    "giggsey/libphonenumber-for-php":
-      "^1.1 to manage integration with phone number bundle"
+    "giggsey/libphonenumber-for-php": "^1.1 to manage integration with phone number bundle"
   },
   "scripts": {
-    "test": ["vendor/bin/phpstan analyze src/", "vendor/bin/atoum"],
-    "post-install-cmd": ["yarn install"],
-    "post-update-cmd": ["yarn install"]
+    "test": [
+      "vendor/bin/phpstan analyze src/",
+      "vendor/bin/atoum"
+    ],
+    "post-install-cmd": [
+      "yarn install"
+    ],
+    "post-update-cmd": [
+      "yarn install"
+    ]
   },
   "license": "MIT",
   "authors": [

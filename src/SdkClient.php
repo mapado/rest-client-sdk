@@ -10,6 +10,8 @@ use ProxyManager\Configuration;
 use ProxyManager\Factory\LazyLoadingGhostFactory;
 use ProxyManager\Proxy\GhostObjectInterface;
 use Psr\Cache\CacheItemPoolInterface;
+use Symfony\Component\PropertyAccess\PropertyAccess;
+use Symfony\Component\PropertyAccess\PropertyAccessor;
 
 /**
  * Sdk Client
@@ -69,6 +71,11 @@ class SdkClient
      */
     private $unitOfWork;
 
+    /**
+     * @var PropertyAccessor
+     */
+    private $propertyAccessor;
+
     public function __construct(
         RestClient $restClient,
         Mapping $mapping,
@@ -88,6 +95,7 @@ class SdkClient
         $this->serializer->setSdk($this);
 
         $this->modelHydrator = new ModelHydrator($this);
+        $this->propertyAccessor = PropertyAccess::createPropertyAccessor();
     }
 
     public function setCacheItemPool(
@@ -199,18 +207,21 @@ class SdkClient
                     );
                     $model = $repository->find($id);
 
-                    $attributeList = $classMetadata->getAttributeList();
+                    if (null !== $model) {
+                        $attributeList = $classMetadata->getAttributeList();
 
-                    foreach ($attributeList as $attribute) {
-                        $getter =
-                            'get' . ucfirst($attribute->getAttributeName());
-                        $value = $model->{$getter}();
-                        $properties[
-                            "\0" .
-                                $proxyModelName .
-                                "\0" .
+                        foreach ($attributeList as $attribute) {
+                            $value = $this->propertyAccessor->getValue(
+                                $model,
                                 $attribute->getAttributeName()
-                        ] = $value;
+                            );
+                            $properties[
+                                "\0" .
+                                    $proxyModelName .
+                                    "\0" .
+                                    $attribute->getAttributeName()
+                            ] = $value;
+                        }
                     }
                 }
 

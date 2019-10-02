@@ -7,12 +7,15 @@ namespace Mapado\RestClientSdk\Model;
 use libphonenumber\PhoneNumber;
 use libphonenumber\PhoneNumberFormat;
 use libphonenumber\PhoneNumberUtil;
+use Mapado\RestClientSdk\Exception\MissingSetterException;
 use Mapado\RestClientSdk\Exception\SdkException;
 use Mapado\RestClientSdk\Helper\ArrayHelper;
 use Mapado\RestClientSdk\Mapping;
 use Mapado\RestClientSdk\Mapping\ClassMetadata;
 use Mapado\RestClientSdk\SdkClient;
 use Mapado\RestClientSdk\UnitOfWork;
+use Symfony\Component\PropertyAccess\PropertyAccess;
+use Symfony\Component\PropertyAccess\PropertyAccessor;
 
 /**
  * Class Serializer
@@ -38,10 +41,16 @@ class Serializer
      */
     private $unitOfWork;
 
+    /**
+     * @var PropertyAccessor
+     */
+    private $propertyAccessor;
+
     public function __construct(Mapping $mapping, UnitOfWork $unitOfWork)
     {
         $this->mapping = $mapping;
         $this->unitOfWork = $unitOfWork;
+        $this->propertyAccessor = PropertyAccess::createPropertyAccessor();
     }
 
     /**
@@ -93,52 +102,54 @@ class Serializer
 
                 $value = ArrayHelper::arrayGet($data, $key);
 
-                $setter = 'set' . ucfirst($attribute->getAttributeName());
+                $attributeName = $attribute->getAttributeName();
+                $this->throwIfAttributeIsNotWritable($instance, $attributeName);
 
-                if (method_exists($instance, $setter)) {
-                    $relation = $classMetadata->getRelation($key);
-                    if ($relation) {
-                        if (is_string($value)) {
-                            $value = $this->sdk->createProxy($value);
-                        } elseif (is_array($value)) {
-                            $targetEntity = $relation->getTargetEntity();
-                            $relationClassMetadata = $this->mapping->getClassMetadata(
-                                $targetEntity
+                $relation = $classMetadata->getRelation($key);
+                if ($relation) {
+                    if (is_string($value)) {
+                        $value = $this->sdk->createProxy($value);
+                    } elseif (is_array($value)) {
+                        $targetEntity = $relation->getTargetEntity();
+                        $relationClassMetadata = $this->mapping->getClassMetadata(
+                            $targetEntity
+                        );
+
+                        if ($relation->isManyToOne()) {
+                            $value = $this->deserialize(
+                                $value,
+                                $relationClassMetadata->getModelName()
                             );
-
-                            if ($relation->isManyToOne()) {
-                                $value = $this->deserialize(
-                                    $value,
-                                    $relationClassMetadata->getModelName()
-                                );
-                            } else {
-                                // One-To-Many association
-                                $list = [];
-                                foreach ($value as $item) {
-                                    if (is_string($item)) {
-                                        $list[] = $this->sdk->createProxy(
-                                            $item
-                                        );
-                                    } elseif (is_array($item)) {
-                                        $list[] = $this->deserialize(
-                                            $item,
-                                            $relationClassMetadata->getModelName()
-                                        );
-                                    }
+                        } else {
+                            // One-To-Many association
+                            $list = [];
+                            foreach ($value as $item) {
+                                if (is_string($item)) {
+                                    var_dump(__METHOD__, $item);
+                                    $list[] = $this->sdk->createProxy($item);
+                                } elseif (is_array($item)) {
+                                    $list[] = $this->deserialize(
+                                        $item,
+                                        $relationClassMetadata->getModelName()
+                                    );
                                 }
-
-                                $value = $list;
                             }
+
+                            $value = $list;
                         }
                     }
+                }
 
-                    if (isset($value)) {
-                        if ('datetime' === $attribute->getType()) {
-                            $value = new \DateTime($value);
-                        }
-
-                        $instance->{$setter}($value);
+                if (isset($value)) {
+                    if ('datetime' === $attribute->getType()) {
+                        $value = new \DateTime($value);
                     }
+
+                    $this->propertyAccessor->setValue(
+                        $instance,
+                        $attributeName,
+                        $value
+                    );
                 }
             }
         }
@@ -333,5 +344,20 @@ class Serializer
     private function getClassMetadata(object $entity): ClassMetadata
     {
         return $this->mapping->getClassMetadata(get_class($entity));
+    }
+
+    private function throwIfAttributeIsNotWritable(
+        object $instance,
+        string $attribute
+    ): void {
+        if (!$this->propertyAccessor->isWritable($instance, $attribute)) {
+            throw new MissingSetterException(
+                sprintf(
+                    'Property %s is not writable for class %s. Please make it writable. You can check the property-access documentation here : https://symfony.com/doc/current/components/property_access.html#writing-to-objects',
+                    $attribute,
+                    get_class($instance)
+                )
+            );
+        }
     }
 }
