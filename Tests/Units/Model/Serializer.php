@@ -8,6 +8,7 @@ use atoum;
 use DateTime;
 use libphonenumber\PhoneNumberFormat;
 use libphonenumber\PhoneNumberUtil;
+use Mapado\RestClientSdk\Exception\MissingSetterException;
 use Mapado\RestClientSdk\Mapping;
 use Mapado\RestClientSdk\Mapping\Attribute;
 use Mapado\RestClientSdk\Mapping\ClassMetadata;
@@ -15,6 +16,7 @@ use Mapado\RestClientSdk\Mapping\Driver\AnnotationDriver;
 use Mapado\RestClientSdk\Mapping\Relation;
 use Mapado\RestClientSdk\Tests\Model\Issue46;
 use Mapado\RestClientSdk\Tests\Model\Issue75;
+use Mapado\RestClientSdk\Tests\Model\Issue80;
 use Mapado\RestClientSdk\Tests\Model\Issue90;
 use Mapado\RestClientSdk\Tests\Model\JsonLd;
 use Mapado\RestClientSdk\UnitOfWork;
@@ -785,6 +787,28 @@ class Serializer extends atoum
                     ->isInstanceOf(Issue90\WithIdInt::class)
 
                 ->object($this->unitOfWork->getDirtyEntity('8'))
+        ;
+    }
+
+    public function testDeserializeEntityWithAnInexistantSetter()
+    {
+        $annotationDriver = new AnnotationDriver(__DIR__ . '/../../cache/');
+        $mapping = new Mapping();
+        $mapping->setMapping($annotationDriver->loadDirectory(__DIR__ . '/../../Model/Issue80/'));
+
+        $this->createNewInstance($mapping);
+        $this
+            ->given($data = [
+                'id' => 8,
+                'title' => 'some title',
+            ])
+            ->and($testedInstance = $this->testedInstance)
+
+            ->then
+                ->exception(function () use ($testedInstance, $data) {
+                    $article = $this->testedInstance->deserialize($data, Issue80\Article::class);
+                })
+                    ->isInstanceOf(MissingSetterException::class)
         ;
     }
 

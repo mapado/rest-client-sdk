@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased
+
+- Throw an exception if the `setter` method does not exists on entity
+
 ## 0.31.1
 
 ### Changed

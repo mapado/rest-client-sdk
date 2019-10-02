@@ -7,6 +7,7 @@ namespace Mapado\RestClientSdk\Model;
 use libphonenumber\PhoneNumber;
 use libphonenumber\PhoneNumberFormat;
 use libphonenumber\PhoneNumberUtil;
+use Mapado\RestClientSdk\Exception\MissingSetterException;
 use Mapado\RestClientSdk\Exception\SdkException;
 use Mapado\RestClientSdk\Helper\ArrayHelper;
 use Mapado\RestClientSdk\Mapping;
@@ -95,50 +96,48 @@ class Serializer
 
                 $setter = 'set' . ucfirst($attribute->getAttributeName());
 
-                if (method_exists($instance, $setter)) {
-                    $relation = $classMetadata->getRelation($key);
-                    if ($relation) {
-                        if (is_string($value)) {
-                            $value = $this->sdk->createProxy($value);
-                        } elseif (is_array($value)) {
-                            $targetEntity = $relation->getTargetEntity();
-                            $relationClassMetadata = $this->mapping->getClassMetadata(
-                                $targetEntity
+                $this->throwIfInstanceDoesNotHasSetter($instance, $setter);
+
+                $relation = $classMetadata->getRelation($key);
+                if ($relation) {
+                    if (is_string($value)) {
+                        $value = $this->sdk->createProxy($value);
+                    } elseif (is_array($value)) {
+                        $targetEntity = $relation->getTargetEntity();
+                        $relationClassMetadata = $this->mapping->getClassMetadata(
+                            $targetEntity
+                        );
+
+                        if ($relation->isManyToOne()) {
+                            $value = $this->deserialize(
+                                $value,
+                                $relationClassMetadata->getModelName()
                             );
-
-                            if ($relation->isManyToOne()) {
-                                $value = $this->deserialize(
-                                    $value,
-                                    $relationClassMetadata->getModelName()
-                                );
-                            } else {
-                                // One-To-Many association
-                                $list = [];
-                                foreach ($value as $item) {
-                                    if (is_string($item)) {
-                                        $list[] = $this->sdk->createProxy(
-                                            $item
-                                        );
-                                    } elseif (is_array($item)) {
-                                        $list[] = $this->deserialize(
-                                            $item,
-                                            $relationClassMetadata->getModelName()
-                                        );
-                                    }
+                        } else {
+                            // One-To-Many association
+                            $list = [];
+                            foreach ($value as $item) {
+                                if (is_string($item)) {
+                                    $list[] = $this->sdk->createProxy($item);
+                                } elseif (is_array($item)) {
+                                    $list[] = $this->deserialize(
+                                        $item,
+                                        $relationClassMetadata->getModelName()
+                                    );
                                 }
-
-                                $value = $list;
                             }
+
+                            $value = $list;
                         }
                     }
+                }
 
-                    if (isset($value)) {
-                        if ('datetime' === $attribute->getType()) {
-                            $value = new \DateTime($value);
-                        }
-
-                        $instance->{$setter}($value);
+                if (isset($value)) {
+                    if ('datetime' === $attribute->getType()) {
+                        $value = new \DateTime($value);
                     }
+
+                    $instance->{$setter}($value);
                 }
             }
         }
@@ -333,5 +332,20 @@ class Serializer
     private function getClassMetadata(object $entity): ClassMetadata
     {
         return $this->mapping->getClassMetadata(get_class($entity));
+    }
+
+    private function throwIfInstanceDoesNotHasSetter(
+        object $instance,
+        string $setter
+    ): void {
+        if (!method_exists($instance, $setter)) {
+            throw new MissingSetterException(
+                sprintf(
+                    'Class %s does not have the %s setter method. Please implement this method.',
+                    get_class($instance),
+                    $setter
+                )
+            );
+        }
     }
 }
