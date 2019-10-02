@@ -21,7 +21,7 @@
     "psr/cache": "^1.0"
   },
   "require-dev": {
-    "atoum/atoum": "^3.0.0",
+    "atoum/atoum": "^3.3.0",
     "atoum/config-extension": "dev-patch-1 as 0.3.1",
     "misd/phone-number-bundle": "^1.1",
     "symfony/cache": "^4.0",
