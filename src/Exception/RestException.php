@@ -4,9 +4,8 @@ declare(strict_types=1);
 
 namespace Mapado\RestClientSdk\Exception;
 
-use Exception;
-use GuzzleHttp\Exception\RequestException;
 use Psr\Http\Message\ResponseInterface;
+use Throwable;
 
 /**
  * Class RestException
@@ -35,14 +34,11 @@ class RestException extends \RuntimeException
         string $path,
         array $params = [],
         int $code = 0,
-        ?Exception $previous = null
+        ?Throwable $previous = null
     ) {
         parent::__construct($message, $code, $previous);
         $this->path = $path;
         $this->params = $params;
-        if ($previous instanceof RequestException) {
-            $this->response = $previous->getResponse();
-        }
     }
 
     public function getPath(): string
@@ -58,5 +54,10 @@ class RestException extends \RuntimeException
     public function getResponse(): ?ResponseInterface
     {
         return $this->response;
+    }
+
+    public function setResponse(ResponseInterface $response): void
+    {
+        $this->response = $response;
     }
 }

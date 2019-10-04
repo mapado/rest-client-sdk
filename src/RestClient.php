@@ -4,14 +4,13 @@ declare(strict_types=1);
 
 namespace Mapado\RestClientSdk;
 
-use GuzzleHttp\ClientInterface;
-use GuzzleHttp\Exception\ClientException;
-use GuzzleHttp\Exception\RequestException;
-use GuzzleHttp\Exception\TransferException;
+use GuzzleHttp\Psr7;
 use Mapado\RestClientSdk\Exception\RestClientException;
 use Mapado\RestClientSdk\Exception\RestException;
+use Psr\Http\Client\ClientExceptionInterface;
+use Psr\Http\Client\ClientInterface;
 use Psr\Http\Message\ResponseInterface;
-use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Request as SymfonyRequest;
 
 /**
  * Class RestClient
@@ -41,7 +40,7 @@ class RestClient
     private $requestHistory;
 
     /**
-     * @var ?Request
+     * @var ?SymfonyRequest
      */
     private $currentRequest;
 
@@ -63,7 +62,7 @@ class RestClient
         return $this->logHistory;
     }
 
-    public function setCurrentRequest(Request $currentRequest): self
+    public function setCurrentRequest(SymfonyRequest $currentRequest): self
     {
         $this->currentRequest = $currentRequest;
 
@@ -93,20 +92,23 @@ class RestClient
     {
         $requestUrl = $this->baseUrl . $path;
         try {
-            return $this->executeRequest('GET', $requestUrl, $parameters);
-        } catch (ClientException $e) {
-            $response = $e->getResponse();
-            if (null !== $response && 404 === $response->getStatusCode()) {
-                return null;
-            }
-            throw new RestClientException(
-                'Error while getting resource',
+            $response = $this->executeRequest('GET', $requestUrl, $parameters);
+
+            $this->throwClientException(
+                $response,
                 $path,
-                [],
-                7,
-                $e
+                'Error while getting resource',
+                7
             );
-        } catch (TransferException $e) {
+            $this->throwServerException(
+                $response,
+                $path,
+                'Error while getting resource',
+                1
+            );
+
+            return $this->responseOrJsonNullable($response);
+        } catch (ClientExceptionInterface $e) {
             throw new RestException(
                 'Error while getting resource',
                 $path,
@@ -123,10 +125,15 @@ class RestClient
     public function delete(string $path): void
     {
         try {
-            $this->executeRequest('DELETE', $this->baseUrl . $path);
-        } catch (ClientException $e) {
-            return;
-        } catch (TransferException $e) {
+            $response = $this->executeRequest('DELETE', $this->baseUrl . $path);
+
+            $this->throwServerException(
+                $response,
+                $path,
+                'Error while deleting resource',
+                2
+            );
+        } catch (ClientExceptionInterface $e) {
             throw new RestException(
                 'Error while deleting resource',
                 $path,
@@ -147,20 +154,33 @@ class RestClient
     {
         $parameters['json'] = $data;
         try {
-            return $this->executeRequest(
+            $response = $this->executeRequest(
                 'POST',
                 $this->baseUrl . $path,
                 $parameters
             );
-        } catch (ClientException $e) {
-            throw new RestClientException(
-                'Cannot create resource',
+
+            $this->throwClientException(
+                $response,
                 $path,
-                [],
-                3,
-                $e
+                'Cannot create resource',
+                3
             );
-        } catch (TransferException $e) {
+            $this->throwClientNotFoundException(
+                $response,
+                $path,
+                'Cannot create resource',
+                3
+            );
+            $this->throwServerException(
+                $response,
+                $path,
+                'Error while posting resource',
+                4
+            );
+
+            return $this->responseOrJson($response);
+        } catch (ClientExceptionInterface $e) {
             throw new RestException(
                 'Error while posting resource',
                 $path,
@@ -182,20 +202,33 @@ class RestClient
         $parameters['json'] = $data;
 
         try {
-            return $this->executeRequest(
+            $response = $this->executeRequest(
                 'PUT',
                 $this->baseUrl . $path,
                 $parameters
             );
-        } catch (ClientException $e) {
-            throw new RestClientException(
-                'Cannot update resource',
+
+            $this->throwClientNotFoundException(
+                $response,
                 $path,
-                [],
-                5,
-                $e
+                'Cannot update resource',
+                5
             );
-        } catch (TransferException $e) {
+            $this->throwClientException(
+                $response,
+                $path,
+                'Cannot update resource',
+                5
+            );
+            $this->throwServerException(
+                $response,
+                $path,
+                'Error while puting resource',
+                6
+            );
+
+            return $this->responseOrJson($response);
+        } catch (ClientExceptionInterface $e) {
             throw new RestException(
                 'Error while puting resource',
                 $path,
@@ -232,7 +265,7 @@ class RestClient
         return $out;
     }
 
-    protected function getCurrentRequest(): ?Request
+    protected function getCurrentRequest(): ?SymfonyRequest
     {
         if ('cli' === \PHP_SAPI) {
             // we are in cli mode, do not bother to get request
@@ -240,24 +273,20 @@ class RestClient
         }
 
         if (!$this->currentRequest) {
-            $this->currentRequest = Request::createFromGlobals();
+            $this->currentRequest = SymfonyRequest::createFromGlobals();
         }
 
         return $this->currentRequest;
     }
 
     /**
-     * Executes request.
-     *
-     * @return ResponseInterface|array
-     *
-     * @throws TransferException
+     * @throws ClientExceptionInterface
      */
     private function executeRequest(
         string $method,
         string $url,
         array $parameters = []
-    ) {
+    ): ResponseInterface {
         $parameters = $this->mergeDefaultParameters($parameters);
 
         $startTime = null;
@@ -266,7 +295,8 @@ class RestClient
         }
 
         try {
-            $response = $this->httpClient->request($method, $url, $parameters);
+            $request = new Psr7\Request($method, $url, $parameters);
+            $response = $this->httpClient->sendRequest($request);
             $this->logRequest(
                 $startTime,
                 $method,
@@ -274,18 +304,99 @@ class RestClient
                 $parameters,
                 $response
             );
-        } catch (RequestException $e) {
-            $this->logRequest(
-                $startTime,
-                $method,
-                $url,
-                $parameters,
-                $e->getResponse()
-            );
-            throw $e;
-        } catch (TransferException $e) {
+        } catch (ClientExceptionInterface $e) {
             $this->logRequest($startTime, $method, $url, $parameters);
+
             throw $e;
+        }
+
+        return $response;
+    }
+
+    private function logRequest(
+        ?float $startTime,
+        string $method,
+        string $url,
+        array $parameters,
+        ?ResponseInterface $response = null
+    ): void {
+        if ($this->isHistoryLogged()) {
+            $queryTime = microtime(true) - $startTime;
+
+            $this->requestHistory[] = [
+                'method' => $method,
+                'url' => $url,
+                'parameters' => $parameters,
+                'response' => $response,
+                'responseBody' => $response
+                    ? json_decode((string) $response->getBody(), true)
+                    : null,
+                'queryTime' => $queryTime,
+                'backtrace' => debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS),
+            ];
+        }
+    }
+
+    private function throwClientException(
+        ResponseInterface $response,
+        string $path,
+        string $message,
+        int $code
+    ): void {
+        $statusCode = $response->getStatusCode();
+
+        if (404 !== $statusCode && $statusCode >= 400 && $statusCode < 500) {
+            // 4xx except 404
+            $exception = new RestClientException($message, $path, [], $code);
+
+            $exception->setResponse($response);
+
+            throw $exception;
+        }
+    }
+
+    private function throwServerException(
+        ResponseInterface $response,
+        string $path,
+        string $message,
+        int $code
+    ): void {
+        $statusCode = $response->getStatusCode();
+
+        if ($statusCode >= 500 && $statusCode < 600) {
+            // 5xx errors
+            $exception = new RestException($message, $path, [], $code);
+
+            $exception->setResponse($response);
+
+            throw $exception;
+        }
+    }
+
+    private function throwClientNotFoundException(
+        ResponseInterface $response,
+        string $path,
+        string $message,
+        int $code
+    ): void {
+        $statusCode = $response->getStatusCode();
+
+        if (404 === $statusCode) {
+            $exception = new RestClientException($message, $path, [], $code);
+
+            $exception->setResponse($response);
+
+            throw $exception;
+        }
+    }
+
+    /**
+     * @return array|ResponseInterface|null
+     */
+    private function responseOrJsonNullable(ResponseInterface $response)
+    {
+        if (404 === $response->getStatusCode()) {
+            return null;
         }
 
         $headers = $response->getHeaders();
@@ -312,27 +423,19 @@ class RestClient
         }
     }
 
-    private function logRequest(
-        ?float $startTime,
-        string $method,
-        string $url,
-        array $parameters,
-        ?ResponseInterface $response = null
-    ): void {
-        if ($this->isHistoryLogged()) {
-            $queryTime = microtime(true) - $startTime;
+    /**
+     * @return array|ResponseInterface
+     */
+    private function responseOrJson(ResponseInterface $response)
+    {
+        $out = $this->responseOrJsonNullable($response);
 
-            $this->requestHistory[] = [
-                'method' => $method,
-                'url' => $url,
-                'parameters' => $parameters,
-                'response' => $response,
-                'responseBody' => $response
-                    ? json_decode((string) $response->getBody(), true)
-                    : null,
-                'queryTime' => $queryTime,
-                'backtrace' => debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS),
-            ];
+        if (null === $out) {
+            throw new \RuntimeException(
+                'response should not be null. This should not happen.'
+            );
         }
+
+        return $out;
     }
 }

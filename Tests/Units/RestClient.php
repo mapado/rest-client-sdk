@@ -5,11 +5,11 @@ declare(strict_types=1);
 namespace Mapado\RestClientSdk\Tests\Units;
 
 use atoum;
-use GuzzleHttp\Client as HttpClient;
 use GuzzleHttp\Handler\MockHandler;
 use GuzzleHttp\HandlerStack;
 use GuzzleHttp\Middleware;
 use GuzzleHttp\Psr7\Response;
+use Http\Adapter\Guzzle6\Client as GuzzleAdapter;
 
 /**
  * Class RestClient
@@ -48,7 +48,10 @@ class RestClient extends atoum
         $handler->push($history);
 
         $this
-            ->given($http = new HttpClient(['handler' => $handler]))
+            ->given($http = GuzzleAdapter::createWithConfig([
+                'handler' => $handler,
+                'http_errors' => false,
+            ]))
                 ->and($this->newTestedInstance($http))
             ->then
                 ->array($this->testedInstance->get('/no-error'))
@@ -98,7 +101,7 @@ class RestClient extends atoum
         $handler = HandlerStack::create($mock);
 
         $this
-            ->given($http = new HttpClient(['handler' => $handler]))
+            ->given($http = GuzzleAdapter::createWithConfig(['handler' => $handler, 'http_errors' => false]))
                 ->and($this->newTestedInstance($http))
             ->then
                 ->variable($this->testedInstance->delete('/no-error'))
@@ -140,7 +143,7 @@ class RestClient extends atoum
         $handler = HandlerStack::create($mock);
 
         $this
-            ->given($http = new HttpClient(['handler' => $handler]))
+            ->given($http = GuzzleAdapter::createWithConfig(['handler' => $handler, 'http_errors' => false]))
                 ->and($this->newTestedInstance($http))
                 ->and($params = ['activityUuid' => '63d108be-629c-11e5-b5ce-f153631dac50'])
             ->then
@@ -190,7 +193,7 @@ class RestClient extends atoum
         $handler = HandlerStack::create($mock);
 
         $this
-            ->given($http = new HttpClient(['handler' => $handler]))
+            ->given($http = GuzzleAdapter::createWithConfig(['handler' => $handler, 'http_errors' => false]))
                 ->and($this->newTestedInstance($http))
                 ->and($params = ['activityUuid' => 'a9e82f60-629e-11e5-8903-0d978bd11e5d'])
             ->then
@@ -240,7 +243,7 @@ class RestClient extends atoum
         $handler = HandlerStack::create($mock);
 
         $this
-            ->given($http = new HttpClient(['handler' => $handler]))
+            ->given($http = GuzzleAdapter::createWithConfig(['handler' => $handler, 'http_errors' => false]))
                 ->and($this->newTestedInstance($http))
             ->then
                 ->boolean($this->testedInstance->isHistoryLogged())
@@ -308,7 +311,7 @@ class RestClient extends atoum
 
         $this
             // no headers
-            ->given($http = new HttpClient(['handler' => $handler]))
+            ->given($http = GuzzleAdapter::createWithConfig(['handler' => $handler, 'http_errors' => false]))
                 ->and($this->newTestedInstance(
                     $http
                 ))
@@ -318,7 +321,7 @@ class RestClient extends atoum
                 ->notHasKey('Accept-Language')
 
             // with headers
-            ->given($http = new HttpClient(['handler' => $handler, 'headers' => ['Accept-Language' => 'fr']]))
+            ->given($http = GuzzleAdapter::createWithConfig(['handler' => $handler, 'http_errors' => false, 'headers' => ['Accept-Language' => 'fr']]))
                 ->and($this->newTestedInstance(
                     $http
                 ))
