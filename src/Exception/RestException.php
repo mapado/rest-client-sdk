@@ -6,6 +6,7 @@ namespace Mapado\RestClientSdk\Exception;
 
 use Exception;
 use GuzzleHttp\Exception\RequestException;
+use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 
 /**
@@ -30,6 +31,11 @@ class RestException extends \RuntimeException
      */
     private $response;
 
+    /**
+     * @var RequestInterface|null
+     */
+    private $request;
+
     public function __construct(
         string $message,
         string $path,
@@ -42,6 +48,7 @@ class RestException extends \RuntimeException
         $this->params = $params;
         if ($previous instanceof RequestException) {
             $this->response = $previous->getResponse();
+            $this->request = $previous->getRequest();
         }
     }
 
@@ -58,5 +65,10 @@ class RestException extends \RuntimeException
     public function getResponse(): ?ResponseInterface
     {
         return $this->response;
+    }
+
+    public function getRequest(): ?RequestInterface
+    {
+        return $this->request;
     }
 }

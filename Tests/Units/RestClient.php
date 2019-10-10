@@ -10,12 +10,9 @@ use GuzzleHttp\Handler\MockHandler;
 use GuzzleHttp\HandlerStack;
 use GuzzleHttp\Middleware;
 use GuzzleHttp\Psr7\Response;
+use Psr\Http\Message\RequestInterface;
+use Psr\Http\Message\ResponseInterface;
 
-/**
- * Class RestClient
- *
- * @author Julien Deniau <julien.deniau@mapado.com>
- */
 class RestClient extends atoum
 {
     /**
@@ -66,6 +63,14 @@ class RestClient extends atoum
                     ->isInstanceOf('Mapado\RestClientSdk\Exception\RestException')
                     ->hasMessage('Error while getting resource')
                     ->hasCode(1)
+                ->and
+                    ->object($this->exception->getResponse())
+                        ->isInstanceOf(ResponseInterface::class)
+                ->and
+                    ->object($request = $this->exception->getRequest())
+                        ->isInstanceOf(RequestInterface::class)
+                    ->string($request->getUri()->getPath())
+                        ->isEqualTo('/error')
 
             // test binary get
             ->then
@@ -79,6 +84,14 @@ class RestClient extends atoum
                     ->isInstanceOf('Mapado\RestClientSdk\Exception\RestException')
                     ->hasMessage('Error while getting resource')
                     ->hasCode(7)
+                ->and
+                    ->object($this->exception->getResponse())
+                        ->isInstanceOf(ResponseInterface::class)
+                ->and
+                    ->object($request = $this->exception->getRequest())
+                        ->isInstanceOf(RequestInterface::class)
+                    ->string($request->getUri()->getPath())
+                        ->isEqualTo('/403')
            ;
     }
 
