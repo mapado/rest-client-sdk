@@ -17,6 +17,7 @@ use Mapado\RestClientSdk\Mapping;
 use Mapado\RestClientSdk\Mapping\ClassMetadata;
 use Mapado\RestClientSdk\SdkClient;
 use Mapado\RestClientSdk\UnitOfWork;
+use Symfony\Component\PropertyAccess\Exception\InvalidArgumentException;
 use Symfony\Component\PropertyAccess\PropertyAccess;
 use Symfony\Component\PropertyAccess\PropertyAccessor;
 
@@ -144,31 +145,11 @@ class Serializer
 
                 if (isset($value)) {
                     if ('datetime' === $attribute->getType()) {
-                        try {
-                            $this->propertyAccessor->setValue(
-                                $instance,
-                                $attributeName,
-                                new DateTime($value)
-                            );
-                        } catch (\Exception $e) {
-                            if (
-                                false ===
-                                mb_strpos(
-                                    $e->getMessage(),
-                                    'Expected argument of type "DateTimeImmutable", "DateTime" given'
-                                )
-                            ) {
-                                // not an issue with DateTimeImmutable, then rethrow exception
-                                throw $e;
-                            }
-
-                            // The excepted value is a DateTimeImmutable, so let's do that
-                            $this->propertyAccessor->setValue(
-                                $instance,
-                                $attributeName,
-                                new DateTimeImmutable($value)
-                            );
-                        }
+                        $this->setDateTimeValue(
+                            $instance,
+                            $attributeName,
+                            $value
+                        );
                     } else {
                         $this->propertyAccessor->setValue(
                             $instance,
@@ -383,6 +364,57 @@ class Serializer
                     $attribute,
                     get_class($instance)
                 )
+            );
+        }
+    }
+
+    private function setDateTimeValue(
+        object $instance,
+        string $attributeName,
+        string $value
+    ): void {
+        try {
+            $this->propertyAccessor->setValue(
+                $instance,
+                $attributeName,
+                new DateTime($value)
+            );
+        } catch (InvalidArgumentException $e) {
+            if (
+                false ===
+                mb_strpos(
+                    $e->getMessage(),
+                    'Expected argument of type "DateTimeImmutable", "DateTime" given'
+                )
+            ) {
+                // not an issue with DateTimeImmutable, then rethrow exception
+                throw $e;
+            }
+
+            // The excepted value is a DateTimeImmutable, so let's do that
+            $this->propertyAccessor->setValue(
+                $instance,
+                $attributeName,
+                new DateTimeImmutable($value)
+            );
+        } catch (\TypeError $e) {
+            // this `catch` block can be dropped when minimum support of symfony/property-access is 3.4
+            if (
+                false ===
+                mb_strpos(
+                    $e->getMessage(),
+                    'must be an instance of DateTimeImmutable, instance of DateTime given'
+                )
+            ) {
+                // not an issue with DateTimeImmutable, then rethrow exception
+                throw $e;
+            }
+
+            // The excepted value is a DateTimeImmutable, so let's do that
+            $this->propertyAccessor->setValue(
+                $instance,
+                $attributeName,
+                new DateTimeImmutable($value)
             );
         }
     }

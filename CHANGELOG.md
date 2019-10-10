@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.32.2
+
+### Fixed
+
+- Fixed issue with Symfony < 3.1
+
 ## 0.32.1
 
 ### Added
