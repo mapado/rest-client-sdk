@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Mapado\RestClientSdk\Tests\Model\JsonLd;
 
-use DateTime;
+use DateTimeImmutable;
 use Mapado\RestClientSdk\Mapping\Annotations as Rest;
 
 /**
@@ -38,7 +38,7 @@ class CartItem
     /**
      * createdAt
      *
-     * @var mixed
+     * @var ?DateTimeImmutable
      *
      * @Rest\Attribute(name="created_at", type="datetime")
      */
@@ -124,24 +124,12 @@ class CartItem
         return $this;
     }
 
-    /**
-     * Getter for createdAt
-     *
-     * @return DateTime
-     */
-    public function getCreatedAt()
+    public function getCreatedAt(): ?DateTimeImmutable
     {
         return $this->createdAt;
     }
 
-    /**
-     * Setter for createdAt
-     *
-     * @param DateTime $createdAt
-     *
-     * @return CartItem
-     */
-    public function setCreatedAt(DateTime $createdAt)
+    public function setCreatedAt(DateTimeImmutable $createdAt): self
     {
         $this->createdAt = $createdAt;
 

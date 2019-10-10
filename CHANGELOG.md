@@ -1,6 +1,16 @@
 # Changelog
 
-## 0.32.0
+## 0.32.1
+
+### Added
+
+- Allow `datetime` type to be either a `DateTime` or a `DateTimeImmutable` instance.
+
+### Fixed
+
+- Removed a `var_dump` introduced in `0.32.0`
+
+## 0.32.0 [BROKEN]
 
 - Leverage [Symfony Property Access](https://symfony.com/doc/current/components/property_access.html) component instead of homemade `$setter` and `$getter` methods (#92)
 - Throw an exception if the `setter` method does not exists on entity (#91)

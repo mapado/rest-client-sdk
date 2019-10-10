@@ -6,6 +6,7 @@ namespace Mapado\RestClientSdk\Tests\Units\Model;
 
 use atoum;
 use DateTime;
+use DateTimeImmutable;
 use libphonenumber\PhoneNumberFormat;
 use libphonenumber\PhoneNumberUtil;
 use Mapado\RestClientSdk\Exception\MissingSetterException;
@@ -997,9 +998,9 @@ class Serializer extends atoum
         $cartItem = $this->createNewCartItem();
         $cartItem->setId('/v1/cart_items/16');
         $cartItem->setAmount(1);
-        $cartItem->setCreatedAt(new DateTime('2015-11-04 15:13:00'));
+        $cartItem->setCreatedAt(new DateTimeImmutable('2015-11-04 15:13:00'));
         $cartItem->setData([
-            'when' => new DateTime('2015-11-04 15:00:00'),
+            'when' => new DateTimeImmutable('2015-11-04 15:00:00'),
             'who' => 'Jane',
         ]);
         $cartItem->setCart($this->createCart());
@@ -1016,7 +1017,7 @@ class Serializer extends atoum
     {
         $cartItem = new \Mapado\RestClientSdk\Tests\Model\JsonLd\CartItem();
         $cartItem->setAmount(2);
-        $cartItem->setCreatedAt(new DateTime('2015-09-20 12:11:00'));
+        $cartItem->setCreatedAt(new DateTimeImmutable('2015-09-20 12:11:00'));
         $cartItem->setData([
             'when' => new DateTime('2015-09-20 15:00:00'),
             'who' => 'John',

@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace Mapado\RestClientSdk\Model;
 
+use DateTime;
+use DateTimeImmutable;
+use DateTimeInterface;
 use libphonenumber\PhoneNumber;
 use libphonenumber\PhoneNumberFormat;
 use libphonenumber\PhoneNumberUtil;
@@ -125,7 +128,6 @@ class Serializer
                             $list = [];
                             foreach ($value as $item) {
                                 if (is_string($item)) {
-                                    var_dump(__METHOD__, $item);
                                     $list[] = $this->sdk->createProxy($item);
                                 } elseif (is_array($item)) {
                                     $list[] = $this->deserialize(
@@ -142,14 +144,38 @@ class Serializer
 
                 if (isset($value)) {
                     if ('datetime' === $attribute->getType()) {
-                        $value = new \DateTime($value);
-                    }
+                        try {
+                            $this->propertyAccessor->setValue(
+                                $instance,
+                                $attributeName,
+                                new DateTime($value)
+                            );
+                        } catch (\Exception $e) {
+                            if (
+                                false ===
+                                mb_strpos(
+                                    $e->getMessage(),
+                                    'Expected argument of type "DateTimeImmutable", "DateTime" given'
+                                )
+                            ) {
+                                // not an issue with DateTimeImmutable, then rethrow exception
+                                throw $e;
+                            }
 
-                    $this->propertyAccessor->setValue(
-                        $instance,
-                        $attributeName,
-                        $value
-                    );
+                            // The excepted value is a DateTimeImmutable, so let's do that
+                            $this->propertyAccessor->setValue(
+                                $instance,
+                                $attributeName,
+                                new DateTimeImmutable($value)
+                            );
+                        }
+                    } else {
+                        $this->propertyAccessor->setValue(
+                            $instance,
+                            $attributeName,
+                            $value
+                        );
+                    }
                 }
             }
         }
@@ -247,7 +273,7 @@ class Serializer
                         CartItem entities explicitly bound to a null Cart instead of the created/updated Cart.
                      */
                     continue;
-                } elseif ($data instanceof \DateTime) {
+                } elseif ($data instanceof DateTimeInterface) {
                     $data = $data->format('c');
                 } elseif (is_object($data) && $data instanceof PhoneNumber) {
                     $phoneNumberUtil = PhoneNumberUtil::getInstance();
@@ -296,7 +322,7 @@ class Serializer
                 } elseif (is_array($data)) {
                     $newData = [];
                     foreach ($data as $key => $item) {
-                        if ($item instanceof \DateTime) {
+                        if ($item instanceof DateTimeInterface) {
                             $newData[$key] = $item->format('c');
                         } elseif (
                             is_object($item) &&
