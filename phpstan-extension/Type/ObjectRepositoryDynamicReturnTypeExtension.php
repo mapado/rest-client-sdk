@@ -10,8 +10,6 @@ use PHPStan\Broker\Broker;
 use PHPStan\Reflection\BrokerAwareExtension;
 use PHPStan\Reflection\MethodReflection;
 use PHPStan\Reflection\ParametersAcceptorSelector;
-use PHPStan\Type\ArrayType;
-use PHPStan\Type\IntegerType;
 use PHPStan\Type\MixedType;
 use PHPStan\Type\ObjectType;
 use PHPStan\Type\Type;
@@ -87,6 +85,6 @@ class ObjectRepositoryDynamicReturnTypeExtension implements \PHPStan\Type\Dynami
             return TypeCombinator::addNull($entityType);
         }
 
-        return new ArrayType(new IntegerType(), $entityType);
+        return new CollectionType($entityType);
     }
 }
