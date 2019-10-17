@@ -72,7 +72,7 @@ class SdkClient
     private $unitOfWork;
 
     /**
-     * @var PropertyAccessor
+     * @var ?PropertyAccessor
      */
     private $propertyAccessor;
 
@@ -95,7 +95,6 @@ class SdkClient
         $this->serializer->setSdk($this);
 
         $this->modelHydrator = new ModelHydrator($this);
-        $this->propertyAccessor = PropertyAccess::createPropertyAccessor();
     }
 
     public function setCacheItemPool(
@@ -211,7 +210,7 @@ class SdkClient
                         $attributeList = $classMetadata->getAttributeList();
 
                         foreach ($attributeList as $attribute) {
-                            $value = $this->propertyAccessor->getValue(
+                            $value = $this->getPropertyAccessor()->getValue(
                                 $model,
                                 $attribute->getAttributeName()
                             );
@@ -251,5 +250,14 @@ class SdkClient
         $this->proxyManagerConfig->setProxiesTargetDir($fileCachePath);
 
         return $this;
+    }
+
+    private function getPropertyAccessor(): PropertyAccessor
+    {
+        if (!isset($this->propertyAccessor)) {
+            $this->propertyAccessor = PropertyAccess::createPropertyAccessor();
+        }
+
+        return $this->propertyAccessor;
     }
 }
