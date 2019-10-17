@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.33.0
+
+### Added
+
+Added a `Mapado\RestClientSdk\SdkClientRegistry` to facilitate SdkClient selection when we don't really care about which Client manages our entity.
+This is totally inspired by Doctrine Persistence ManagerRegistry.
+
 ## 0.32.2
 
 ### Fixed
