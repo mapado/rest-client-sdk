@@ -1,0 +1,31 @@
+parameters:
+    rest_client_sdk:
+      registryFile: rest-object-manager.php
+
+parametersSchema:
+    rest_client_sdk: structure([
+        registryFile: schema(string(), nullable())
+    ])
+
+services:
+    - {
+        class: 'Mapado\RestClientSdk\PHPStan\Type\ObjectMetadataResolver'
+        arguments: {
+          registryFile: '%rest_client_sdk.registryFile%'
+        }
+    }
+    - {
+        class: 'Mapado\RestClientSdk\PHPStan\Reflection\RepositoryMagicFindExtension'
+        tags: ['phpstan.broker.methodsClassReflectionExtension']
+    }
+    - {
+          class: 'Mapado\RestClientSdk\PHPStan\Type\GetRepositoryDynamicReturnTypeExtension',
+          tags: ['phpstan.broker.dynamicMethodReturnTypeExtension']
+          arguments: {
+            sdkClientClass: 'Mapado\RestClientSdk\SdkClient'
+          }
+    }
+    - {
+        class: 'Mapado\RestClientSdk\PHPStan\Type\ObjectRepositoryDynamicReturnTypeExtension',
+        tags: ['phpstan.broker.dynamicMethodReturnTypeExtension']
+    }

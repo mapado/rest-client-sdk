@@ -3,6 +3,7 @@
   "description": "Rest Client SDK for hydra API",
   "autoload": {
     "psr-4": {
+      "Mapado\\RestClientSdk\\PHPStan\\": "phpstan-extension/",
       "Mapado\\RestClientSdk\\": "src/"
     }
   },
