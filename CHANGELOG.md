@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.33.1
+
+### Added
+
+Added phpstan extension
+
 ## 0.33.0
 
 ### Added
