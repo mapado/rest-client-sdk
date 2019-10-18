@@ -297,3 +297,7 @@ try {
   var_dump($body); // will dump your response body
 }
 ```
+
+## PHPStan
+
+rest-client-sdk does work well with PHPStan. See [the related documentation](phpstan-extension/README.md).
