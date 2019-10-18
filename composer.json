@@ -86,6 +86,11 @@
     },
     "scenario-options": {
       "dependency-licenses": false
+    },
+    "phpstan": {
+      "includes": [
+        "phpstan-extension/extension.neon"
+      ]
     }
   }
 }
