@@ -39,7 +39,9 @@ class ObjectRepositoryDynamicReturnTypeExtension implements \PHPStan\Type\Dynami
             || 0 === mb_strpos($methodName, 'findOneBy')
             || 'findAll' === $methodName
             || 'find' === $methodName
-            || 'persist' === $methodName;
+            || 'persist' === $methodName
+            || 'update' === $methodName
+        ;
     }
 
     public function getTypeFromMethodCall(
@@ -81,10 +83,17 @@ class ObjectRepositoryDynamicReturnTypeExtension implements \PHPStan\Type\Dynami
 
         $entityType = new ObjectType($calledOnType->getEntityClass());
 
-        if ('find' === $methodName || 'persist' === $methodName || 0 === mb_strpos($methodName, 'findOneBy')) {
+        // find or findOneBy may return null
+        if ('find' === $methodName || 0 === mb_strpos($methodName, 'findOneBy')) {
             return TypeCombinator::addNull($entityType);
         }
 
+        // those method should return a valid entity
+        if ('update' === $methodName || 'persist' === $methodName) {
+            return $entityType;
+        }
+
+        // findBy : we are on a collection
         return new CollectionType($entityType);
     }
 }
