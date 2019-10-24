@@ -1,6 +1,6 @@
 parameters:
     rest_client_sdk:
-      registryFile: rest-object-manager.php
+      registryFile: null
 
 parametersSchema:
     rest_client_sdk: structure([
