@@ -119,14 +119,13 @@ class EntityRepository
         }
 
         $data = $this->restClient->get($path);
-        // $data = $this->assertArray($data, $methodName);
         $hydrator = $this->sdk->getModelHydrator();
 
         if ('findOneBy' == $methodName) {
             // If more results are found but one is requested return the first hit.
             $collectionKey = $mapping->getConfig()['collectionKey'];
 
-            $data = $this->assertArray($data, __METHOD__);
+            $data = $this->assertArray($data, $methodName);
             $entityList = ArrayHelper::arrayGet($data, $collectionKey);
             if (!empty($entityList)) {
                 $data = current($entityList);
@@ -144,7 +143,7 @@ class EntityRepository
                 $hydratedData = null;
             }
         } else {
-            $data = $this->assertNotObject($data, __METHOD__);
+            $data = $this->assertNotObject($data, $methodName);
             $hydratedData = $hydrator->hydrateList($data, $this->entityName);
 
             // then cache each entity from list

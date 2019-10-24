@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.33.2
+
+### Added
+
+Removed default registryFile
+
 ## 0.33.1
 
 ### Added
