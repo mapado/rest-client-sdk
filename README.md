@@ -1,4 +1,4 @@
-# Rest Client Sdk [![Build Status](https://travis-ci.org/mapado/rest-client-sdk.svg?branch=v0.33.1)](https://travis-ci.org/mapado/rest-client-sdk) [![StyleCI](https://styleci.io/repos/43553136/shield)](https://styleci.io/repos/43553136) [![Scrutinizer](https://scrutinizer-ci.com/g/mapado/rest-client-sdk/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/mapado/rest-client-sdk/)
+# Rest Client Sdk [![Build Status](https://travis-ci.org/mapado/rest-client-sdk.svg?branch=v0.33.2)](https://travis-ci.org/mapado/rest-client-sdk) [![StyleCI](https://styleci.io/repos/43553136/shield)](https://styleci.io/repos/43553136) [![Scrutinizer](https://scrutinizer-ci.com/g/mapado/rest-client-sdk/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/mapado/rest-client-sdk/)
 
 PHP Rest Client SDK for JSON API.
 
