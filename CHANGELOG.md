@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.33.3
+
+### Fixed
+
+Fix issue when `content-type` header is in lowercase
+
 ## 0.33.2
 
 ### Added
