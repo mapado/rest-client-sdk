@@ -311,6 +311,12 @@ class RestClient extends atoum
                     ['Content-Type' => 'application/ld+json'],
                     file_get_contents(__DIR__ . '/../data/ticketing.list.no_result.json')
                 ),
+
+                new Response(
+                    200,
+                    ['content-type' => 'application/ld+json'],
+                    file_get_contents(__DIR__ . '/../data/ticketing.list.no_result.json')
+                ),
             ]
         );
 
@@ -335,10 +341,25 @@ class RestClient extends atoum
                 ->and($this->newTestedInstance(
                     $http
                 ))
-            ->then($this->testedInstance->get('/no-error'))
-                ->and($headers = array_pop($historyContainer)['request']->getHeaders())
-            ->array($headers)
-                ->hasKey('Accept-Language')
+                ->then($result = $this->testedInstance->get('/no-error'))
+                    ->and($request = array_pop($historyContainer)['request'])
+                    ->and($headers = $request->getHeaders())
+                ->array($headers)
+                    ->hasKey('Accept-Language')
+                ->array($result)
+                        ->hasKey('@id')
+
+            ->given($http = new HttpClient(['handler' => $handler, 'headers' => ['Accept-Language' => 'fr']]))
+                ->and($this->newTestedInstance(
+                    $http
+                ))
+                ->then($result = $this->testedInstance->get('/no-error'))
+                    ->and($request = array_pop($historyContainer)['request'])
+                    ->and($headers = $request->getHeaders())
+                ->array($headers)
+                    ->hasKey('Accept-Language')
+                ->array($result)
+                        ->hasKey('@id')
         ;
     }
 }

@@ -293,11 +293,12 @@ class RestClient
 
         $requestIsJson = false;
 
-        if (isset($headers['Content-Type'])) {
+        $responseContentType =
+            $headers['Content-Type'] ?? $headers['content-type'] ?? null;
+        if ($responseContentType) {
             foreach ($jsonContentTypeList as $contentType) {
                 if (
-                    false !==
-                    mb_stripos($headers['Content-Type'][0], $contentType)
+                    false !== mb_stripos($responseContentType[0], $contentType)
                 ) {
                     $requestIsJson = true;
                     break;
