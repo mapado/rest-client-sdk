@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.33.4
+
+### Fixed
+
+- Fix incompatibility with DateTimeImmutable and Symfony >= 4.4
+
 ## 0.33.3
 
 ### Fixed
