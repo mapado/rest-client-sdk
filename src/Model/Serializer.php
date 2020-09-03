@@ -382,10 +382,15 @@ class Serializer
         } catch (InvalidArgumentException $e) {
             if (
                 false ===
-                mb_strpos(
-                    $e->getMessage(),
-                    'Expected argument of type "DateTimeImmutable", "DateTime" given'
-                )
+                    mb_strpos(
+                        $e->getMessage(),
+                        'Expected argument of type "DateTimeImmutable", "DateTime" given' // symfony < 4.4 message
+                    ) &&
+                false ===
+                    mb_strpos(
+                        $e->getMessage(),
+                        'Expected argument of type "DateTimeImmutable", "instance of DateTime" given' // symfony >= 4.4 message
+                    )
             ) {
                 // not an issue with DateTimeImmutable, then rethrow exception
                 throw $e;
