@@ -3,19 +3,19 @@ language: php
 matrix:
     include:
         - php: 8.0
-          env: 'SCENARIO=symfony5'
+          env: 'XDEBUG_MODE=coverage SCENARIO=symfony5'
         - php: 7.4
-          env: 'SCENARIO=symfony5'
+          env: 'XDEBUG_MODE=coverage SCENARIO=symfony5'
         - php: 7.4
-          env: 'SCENARIO=symfony4'
+          env: 'XDEBUG_MODE=coverage SCENARIO=symfony4'
         - php: 7.3
-          env: 'SCENARIO=symfony4'
+          env: 'XDEBUG_MODE=coverage SCENARIO=symfony4'
         - php: 7.3
-          env: 'SCENARIO=symfony3'
+          env: 'XDEBUG_MODE=coverage SCENARIO=symfony3'
         - php: 7.3
-          env: 'SCENARIO=symfony2 DEPENDENCIES=lowest'
+          env: 'XDEBUG_MODE=coverage SCENARIO=symfony2 DEPENDENCIES=lowest'
         - php: 7.2
-          env: 'SCENARIO=symfony4 DEPENDENCIES=lowest'
+          env: 'XDEBUG_MODE=coverage SCENARIO=symfony4 DEPENDENCIES=lowest'
 
 install:
   - '.scenarios.lock/install "${SCENARIO}" "${DEPENDENCIES}"'
