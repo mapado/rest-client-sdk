@@ -13,20 +13,20 @@
         }
     },
     "require": {
-        "php": "^7.2",
-        "guzzlehttp/guzzle": "^6.2.2",
+        "php": "^7.2 || ^8.0",
+        "guzzlehttp/guzzle": "^6.2.2 || ^7.2.0",
         "ocramius/proxy-manager": "^2.2.3",
         "doctrine/annotations": "^1.2",
-        "symfony/http-foundation": "^2.7 || ^3.3 || ^4.0",
-        "symfony/property-access": "^2.7 || ^3.3 || ^4.0",
+        "symfony/http-foundation": "^2.7 || ^3.3 || ^4.0 || ^5.0",
+        "symfony/property-access": "^2.7 || ^3.3 || ^4.0 || ^5.0",
         "psr/cache": "^1.0"
     },
     "require-dev": {
         "atoum/atoum": "^3.3.0",
         "atoum/config-extension": "dev-patch-1 as 0.3.1",
         "misd/phone-number-bundle": "^1.1",
-        "symfony/cache": "^4.0",
-        "phpstan/phpstan": "^0.11.19",
+        "symfony/cache": "^4.0 || ^5.0",
+        "phpstan/phpstan": "^0.12.38",
         "mapado/php-cs-fixer-config": "^2.1",
         "g1a/composer-test-scenarios": "^3.0"
     },

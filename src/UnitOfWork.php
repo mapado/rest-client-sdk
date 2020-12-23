@@ -194,6 +194,7 @@ class UnitOfWork
     /**
      * add defined identifiers to given model
      *
+     * @param mixed $newSerializedModel
      * @param ?mixed $idSerializedKey
      */
     private function addIdentifiers(
@@ -244,7 +245,6 @@ class UnitOfWork
      * get entity id from string or array
      *
      * @param string|array $stringOrEntity
-     * @param string $idSerializedKey
      *
      * @return ?mixed
      */

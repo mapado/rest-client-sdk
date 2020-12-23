@@ -2,6 +2,12 @@
 language: php
 matrix:
     include:
+        - php: 8.0
+          env: 'SCENARIO=symfony5'
+        - php: 7.4
+          env: 'SCENARIO=symfony5'
+        - php: 7.4
+          env: 'SCENARIO=symfony4'
         - php: 7.3
           env: 'SCENARIO=symfony4'
         - php: 7.3

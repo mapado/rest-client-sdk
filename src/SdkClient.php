@@ -168,11 +168,10 @@ class SdkClient
         $classMetadata = $this->mapping->getClassMetadataByKey($key);
 
         if (null === $classMetadata) {
-            throw new \RuntimeException(
-                "Unable to get classMetadata for key {$key}. This should not happen."
-            );
+            throw new \RuntimeException("Unable to get classMetadata for key {$key}. This should not happen.");
         }
 
+        /** @var class-string $modelName */
         $modelName = $classMetadata->getModelName();
 
         $sdk = $this;
