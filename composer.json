@@ -13,7 +13,7 @@
     }
   },
   "require": {
-    "php": "^7.2 || ^8.0",
+    "php": "^7.2",
     "guzzlehttp/guzzle": "^6.2.2 || ^7.2.0",
     "ocramius/proxy-manager": "^2.2.3",
     "doctrine/annotations": "^1.2",

@@ -2,20 +2,30 @@
 language: php
 matrix:
     include:
-        - php: 8.0
-          env: 'XDEBUG_MODE=coverage SCENARIO=symfony5'
         - php: 7.4
           env: 'XDEBUG_MODE=coverage SCENARIO=symfony5'
         - php: 7.4
           env: 'XDEBUG_MODE=coverage SCENARIO=symfony4'
         - php: 7.3
+          sudo: required
           env: 'XDEBUG_MODE=coverage SCENARIO=symfony4'
+          before_install:
+              - sudo composer self-update --1
         - php: 7.3
+          sudo: required
           env: 'XDEBUG_MODE=coverage SCENARIO=symfony3'
+          before_install:
+              - sudo composer self-update --1
         - php: 7.3
+          sudo: required
           env: 'XDEBUG_MODE=coverage SCENARIO=symfony2 DEPENDENCIES=lowest'
+          before_install:
+              - sudo composer self-update --1
         - php: 7.2
+          sudo: required
           env: 'XDEBUG_MODE=coverage SCENARIO=symfony4 DEPENDENCIES=lowest'
+          before_install:
+              - sudo composer self-update --1
 
 install:
   - '.scenarios.lock/install "${SCENARIO}" "${DEPENDENCIES}"'
