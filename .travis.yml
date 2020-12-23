@@ -10,24 +10,28 @@ matrix:
           sudo: required
           env: 'XDEBUG_MODE=coverage SCENARIO=symfony4'
           before_install:
+              - echo "memory_limit=-1" >> ~/.phpenv/versions/$(phpenv version-name)/etc/conf.d/travis.ini
               - composer self-update --1
               - composer --version
         - php: 7.3
           sudo: required
           env: 'XDEBUG_MODE=coverage SCENARIO=symfony3'
           before_install:
+              - echo "memory_limit=-1" >> ~/.phpenv/versions/$(phpenv version-name)/etc/conf.d/travis.ini
               - composer self-update --1
               - composer --version
         - php: 7.3
           sudo: required
           env: 'XDEBUG_MODE=coverage SCENARIO=symfony2 DEPENDENCIES=lowest'
           before_install:
+              - echo "memory_limit=-1" >> ~/.phpenv/versions/$(phpenv version-name)/etc/conf.d/travis.ini
               - composer self-update --1
               - composer --version
         - php: 7.2
           sudo: required
           env: 'XDEBUG_MODE=coverage SCENARIO=symfony4 DEPENDENCIES=lowest'
           before_install:
+              - echo "memory_limit=-1" >> ~/.phpenv/versions/$(phpenv version-name)/etc/conf.d/travis.ini
               - composer self-update --1
               - composer --version
 
