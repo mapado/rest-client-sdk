@@ -10,22 +10,26 @@ matrix:
           sudo: required
           env: 'XDEBUG_MODE=coverage SCENARIO=symfony4'
           before_install:
-              - sudo composer self-update --1
+              - composer self-update --1
+              - composer --version
         - php: 7.3
           sudo: required
           env: 'XDEBUG_MODE=coverage SCENARIO=symfony3'
           before_install:
-              - sudo composer self-update --1
+              - composer self-update --1
+              - composer --version
         - php: 7.3
           sudo: required
           env: 'XDEBUG_MODE=coverage SCENARIO=symfony2 DEPENDENCIES=lowest'
           before_install:
-              - sudo composer self-update --1
+              - composer self-update --1
+              - composer --version
         - php: 7.2
           sudo: required
           env: 'XDEBUG_MODE=coverage SCENARIO=symfony4 DEPENDENCIES=lowest'
           before_install:
-              - sudo composer self-update --1
+              - composer self-update --1
+              - composer --version
 
 install:
   - '.scenarios.lock/install "${SCENARIO}" "${DEPENDENCIES}"'
