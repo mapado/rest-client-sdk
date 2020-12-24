@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.34.0
+
+### Added
+
+Allow Symfony 5 and Guzzle 7
+
 ## 0.33.4
 
 ### Fixed
