@@ -71,6 +71,17 @@
           "symfony/property-access": ">=6.0.0"
         }
       },
+      "symfony4-php74": {
+        "config": {
+          "platform": {
+            "php": "7.4"
+          }
+        },
+        "conflict": {
+          "symfony/http-foundation": ">=5.0.0",
+          "symfony/property-access": ">=5.0.0"
+        }
+      },
       "symfony4": {
         "conflict": {
           "symfony/http-foundation": ">=5.0.0",
