@@ -301,3 +301,19 @@ try {
 ## PHPStan
 
 rest-client-sdk does work well with PHPStan. See [the related documentation](phpstan-extension/README.md).
+
+## Hacking
+
+This library is tested on multiple Symfony and PHP version thanks to [composer-test-scenarios](https://github.com/g1a/composer-test-scenarios).
+
+But there is a conflict between ocramius/proxy-manager, composer 1&2, and php version.
+
+In order to sort this issue, it may be usefull to update scenarios with this command for scenario with php 7.4:
+
+```sh
+docker run --rm --interactive --tty --volume $PWD:/app -w "/app" roadiz/php74-runner composer scenario:update
+```
+
+This should be resolved with [ocramius/proxy-manager#2.9.0](https://packagist.org/packages/ocramius/proxy-manager#2.9.0) but it requires composer 2 absolutely, and we (Mapado) are not ready for this.
+
+The path to fix this is to bump a major version with `"ocramius/proxy-manager": "^2.9.0"` that requires composer^2

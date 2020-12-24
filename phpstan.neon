@@ -2,3 +2,5 @@ parameters:
     level: max
     inferPrivatePropertyTypeFromConstructor: true
     ignoreErrors: []
+    checkMissingIterableValueType: false
+    checkGenericClassInNonGenericObjectType: false

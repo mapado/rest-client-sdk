@@ -11,6 +11,7 @@ use Mapado\RestClientSdk\Exception\SdkException;
 use Mapado\RestClientSdk\Exception\UnexpectedTypeException;
 use Mapado\RestClientSdk\Helper\ArrayHelper;
 use Mapado\RestClientSdk\Mapping\ClassMetadata;
+use Psr\Http\Message\ResponseInterface;
 
 class EntityRepository
 {
@@ -85,18 +86,12 @@ class EntityRepository
                 break;
 
             default:
-                throw new \BadMethodCallException(
-                    'Undefined method \'' .
-                        $method .
-                        '\'. The method name must start with
-                    either findBy or findOneBy!'
-                );
+                throw new \BadMethodCallException('Undefined method \'' . $method . '\'. The method name must start with
+                    either findBy or findOneBy!');
         }
 
         if (empty($arguments)) {
-            throw new SdkException(
-                'You need to pass a parameter to ' . $method
-            );
+            throw new SdkException('You need to pass a parameter to ' . $method);
         }
 
         $mapping = $this->sdk->getMapping();
@@ -204,11 +199,7 @@ class EntityRepository
         // if entityList is found in cache, return it
         if (false !== $entityListFromCache) {
             if (!$entityListFromCache instanceof Collection) {
-                throw new \RuntimeException(
-                    'Entity list in cache should be an instance of ' .
-                        Collection::class .
-                        '. This should not happen.'
-                );
+                throw new \RuntimeException('Entity list in cache should be an instance of ' . Collection::class . '. This should not happen.');
             }
 
             return $entityListFromCache;
@@ -285,9 +276,7 @@ class EntityRepository
         $out = $hydrator->hydrate($data, $this->entityName);
 
         if (null === $out) {
-            throw new HydratorException(
-                "Unable to convert data from PUT request ({$path}) to an instance of {$this->entityName}. Maybe you have a custom hydrator returning null?"
-            );
+            throw new HydratorException("Unable to convert data from PUT request ({$path}) to an instance of {$this->entityName}. Maybe you have a custom hydrator returning null?");
         }
 
         return $out;
@@ -322,10 +311,7 @@ class EntityRepository
         $data = $this->assertNotObject($data, __METHOD__);
 
         if (null === $data) {
-            throw new RestException(
-                "No data found after sending a `POST` request to {$path}. Did the server returned a 4xx or 5xx status code?",
-                $path
-            );
+            throw new RestException("No data found after sending a `POST` request to {$path}. Did the server returned a 4xx or 5xx status code?", $path);
         }
 
         $hydrator = $this->sdk->getModelHydrator();
@@ -333,9 +319,7 @@ class EntityRepository
         $out = $hydrator->hydrate($data, $this->entityName);
 
         if (null === $out) {
-            throw new HydratorException(
-                "Unable to convert data from POST request ({$path}) to an instance of {$this->entityName}. Maybe you have a custom hydrator returning null?"
-            );
+            throw new HydratorException("Unable to convert data from POST request ({$path}) to an instance of {$this->entityName}. Maybe you have a custom hydrator returning null?");
         }
 
         return $out;
@@ -433,9 +417,7 @@ class EntityRepository
         $out = preg_replace('~[\\/\{\}@:\(\)]~', '_', $key);
 
         if (null === $out) {
-            throw new \RuntimeException(
-                'Unable to normalize cache key. This should not happen.'
-            );
+            throw new \RuntimeException('Unable to normalize cache key. This should not happen.');
         }
 
         return $out;
@@ -453,7 +435,7 @@ class EntityRepository
     }
 
     /**
-     * @var array|ResponseInterface|null
+     * @param array|ResponseInterface|null $data
      */
     private function assertArray($data, string $methodName): array
     {
@@ -463,13 +445,11 @@ class EntityRepository
 
         $type = null === $data ? 'null' : get_class($data);
 
-        throw new UnexpectedTypeException(
-            "Return of method {$methodName} should be an array. {$type} given."
-        );
+        throw new UnexpectedTypeException("Return of method {$methodName} should be an array. {$type} given.");
     }
 
     /**
-     * @var array|ResponseInterface|null
+     * @param array|ResponseInterface|null $data
      *
      * @return array|null
      */
@@ -481,8 +461,6 @@ class EntityRepository
 
         $type = get_class($data);
 
-        throw new UnexpectedTypeException(
-            "Return of method {$methodName} should be an array. {$type} given."
-        );
+        throw new UnexpectedTypeException("Return of method {$methodName} should be an array. {$type} given.");
     }
 }

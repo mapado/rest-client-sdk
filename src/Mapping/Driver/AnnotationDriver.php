@@ -98,6 +98,8 @@ class AnnotationDriver
     }
 
     /**
+     * @param class-string $classname
+     *
      * @return array<ClassMetadata>
      */
     public function loadClassname(string $classname): array
@@ -107,6 +109,11 @@ class AnnotationDriver
         return $metadata ? [$metadata] : [];
     }
 
+    /**
+     * @param class-string $classname
+     *
+     * @throws \ReflectionException
+     */
     private function getClassMetadataForClassname(
         string $classname
     ): ?ClassMetadata {
@@ -200,14 +207,18 @@ class AnnotationDriver
         return $classMetadata;
     }
 
+    /**
+     * @return object|null the Annotation or NULL, if the requested annotation does not exist
+     */
     private function getPropertyAnnotation(
         Reader $reader,
         \ReflectionProperty $property,
         string $classname
     ): ?object {
-        return $reader->getPropertyAnnotation(
-            $property,
-            'Mapado\\RestClientSdk\\Mapping\\Annotations\\' . $classname
-        );
+        /** @var class-string $classname */
+        $classname =
+            'Mapado\\RestClientSdk\\Mapping\\Annotations\\' . $classname;
+
+        return $reader->getPropertyAnnotation($property, $classname);
     }
 }

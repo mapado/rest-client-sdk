@@ -73,11 +73,14 @@
             ]
         }
     },
-    "conflict": {
-        "symfony/http-foundation": ">=3.0.0",
-        "symfony/property-access": ">=3.0.0"
-    },
     "config": {
+        "platform": {
+            "php": "7.4"
+        },
         "vendor-dir": "../../vendor"
+    },
+    "conflict": {
+        "symfony/http-foundation": ">=5.0.0",
+        "symfony/property-access": ">=5.0.0"
     }
 }

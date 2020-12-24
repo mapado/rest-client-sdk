@@ -74,8 +74,8 @@
         }
     },
     "conflict": {
-        "symfony/http-foundation": ">=3.0.0",
-        "symfony/property-access": ">=3.0.0"
+        "symfony/http-foundation": ">=6.0.0",
+        "symfony/property-access": ">=6.0.0"
     },
     "config": {
         "vendor-dir": "../../vendor"

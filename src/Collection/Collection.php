@@ -84,6 +84,9 @@ class Collection implements \IteratorAggregate, \Serializable, \Countable, \Arra
 
     /**
      * {@inheritdoc}
+     *
+     * @param mixed|null $offset
+     * @param mixed $value
      */
     public function offsetSet($offset, $value)
     {
@@ -96,6 +99,8 @@ class Collection implements \IteratorAggregate, \Serializable, \Countable, \Arra
 
     /**
      * {@inheritdoc}
+     *
+     * @param mixed|null $offset
      */
     public function offsetExists($offset)
     {
@@ -104,6 +109,8 @@ class Collection implements \IteratorAggregate, \Serializable, \Countable, \Arra
 
     /**
      * {@inheritdoc}
+     *
+     * @param mixed|null $offset
      */
     public function offsetUnset($offset)
     {
@@ -112,12 +119,15 @@ class Collection implements \IteratorAggregate, \Serializable, \Countable, \Arra
 
     /**
      * {@inheritdoc}
+     *
+     * @param mixed|null $offset
+     *
+     * @return mixed|null
      */
     public function offsetGet($offset)
     {
-        return isset($this->elements[$offset])
-            ? $this->elements[$offset]
-            : null;
+        return $this->elements[$offset]
+            ?? null;
     }
 
     /**

@@ -11,11 +11,17 @@ namespace Mapado\RestClientSdk\Collection;
  */
 class HalCollection extends Collection
 {
+    /**
+     * @return mixed
+     */
     public function getLinks()
     {
         return $this->getExtraProperty('_links');
     }
 
+    /**
+     * @return mixed
+     */
     public function getEmbedded()
     {
         return $this->getExtraProperty('_embedded');
