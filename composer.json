@@ -24,11 +24,11 @@
   "require-dev": {
     "atoum/atoum": "^3.3.0",
     "atoum/config-extension": "dev-patch-1 as 0.3.1",
-    "misd/phone-number-bundle": "^1.1",
     "symfony/cache": "^4.0 || ^5.0",
     "phpstan/phpstan": "^0.12.38",
     "mapado/php-cs-fixer-config": "^2.1",
-    "g1a/composer-test-scenarios": "^3.0"
+    "g1a/composer-test-scenarios": "^3.0",
+    "giggsey/libphonenumber-for-php": "^8.0"
   },
   "suggest": {
     "giggsey/libphonenumber-for-php": "^1.1 to manage integration with phone number bundle"
