@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.35.0
+
+### Changed
+
+Replace abandonned misd/phone-number-bundle 
+
 ## 0.34.0
 
 ### Added
