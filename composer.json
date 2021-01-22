@@ -28,7 +28,7 @@
     "phpstan/phpstan": "^0.12.38",
     "mapado/php-cs-fixer-config": "^2.1",
     "g1a/composer-test-scenarios": "^3.0",
-    "giggsey/libphonenumber-for-php": "^8.12"
+    "giggsey/libphonenumber-for-php": "^8.0"
   },
   "suggest": {
     "giggsey/libphonenumber-for-php": "^1.1 to manage integration with phone number bundle"
