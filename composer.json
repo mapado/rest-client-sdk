@@ -105,9 +105,6 @@
   },
   "repositories": [
     {
-      "packagist":false
-    },
-    {
       "type": "vcs",
       "url": "https://github.com/jdeniau/config-extension",
       "no-api": true
