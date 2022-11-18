@@ -1,4 +1,8 @@
 # Changelog
+## 0.36.0
+### Changed
+
+- [Breaking] Added compatibility for PHP 8.1
 
 ## 0.35.0
 
