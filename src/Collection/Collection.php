@@ -50,18 +50,35 @@ class Collection implements \IteratorAggregate, \Serializable, \Countable, \Arra
         return $this->elements;
     }
 
-    /**
+        /**
      * {@inheritdoc}
+     * @deprecated `serialize` method is deprecated, `__serialize` is used instead. See https://php.watch/versions/8.1/serializable-deprecated
      */
-    public function serialize()
+    public function serialize(): string
     {
-        return serialize($this->elements);
+        return serialize($this->__serialize());
+    }
+
+    /**
+     *  @return array<string, mixed>
+     */
+    public function __serialize(): array
+    {
+        return $this->elements;
+    }
+
+    /**
+     * @deprecated `unserialize` method is deprecated, `__unserialize` is used instead. See https://php.watch/versions/8.1/serializable-deprecated
+     */
+    public function unserialize($data): void
+    {
+        $this->__unserialize($data);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function unserialize($values)
+    public function __unserialize($values)
     {
         $this->elements = unserialize($values);
     }
@@ -69,7 +86,7 @@ class Collection implements \IteratorAggregate, \Serializable, \Countable, \Arra
     /**
      * {@inheritdoc}
      */
-    public function count()
+    public function count(): int
     {
         return count($this->elements);
     }
@@ -88,7 +105,7 @@ class Collection implements \IteratorAggregate, \Serializable, \Countable, \Arra
      * @param mixed|null $offset
      * @param mixed $value
      */
-    public function offsetSet($offset, $value)
+    public function offsetSet($offset, $value): void
     {
         if (null === $offset) {
             $this->elements[] = $value;
@@ -102,7 +119,7 @@ class Collection implements \IteratorAggregate, \Serializable, \Countable, \Arra
      *
      * @param mixed|null $offset
      */
-    public function offsetExists($offset)
+    public function offsetExists($offset): bool
     {
         return isset($this->elements[$offset]);
     }
@@ -112,7 +129,7 @@ class Collection implements \IteratorAggregate, \Serializable, \Countable, \Arra
      *
      * @param mixed|null $offset
      */
-    public function offsetUnset($offset)
+    public function offsetUnset($offset): void
     {
         unset($this->elements[$offset]);
     }
@@ -124,7 +141,7 @@ class Collection implements \IteratorAggregate, \Serializable, \Countable, \Arra
      *
      * @return mixed|null
      */
-    public function offsetGet($offset)
+    public function offsetGet($offset): mixed
     {
         return $this->elements[$offset]
             ?? null;
