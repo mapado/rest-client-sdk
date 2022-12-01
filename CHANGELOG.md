@@ -1,5 +1,6 @@
 # Changelog
-## 0.36.0
+## 0.36.1
+- Collection.php compatibility with PHP 8.1
 ### Changed
 
 - [Breaking] Added compatibility for PHP 8.1
