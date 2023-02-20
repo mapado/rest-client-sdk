@@ -50,7 +50,7 @@ class Collection implements \IteratorAggregate, \Serializable, \Countable, \Arra
         return $this->elements;
     }
 
-        /**
+    /**
      * {@inheritdoc}
      * @deprecated `serialize` method is deprecated, `__serialize` is used instead. See https://php.watch/versions/8.1/serializable-deprecated
      */
