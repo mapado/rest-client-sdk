@@ -24,11 +24,20 @@ jobs:
           - php: "7.3"
             scenario: "symfony4"
             composer: "v1"
+          - php: "7.3"
+            scenario: "symfony3"
+            composer: "v1"
+          - php: "7.3"
+            scenario: "symfony2"
+            dependencies: "lowest"
+          - php: "7.2"
+            scenario: "symfony4"
+            dependencies: "lowest"
 
     steps:
     - uses: actions/checkout@v3
     
-    - name: Setup PHP with composer v2
+    - name: Setup PHP with composer
       uses: shivammathur/setup-php@v2
       with:
         php-version: ${{ matrix.php }}
