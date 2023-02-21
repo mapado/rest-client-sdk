@@ -109,5 +109,10 @@
       "url": "https://github.com/jdeniau/config-extension",
       "no-api": true
     }
-  ]
+  ],
+  "config": {
+    "allow-plugins": {
+      "g1a/composer-test-scenarios": true
+    }
+  }
 }

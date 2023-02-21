@@ -13,9 +13,9 @@
         }
     },
     "require": {
-        "php": "^7.2",
-        "guzzlehttp/guzzle": "^6.2.2 || ^7.2.0",
-        "ocramius/proxy-manager": "^2.2.3",
+        "php": "^7.2|^8.1",
+        "guzzlehttp/guzzle": "^6.2.2 || ^7.5.0",
+        "friendsofphp/proxy-manager-lts": "^1.0",
         "doctrine/annotations": "^1.2",
         "symfony/http-foundation": "^2.7 || ^3.3 || ^4.0 || ^5.0",
         "symfony/property-access": "^2.7 || ^3.3 || ^4.0 || ^5.0",
@@ -28,7 +28,7 @@
         "phpstan/phpstan": "^0.12.38",
         "mapado/php-cs-fixer-config": "^2.1",
         "g1a/composer-test-scenarios": "^3.0",
-        "giggsey/libphonenumber-for-php": "^8.12"
+        "giggsey/libphonenumber-for-php": "^8.0"
     },
     "suggest": {
         "giggsey/libphonenumber-for-php": "^1.1 to manage integration with phone number bundle"
@@ -56,13 +56,6 @@
             "email": "dallegoet@gmail.com"
         }
     ],
-    "repositories": [
-        {
-            "type": "vcs",
-            "url": "https://github.com/jdeniau/config-extension",
-            "no-api": true
-        }
-    ],
     "extra": {
         "scenario-options": {
             "dependency-licenses": false
@@ -73,11 +66,21 @@
             ]
         }
     },
+    "repositories": [
+        {
+            "type": "vcs",
+            "url": "https://github.com/jdeniau/config-extension",
+            "no-api": true
+        }
+    ],
+    "config": {
+        "allow-plugins": {
+            "g1a/composer-test-scenarios": true
+        },
+        "vendor-dir": "../../vendor"
+    },
     "conflict": {
         "symfony/http-foundation": ">=6.0.0",
         "symfony/property-access": ">=6.0.0"
-    },
-    "config": {
-        "vendor-dir": "../../vendor"
     }
 }
