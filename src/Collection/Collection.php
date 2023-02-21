@@ -43,6 +43,24 @@ class Collection implements \IteratorAggregate, \Serializable, \Countable, \Arra
     }
 
     /**
+     *  @return array<string, mixed>
+     */
+    public function __serialize(): array
+    {
+        return $this->elements;
+    }
+
+    /**
+     * {@inheritdoc}
+     *
+     * @param string $values
+     */
+    public function __unserialize($values): void
+    {
+        $this->elements = unserialize($values);
+    }
+
+    /**
      * Returns inner elements collection.
      */
     public function toArray(): array
@@ -52,6 +70,7 @@ class Collection implements \IteratorAggregate, \Serializable, \Countable, \Arra
 
     /**
      * {@inheritdoc}
+     *
      * @deprecated `serialize` method is deprecated, `__serialize` is used instead. See https://php.watch/versions/8.1/serializable-deprecated
      */
     public function serialize(): string
@@ -60,27 +79,11 @@ class Collection implements \IteratorAggregate, \Serializable, \Countable, \Arra
     }
 
     /**
-     *  @return array<string, mixed>
-     */
-    public function __serialize(): array
-    {
-        return $this->elements;
-    }
-
-    /**
      * @deprecated `unserialize` method is deprecated, `__unserialize` is used instead. See https://php.watch/versions/8.1/serializable-deprecated
      */
     public function unserialize($data): void
     {
         $this->__unserialize($data);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function __unserialize($values)
-    {
-        $this->elements = unserialize($values);
     }
 
     /**
@@ -141,10 +144,9 @@ class Collection implements \IteratorAggregate, \Serializable, \Countable, \Arra
      *
      * @return mixed|null
      */
-    public function offsetGet($offset): mixed
+    public function offsetGet($offset)
     {
-        return $this->elements[$offset]
-            ?? null;
+        return $this->elements[$offset] ?? null;
     }
 
     /**
