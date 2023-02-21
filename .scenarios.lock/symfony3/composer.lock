@@ -1826,16 +1826,16 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/jdeniau/config-extension",
-                "reference": "7482b9fa4350b749786f00012f5dd7af29b1b6f2"
+                "reference": "4b55cfaa876a834ea59ebc341b1d70058281ed1a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/jdeniau/config-extension/zipball/7482b9fa4350b749786f00012f5dd7af29b1b6f2",
-                "reference": "7482b9fa4350b749786f00012f5dd7af29b1b6f2",
+                "url": "https://api.github.com/repos/jdeniau/config-extension/zipball/4b55cfaa876a834ea59ebc341b1d70058281ed1a",
+                "reference": "4b55cfaa876a834ea59ebc341b1d70058281ed1a",
                 "shasum": ""
             },
             "require": {
-                "atoum/atoum": "^2.9||^3.0",
+                "atoum/atoum": "^2.9||^3.0||^4.0",
                 "symfony/config": "^2.6||^3.0||^4.0",
                 "symfony/dependency-injection": "^2.6||^3.0||^4.0",
                 "symfony/yaml": "^2.6||^3.0||^4.0"
@@ -1868,7 +1868,7 @@
                 "test",
                 "unit testing"
             ],
-            "time": "2019-01-30T10:41:40+00:00"
+            "time": "2023-02-21T13:16:21+00:00"
         },
         {
             "name": "composer/pcre",
