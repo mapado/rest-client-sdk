@@ -1,4 +1,11 @@
 # Changelog
+
+## 1.0.0
+
+### Changed
+
+- [BREAKING] Remove support of PHP < 8.1 and Symfony < 4.0
+
 ## 0.36.1
 - Collection.php compatibility with PHP 8.1
 ### Changed

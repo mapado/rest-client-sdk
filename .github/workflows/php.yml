@@ -16,22 +16,10 @@ jobs:
     strategy:
       matrix:
         include:
-          - php: "7.4"
+          - php: "8.1"
             scenario: "symfony5"
-          - php: "7.4"
-            scenario: "symfony4-php74"
-          - php: "7.3"
+          - php: "8.1"
             scenario: "symfony4"
-            composer: "v1"
-          - php: "7.3"
-            scenario: "symfony3"
-            composer: "v1"
-          - php: "7.3"
-            scenario: "symfony2"
-            dependencies: "lowest"
-          - php: "7.2"
-            scenario: "symfony4"
-            dependencies: "lowest"
 
     steps:
     - uses: actions/checkout@v3

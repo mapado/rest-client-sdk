@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace Mapado\RestClientSdk\Collection;
 
-use ArrayIterator;
-
 /**
  * Class Collection
  *
@@ -144,7 +142,7 @@ class Collection implements \IteratorAggregate, \Serializable, \Countable, \Arra
      *
      * @return mixed|null
      */
-    public function offsetGet($offset)
+    public function offsetGet($offset): mixed
     {
         return $this->elements[$offset] ?? null;
     }
@@ -152,9 +150,9 @@ class Collection implements \IteratorAggregate, \Serializable, \Countable, \Arra
     /**
      * {@inheritdoc}
      */
-    public function getIterator(): ArrayIterator
+    public function getIterator(): \ArrayIterator
     {
-        return new ArrayIterator($this->elements);
+        return new \ArrayIterator($this->elements);
     }
 
     /**
