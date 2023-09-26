@@ -2,7 +2,7 @@ name: PHP Composer
 
 on:
   push:
-    branches: [ "main" ]
+    branches: ["main"]
   pull_request: ~
 
 permissions:
@@ -12,23 +12,31 @@ jobs:
   test:
 
     runs-on: ubuntu-latest
-    
+
     strategy:
       matrix:
         include:
+          - php: "8.2"
+            scenario: "symfony6"
+          - php: "8.1"
+            scenario: "symfony6"
+          - php: "8.2"
+            scenario: "symfony5"
           - php: "8.1"
             scenario: "symfony5"
+          - php: "8.2"
+            scenario: "symfony4"
           - php: "8.1"
             scenario: "symfony4"
 
     steps:
     - uses: actions/checkout@v3
-    
+
     - name: Setup PHP with composer
       uses: shivammathur/setup-php@v2
       with:
         php-version: ${{ matrix.php }}
-        tools: composer:${{ matrix.composer || 'v2' }}
+        tools: composer:v2
 
 #     - name: Validate composer.json and composer.lock
 #       run: composer validate --strict
@@ -44,9 +52,9 @@ jobs:
 
     - name: Install dependencies
       run: .scenarios.lock/install "${{ matrix.scenario }}" "${{ matrix.dependencies }}"
-    
+
     - name: PHPStan
       run: vendor/bin/phpstan analyse -c phpstan.neon src/
-    
+
     - name: atoum
       run: vendor/bin/atoum
