@@ -9,7 +9,11 @@ namespace Mapado\RestClientSdk\Collection;
  *
  * @author Florent Clerc <florent.clerc@mapado.com>
  */
-class Collection implements \IteratorAggregate, \Serializable, \Countable, \ArrayAccess
+class Collection implements
+    \IteratorAggregate,
+    \Serializable,
+    \Countable,
+    \ArrayAccess
 {
     /**
      * The elements of the collection.

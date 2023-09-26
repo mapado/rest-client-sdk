@@ -25,7 +25,7 @@ $config->getFinder()
         'Tests',
     ])
     // if you want to exclude Tests directory
-    ->exclude('cache')
+    ->exclude('Tests/cache')
 ;
 
 return $config;

@@ -1,7 +1,0 @@
-atoum:
-    directories:
-        - ./Tests/Units
-
-    reports:
-        - report.default
-        - report.coverage.clover
