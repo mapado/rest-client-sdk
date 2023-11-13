@@ -10,6 +10,7 @@ namespace Mapado\RestClientSdk\Mapping\Annotations;
  * @author Julien Deniau <julien.deniau@mapado.com>
  *
  * @Annotation
+ *
  * @Target("CLASS")
  */
 final class Entity
@@ -26,7 +27,18 @@ final class Entity
     /**
      * repository
      *
-     * @var ?class-string
+     * @var ?string
      */
     public $repository;
+
+    /**
+     * @return ?class-string
+     */
+    public function getRepository(): ?string
+    {
+        /** @var ?class-string $repository */
+        $repository = $this->repository;
+
+        return $repository;
+    }
 }

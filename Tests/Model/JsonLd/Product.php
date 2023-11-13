@@ -21,6 +21,7 @@ class Product
      * @var int
      *
      * @Rest\Id
+     *
      * @Rest\Attribute(name="id", type="integer")
      */
     private $id;
