@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace Mapado\RestClientSdk\Model;
 
+use DateTime;
 use DateTimeImmutable;
+use DateTimeInterface;
 use libphonenumber\PhoneNumber;
 use libphonenumber\PhoneNumberFormat;
 use libphonenumber\PhoneNumberUtil;
@@ -252,7 +254,7 @@ class Serializer
                         CartItem entities explicitly bound to a null Cart instead of the created/updated Cart.
                      */
                     continue;
-                } elseif ($data instanceof \DateTimeInterface) {
+                } elseif ($data instanceof DateTimeInterface) {
                     $data = $data->format('c');
                 } elseif (is_object($data) && $data instanceof PhoneNumber) {
                     $phoneNumberUtil = PhoneNumberUtil::getInstance();
@@ -301,7 +303,7 @@ class Serializer
                 } elseif (is_array($data)) {
                     $newData = [];
                     foreach ($data as $key => $item) {
-                        if ($item instanceof \DateTimeInterface) {
+                        if ($item instanceof DateTimeInterface) {
                             $newData[$key] = $item->format('c');
                         } elseif (
                             is_object($item)
@@ -375,7 +377,7 @@ class Serializer
             $this->propertyAccessor->setValue(
                 $instance,
                 $attributeName,
-                new \DateTime($value)
+                new DateTime($value)
             );
         } catch (InvalidArgumentException $e) {
             if (
@@ -398,7 +400,7 @@ class Serializer
             $this->propertyAccessor->setValue(
                 $instance,
                 $attributeName,
-                new \DateTimeImmutable($value)
+                new DateTimeImmutable($value)
             );
         } catch (\TypeError $e) {
             // this `catch` block can be dropped when minimum support of symfony/property-access is 3.4
@@ -417,7 +419,7 @@ class Serializer
             $this->propertyAccessor->setValue(
                 $instance,
                 $attributeName,
-                new \DateTimeImmutable($value)
+                new DateTimeImmutable($value)
             );
         }
     }
