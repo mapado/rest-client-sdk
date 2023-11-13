@@ -10,8 +10,6 @@ use Mapado\RestClientSdk\Mapping\Attributes as Rest;
  * Class Product
  *
  * @author Julien Deniau <julien.deniau@mapado.com>
- *
- * @Rest\Entity(key="product", repository="Mapado\RestClientSdk\Test\Model\ModelRepository")
  */
 #[Rest\Entity(key: 'product', repository: ModelRepository::class)]
 class Product

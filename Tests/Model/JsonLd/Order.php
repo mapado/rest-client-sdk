@@ -16,13 +16,6 @@ use Mapado\RestClientSdk\Mapping\Attributes as Rest;
 #[Rest\Entity(key: 'order')]
 class Order
 {
-    /**
-     * id
-     *
-     * @Rest\Id
-     *
-     * @Rest\Attribute(name="id", type="string")
-     */
     #[Rest\Id]
     #[Rest\Attribute(name: 'id', type: 'string')]
     private $id;
@@ -40,7 +33,7 @@ class Order
      *
      * @var string
      */
-    #[Rest\Attribute(name: 'status', type: 'integer')]
+    #[Rest\Attribute(name: 'status', type: 'string')]
     private $status;
 
     /**

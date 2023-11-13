@@ -322,11 +322,11 @@ class EntityRepositoryTest extends TestCase
 
     public function testCacheWithIriAsId(): void
     {
-        $AttributeDriver = new AttributeDriver(__DIR__ . '/../cache/');
+        $attributeDriver = new AttributeDriver(__DIR__ . '/../cache/');
 
         $mapping = new RestMapping();
         $mapping->setMapping(
-            $AttributeDriver->loadDirectory(__DIR__ . '/../Model/Issue46/')
+            $attributeDriver->loadDirectory(__DIR__ . '/../Model/Issue46/')
         );
 
         [
@@ -611,10 +611,10 @@ class EntityRepositoryTest extends TestCase
 
     public function testPersistWithUnitOfWork(): void
     {
-        $AttributeDriver = new AttributeDriver(__DIR__ . '/../cache/');
+        $attributeDriver = new AttributeDriver(__DIR__ . '/../cache/');
         $mapping = new RestMapping();
         $mapping->setMapping(
-            $AttributeDriver->loadDirectory(__DIR__ . '/../Model/JsonLd/')
+            $attributeDriver->loadDirectory(__DIR__ . '/../Model/JsonLd/')
         );
 
         [
@@ -656,10 +656,10 @@ class EntityRepositoryTest extends TestCase
 
     public function testUpdatingInstanceDoesGetDataFromUnitOfWork(): void
     {
-        $AttributeDriver = new AttributeDriver(__DIR__ . '/../cache/');
+        $attributeDriver = new AttributeDriver(__DIR__ . '/../cache/');
         $mapping = new RestMapping();
         $mapping->setMapping(
-            $AttributeDriver->loadDirectory(__DIR__ . '/../Model/JsonLd/')
+            $attributeDriver->loadDirectory(__DIR__ . '/../Model/JsonLd/')
         );
 
         [
@@ -720,10 +720,10 @@ class EntityRepositoryTest extends TestCase
 
     public function testUpdatingInstanceDoesGetDataFromUnitOfWorkWithQueryParam(): void
     {
-        $AttributeDriver = new AttributeDriver(__DIR__ . '/../cache/');
+        $attributeDriver = new AttributeDriver(__DIR__ . '/../cache/');
         $mapping = new RestMapping();
         $mapping->setMapping(
-            $AttributeDriver->loadDirectory(__DIR__ . '/../Model/JsonLd/')
+            $attributeDriver->loadDirectory(__DIR__ . '/../Model/JsonLd/')
         );
 
         [

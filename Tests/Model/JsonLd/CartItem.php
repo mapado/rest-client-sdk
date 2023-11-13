@@ -17,7 +17,7 @@ class CartItem
     /**
      * id
      */
-    #[Rest\Id]
+    #[Rest\Id, Rest\Attribute(name: 'id', type: 'string')]
     private $id;
 
     /**
@@ -31,13 +31,11 @@ class CartItem
      *
      * @var ?\DateTimeImmutable
      */
-    #[Rest\Attribute(name: 'amount', type: 'float')]
+    #[Rest\Attribute(name: 'created_at', type: 'datetime')]
     private $createdAt;
 
     /**
      * data
-     *
-     * @Rest\Attribute(name="data", type="array")
      */
     #[Rest\Attribute(name: 'data', type: 'array')]
     private $data = [];

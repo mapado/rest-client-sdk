@@ -6,24 +6,12 @@ namespace Mapado\RestClientSdk\Tests\Model\Issue90;
 
 use Mapado\RestClientSdk\Mapping\Attributes as Rest;
 
-/**
- * @Rest\Entity(key="plop")
- */
+#[Rest\Entity(key: 'plop')]
 class WithIdInt
 {
-    /**
-     * @var int
-     *
-     * @Rest\Id
-     *
-     * @Rest\Attribute(name="id", type="int")
-     */
-    #[Rest\Id]
+    #[Rest\Id, Rest\Attribute(name: 'id', type: 'int')]
     private $id;
 
-    /**
-     * @Rest\Attribute(name="title", type="string")
-     */
     #[Rest\Attribute(name: 'title', type: 'string')]
     private $title;
 

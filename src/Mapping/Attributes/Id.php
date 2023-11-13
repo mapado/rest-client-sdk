@@ -3,6 +3,6 @@
 namespace Mapado\RestClientSdk\Mapping\Attributes;
 
 #[\Attribute(\Attribute::TARGET_PROPERTY)]
-final class Id extends AbstractPropertyAttribute
+class Id extends AbstractPropertyAttribute
 {
 }

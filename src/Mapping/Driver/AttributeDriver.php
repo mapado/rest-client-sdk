@@ -119,15 +119,15 @@ class AttributeDriver
         foreach ($reflClass->getProperties() as $property) {
             // manage attributes
             $propertyAttribute = $this->getPropertyAttribute($property, Attributes\Attribute::class);
-
             if ($propertyAttribute) {
-                $isId = $this->getPropertyAttribute($property, Attributes\Id::class);
+                $propertyIsAnIdentifier = $this->getPropertyAttribute($property, Attributes\Id::class);
+                $propertyIsAnIdentifier = $propertyIsAnIdentifier instanceof Attributes\Id;
 
                 $attributeList[] = new Attribute(
                     $propertyAttribute->name,
                     $property->getName(),
                     $propertyAttribute->type,
-                    (bool) $isId
+                    $propertyIsAnIdentifier
                 );
             } else {
                 $relation = $this->getPropertyAttribute($property, Attributes\OneToMany::class);
@@ -174,37 +174,37 @@ class AttributeDriver
     /**
      * @template T of Attributes\AbstractPropertyAttribute
      *
-     * @param class-string<T> $classname
+     * @param class-string<T> $attributeClassName
      *
      * @return T|null
      */
-    private function getPropertyAttribute(\ReflectionProperty $property, string $classname)
+    private function getPropertyAttribute(\ReflectionProperty $property, string $attributeClassName)
     {
-        return $this->getAttribute($property, $classname);
+        return $this->getAttribute($property, $attributeClassName);
     }
 
     /**
      * @template T of Attributes\AbstractClassAttribute
      *
-     * @param class-string<T> $className
+     * @param class-string<T> $attributeClassName
      *
      * @return T|null
      */
-    private function getClassAttribute(\ReflectionClass $reflectionClass, string $className)
+    private function getClassAttribute(\ReflectionClass $reflectionClass, string $attributeClassName)
     {
-        return $this->getAttribute($reflectionClass, $className);
+        return $this->getAttribute($reflectionClass, $attributeClassName);
     }
 
     /**
      * @template T
      *
-     * @param class-string<T> $className
+     * @param class-string<T> $attributeClassName
      *
      * @return T|null
      */
-    private function getAttribute(\ReflectionClass|\ReflectionProperty $reflection, string $className)
+    private function getAttribute(\ReflectionClass|\ReflectionProperty $reflection, string $attributeClassName)
     {
-        $attribute = $reflection->getAttributes($className, \ReflectionAttribute::IS_INSTANCEOF)[0] ?? null;
+        $attribute = $reflection->getAttributes($attributeClassName, \ReflectionAttribute::IS_INSTANCEOF)[0] ?? null;
 
         if (!$attribute instanceof \ReflectionAttribute) {
             return null;
