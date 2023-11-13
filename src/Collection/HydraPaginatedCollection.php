@@ -16,7 +16,7 @@ class HydraPaginatedCollection extends Collection
      */
     public function getFirstPage(): ?string
     {
-        return $this->getExtraProperty('hydra:firstPage');
+        return $this->getStringExtraProperty('hydra:firstPage');
     }
 
     /**
@@ -24,7 +24,7 @@ class HydraPaginatedCollection extends Collection
      */
     public function getLastPage(): ?string
     {
-        return $this->getExtraProperty('hydra:lastPage');
+        return $this->getStringExtraProperty('hydra:lastPage');
     }
 
     /**
@@ -32,7 +32,7 @@ class HydraPaginatedCollection extends Collection
      */
     public function getNextPage(): ?string
     {
-        return $this->getExtraProperty('hydra:nextPage');
+        return $this->getStringExtraProperty('hydra:nextPage');
     }
 
     /**
@@ -40,6 +40,6 @@ class HydraPaginatedCollection extends Collection
      */
     public function getTotalItems(): int
     {
-        return $this->getExtraProperty('hydra:totalItems') ?? 0;
+        return $this->getIntExtraProperty('hydra:totalItems') ?? 0;
     }
 }

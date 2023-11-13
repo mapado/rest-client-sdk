@@ -18,7 +18,7 @@ class ClassMetadata
     /**
      * Model name (entity class with full namespace, ie: "Foo\Entity\Article").
      *
-     * @var string
+     * @var class-string
      */
     private $modelName;
 
@@ -57,6 +57,9 @@ class ClassMetadata
      */
     private $identifierAttribute;
 
+    /**
+     * @param class-string $modelName
+     */
     public function __construct(
         string $key,
         string $modelName,
@@ -69,11 +72,18 @@ class ClassMetadata
         $this->relationList = [];
     }
 
+    /**
+     * @return class-string
+     */
     public function getModelName(): string
     {
         return $this->modelName;
     }
 
+    /**
+     * @param class-string $modelName
+     * @return $this
+     */
     public function setModelName(string $modelName): self
     {
         $this->modelName = $modelName;

@@ -27,10 +27,7 @@ class ModelHydrator
         $this->sdk = $sdk;
     }
 
-    /**
-     * @param string|int|mixed $id
-     */
-    public function convertId($id, string $modelName): string
+    public function convertId(string|int $id, string $modelName): string
     {
         $id = (string) $id;
 
