@@ -9,7 +9,7 @@ use Mapado\RestClientSdk\Mapping\Relation;
 use PHPUnit\Framework\TestCase;
 
 /**
- * @covers \AnnotationDriver
+ * @covers \AttributeDriver
  */
 class AttributeDriverTest extends TestCase
 {

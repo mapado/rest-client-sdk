@@ -4,9 +4,7 @@ declare(strict_types=1);
 
 namespace Mapado\RestClientSdk\Model;
 
-use DateTime;
 use DateTimeImmutable;
-use DateTimeInterface;
 use libphonenumber\PhoneNumber;
 use libphonenumber\PhoneNumberFormat;
 use libphonenumber\PhoneNumberUtil;
@@ -242,10 +240,10 @@ class Serializer
                 $data = $entity->{$method}();
 
                 if (
-                    null === $data &&
-                    $relation &&
-                    $relation->isManyToOne() &&
-                    $level > 0
+                    null === $data
+                    && $relation
+                    && $relation->isManyToOne()
+                    && $level > 0
                 ) {
                     /*
                         We only serialize the root many-to-one relations to prevent, hopefully,
@@ -254,7 +252,7 @@ class Serializer
                         CartItem entities explicitly bound to a null Cart instead of the created/updated Cart.
                      */
                     continue;
-                } elseif ($data instanceof DateTimeInterface) {
+                } elseif ($data instanceof \DateTimeInterface) {
                     $data = $data->format('c');
                 } elseif (is_object($data) && $data instanceof PhoneNumber) {
                     $phoneNumberUtil = PhoneNumberUtil::getInstance();
@@ -263,9 +261,9 @@ class Serializer
                         PhoneNumberFormat::INTERNATIONAL
                     );
                 } elseif (
-                    is_object($data) &&
-                    $relation &&
-                    $this->mapping->hasClassMetadata(
+                    is_object($data)
+                    && $relation
+                    && $this->mapping->hasClassMetadata(
                         $relation->getTargetEntity()
                     )
                 ) {
@@ -286,8 +284,8 @@ class Serializer
                             'get' . ucfirst($idAttribute->getAttributeName());
 
                         if (
-                            method_exists($data, $idGetter) &&
-                            $data->{$idGetter}()
+                            method_exists($data, $idGetter)
+                            && $data->{$idGetter}()
                         ) {
                             $data = $data->{$idGetter}();
                         } elseif ($relation->isManyToOne()) {
@@ -303,18 +301,18 @@ class Serializer
                 } elseif (is_array($data)) {
                     $newData = [];
                     foreach ($data as $key => $item) {
-                        if ($item instanceof DateTimeInterface) {
+                        if ($item instanceof \DateTimeInterface) {
                             $newData[$key] = $item->format('c');
                         } elseif (
-                            is_object($item) &&
-                            $relation &&
-                            $this->mapping->hasClassMetadata(
+                            is_object($item)
+                            && $relation
+                            && $this->mapping->hasClassMetadata(
                                 $relation->getTargetEntity()
                             )
                         ) {
                             $serializeRelation =
-                                !empty($context['serializeRelations']) &&
-                                in_array(
+                                !empty($context['serializeRelations'])
+                                && in_array(
                                     $relation->getSerializedKey(),
                                     $context['serializeRelations']
                                 );
@@ -350,7 +348,7 @@ class Serializer
 
     private function getClassMetadata(object $entity): ClassMetadata
     {
-        return $this->mapping->getClassMetadata(get_class($entity));
+        return $this->mapping->getClassMetadata($entity::class);
     }
 
     private function throwIfAttributeIsNotWritable(
@@ -362,7 +360,7 @@ class Serializer
                 sprintf(
                     'Property %s is not writable for class %s. Please make it writable. You can check the property-access documentation here : https://symfony.com/doc/current/components/property_access.html#writing-to-objects',
                     $attribute,
-                    get_class($instance)
+                    $instance::class
                 )
             );
         }
@@ -377,7 +375,7 @@ class Serializer
             $this->propertyAccessor->setValue(
                 $instance,
                 $attributeName,
-                new DateTime($value)
+                new \DateTime($value)
             );
         } catch (InvalidArgumentException $e) {
             if (
@@ -385,8 +383,8 @@ class Serializer
                     mb_strpos(
                         $e->getMessage(),
                         'Expected argument of type "DateTimeImmutable", "DateTime" given' // symfony < 4.4 message
-                    ) &&
-                false ===
+                    )
+                && false ===
                     mb_strpos(
                         $e->getMessage(),
                         'Expected argument of type "DateTimeImmutable", "instance of DateTime" given' // symfony >= 4.4 message
@@ -400,7 +398,7 @@ class Serializer
             $this->propertyAccessor->setValue(
                 $instance,
                 $attributeName,
-                new DateTimeImmutable($value)
+                new \DateTimeImmutable($value)
             );
         } catch (\TypeError $e) {
             // this `catch` block can be dropped when minimum support of symfony/property-access is 3.4
@@ -419,7 +417,7 @@ class Serializer
             $this->propertyAccessor->setValue(
                 $instance,
                 $attributeName,
-                new DateTimeImmutable($value)
+                new \DateTimeImmutable($value)
             );
         }
     }

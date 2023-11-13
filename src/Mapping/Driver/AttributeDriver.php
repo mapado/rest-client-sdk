@@ -120,8 +120,8 @@ class AttributeDriver
             // manage attributes
             $propertyAttribute = $this->getPropertyAttribute($property, Attributes\Attribute::class);
             if ($propertyAttribute) {
-                $propertyIsAnIdentifier = $this->getPropertyAttribute($property, Attributes\Id::class);
-                $propertyIsAnIdentifier = $propertyIsAnIdentifier instanceof Attributes\Id;
+                $idPropertyAttribute = $this->getPropertyAttribute($property, Attributes\Id::class);
+                $propertyIsAnIdentifier = $idPropertyAttribute instanceof Attributes\Id;
 
                 $attributeList[] = new Attribute(
                     $propertyAttribute->name,
@@ -196,7 +196,7 @@ class AttributeDriver
     }
 
     /**
-     * @template T of Attributes\AbstractPropertyAttribute|Attributes\AbstractClassAttribute
+     * @template T
      *
      * @param class-string<T> $attributeClassName
      *
