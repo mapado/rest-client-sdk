@@ -1,4 +1,5 @@
 {
+    "phpVersion": "8.0",
     "singleQuote": true,
-    "trailingCommaPHP": "php5"
+    "trailingCommaPHP": true
 }
