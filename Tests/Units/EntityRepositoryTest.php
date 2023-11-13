@@ -20,7 +20,7 @@ use PHPUnit\Framework\TestCase;
 use Symfony\Component\Cache\Adapter\ArrayAdapter;
 
 /**
- * @covers \EntityRepository
+ * @covers EntityRepository
  */
 class EntityRepositoryTest extends TestCase
 {
