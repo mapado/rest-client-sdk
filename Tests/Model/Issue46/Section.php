@@ -4,35 +4,27 @@ declare(strict_types=1);
 
 namespace Mapado\RestClientSdk\Tests\Model\Issue46;
 
-use Mapado\RestClientSdk\Mapping\Annotations as Rest;
+use Mapado\RestClientSdk\Mapping\Attributes as Rest;
 
-/**
- * @Rest\Entity(key="sections")
- */
+#[Rest\Entity(key: 'sections')]
 class Section
 {
-    /**
-     * @Rest\Id
-     * @Rest\Attribute(name="@id", type="string")
-     */
+    #[
+        Rest\Id,
+        Rest\Attribute(name: '@id', type: 'string')
+    ]
     private $iri;
 
-    /**
-     * @Rest\Attribute(name="id", type="string")
-     */
+    #[Rest\Attribute(name: 'id', type: 'string')]
     private $id;
 
-    /**
-     * @Rest\Attribute(name="title", type="string")
-     */
+    #[Rest\Attribute(name: 'title', type: 'string')]
     private $title;
 
-    /**
-     * @Rest\OneToMany(name="articleList", targetEntity="Article")
-     */
+    #[Rest\OneToMany(name: 'articleList', targetEntity: 'Article')]
     private $articleList = [];
 
-    public function setId($id)
+    public function setId($id): void
     {
         $this->id = $id;
     }
@@ -66,7 +58,7 @@ class Section
         return $this;
     }
 
-    public function setTitle($title)
+    public function setTitle($title): void
     {
         $this->title = $title;
     }
@@ -76,7 +68,7 @@ class Section
         return $this->title;
     }
 
-    public function addArticle(Article $article)
+    public function addArticle(Article $article): void
     {
         $this->articleList[] = $article;
     }

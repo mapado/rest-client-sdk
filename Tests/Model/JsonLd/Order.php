@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Mapado\RestClientSdk\Tests\Model\JsonLd;
 
-use Mapado\RestClientSdk\Mapping\Annotations as Rest;
+use Mapado\RestClientSdk\Mapping\Attributes as Rest;
 
 /**
  * Order Model
@@ -13,34 +13,34 @@ use Mapado\RestClientSdk\Mapping\Annotations as Rest;
  *
  * @Rest\Entity(key="order")
  */
+#[Rest\Entity(key: 'order')]
 class Order
 {
     /**
      * id
      *
-     * @var mixed
-     *
      * @Rest\Id
+     *
      * @Rest\Attribute(name="id", type="string")
      */
+    #[Rest\Id]
+    #[Rest\Attribute(name: 'id', type: 'string')]
     private $id;
 
     /**
      * customerPaidAmount
      *
      * @var int
-     *
-     * @Rest\Attribute(name="customerPaidAmount", type="integer")
      */
+    #[Rest\Attribute(name: 'customerPaidAmount', type: 'integer')]
     private $customerPaidAmount;
 
     /**
      * status
      *
      * @var string
-     *
-     * @Rest\Attribute(name="status", type="string")
      */
+    #[Rest\Attribute(name: 'status', type: 'integer')]
     private $status;
 
     /**

@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Mapado\RestClientSdk\Tests\Model\JsonLd;
 
-use Mapado\RestClientSdk\Mapping\Annotations as Rest;
+use Mapado\RestClientSdk\Mapping\Attributes as Rest;
 
 /**
  * Class Product
@@ -13,6 +13,7 @@ use Mapado\RestClientSdk\Mapping\Annotations as Rest;
  *
  * @Rest\Entity(key="product", repository="Mapado\RestClientSdk\Test\Model\ModelRepository")
  */
+#[Rest\Entity(key: 'product', repository: ModelRepository::class)]
 class Product
 {
     /**
@@ -21,8 +22,13 @@ class Product
      * @var int
      *
      * @Rest\Id
+     *
      * @Rest\Attribute(name="id", type="integer")
      */
+    #[
+        Rest\Id,
+        Rest\Attribute(name: 'id', type: 'integer')
+    ]
     private $id;
 
     /**
@@ -32,6 +38,7 @@ class Product
      *
      * @Rest\Attribute(name="product_value", type="string")
      */
+    #[Rest\Attribute(name: 'product_value', type: 'string')]
     private $value;
 
     /**
@@ -41,6 +48,7 @@ class Product
      *
      * @Rest\Attribute(name="currency", type="string")
      */
+    #[Rest\Attribute(name: 'currency', type: 'string')]
     private $currency;
 
     /**
