@@ -41,6 +41,9 @@ jobs:
 #     - name: Validate composer.json and composer.lock
 #       run: composer validate --strict
 
+    - name: Create units tests cache directory
+      run: mkdir -p Tests/cache
+
 #     - name: Cache Composer packages
 #       id: composer-cache
 #       uses: actions/cache@v3
