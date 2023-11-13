@@ -196,7 +196,7 @@ class AttributeDriver
     }
 
     /**
-     * @template T
+     * @template T of Attributes\AbstractPropertyAttribute|Attributes\AbstractClassAttribute
      *
      * @param class-string<T> $attributeClassName
      *

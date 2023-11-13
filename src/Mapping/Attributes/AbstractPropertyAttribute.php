@@ -2,6 +2,6 @@
 
 namespace Mapado\RestClientSdk\Mapping\Attributes;
 
-abstract class AbstractPropertyAttribute implements MappingAttribute
+abstract class AbstractPropertyAttribute
 {
 }
