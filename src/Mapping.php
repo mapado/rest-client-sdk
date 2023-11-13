@@ -72,6 +72,8 @@ class Mapping
 
     /**
      * return a model class name for a given key
+     *
+     * @return class-string
      */
     public function getModelName(string $key): string
     {
@@ -211,7 +213,7 @@ class Mapping
         }
 
         if ($checkModelName) {
-            if ('' === $metadata->getModelName()) {
+            if (empty($metadata->getModelName())) {
                 throw new MappingException(
                     $key . ' key is mapped but the model name is empty'
                 );

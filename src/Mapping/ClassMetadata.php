@@ -32,7 +32,7 @@ class ClassMetadata
     /**
      * Repository name (repository class with full namespace, ie: "Foo\Repository\ArticleRepository").
      *
-     * @var string
+     * @var class-string
      */
     private $repositoryName;
 
@@ -59,6 +59,7 @@ class ClassMetadata
 
     /**
      * @param class-string $modelName
+     * @param class-string $repositoryName
      */
     public function __construct(
         string $key,
@@ -204,11 +205,17 @@ class ClassMetadata
         return null;
     }
 
+    /**
+     * @return class-string
+     */
     public function getRepositoryName(): string
     {
         return $this->repositoryName;
     }
 
+    /**
+     * @param class-string $repositoryName
+     */
     public function setRepositoryName(string $repositoryName): self
     {
         $this->repositoryName = $repositoryName;

@@ -194,11 +194,11 @@ class UnitOfWork
     /**
      * add defined identifiers to given model
      *
-     * @param mixed $newSerializedModel
-     * @param ?mixed $idSerializedKey
+     * @param array $newSerializedModel
+     * @param ?string $idSerializedKey
      */
     private function addIdentifiers(
-        $newSerializedModel,
+        array $newSerializedModel,
         array $dirtyFields,
         $idSerializedKey = null
     ): array {

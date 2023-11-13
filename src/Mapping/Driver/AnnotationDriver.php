@@ -52,6 +52,7 @@ class AnnotationDriver
             throw new MappingException($path . ' is not a valid directory');
         }
 
+        /** @var array<int, array|string> $iterator */
         $iterator = new \RegexIterator(
             new \RecursiveIteratorIterator(
                 new \RecursiveDirectoryIterator(
