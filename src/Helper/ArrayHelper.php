@@ -19,8 +19,11 @@ class ArrayHelper
      *
      * @return mixed
      */
-    public static function arrayGet(array $array, ?string $key, $default = null)
-    {
+    public static function arrayGet(
+        array $array,
+        ?string $key,
+        $default = null
+    ): mixed {
         if (null === $key) {
             return $array;
         }

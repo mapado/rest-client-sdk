@@ -30,7 +30,7 @@ class EntityRepository
     protected $sdk;
 
     /**
-     * @var string
+     * @var class-string
      */
     protected $entityName;
 
@@ -53,7 +53,7 @@ class EntityRepository
      *
      * @param SdkClient  $sdkClient  The client to connect to the datasource with
      * @param RestClient $restClient The client to process the http requests
-     * @param string     $entityName The entity to work with
+     * @param class-string     $entityName The entity to work with
      */
     public function __construct(
         SdkClient $sdkClient,
@@ -122,7 +122,7 @@ class EntityRepository
 
             $data = $this->assertArray($data, $methodName);
             $entityList = ArrayHelper::arrayGet($data, $collectionKey);
-            if (!empty($entityList)) {
+            if (!empty($entityList) && is_array($entityList)) {
                 $data = current($entityList);
                 $hydratedData = $hydrator->hydrate($data, $this->entityName);
 
@@ -144,8 +144,11 @@ class EntityRepository
             // then cache each entity from list
             foreach ($hydratedData as $entity) {
                 $identifier = $entity->{$this->getClassMetadata()->getIdGetter()}();
-                $this->saveToCache($identifier, $entity);
-                $this->unitOfWork->registerClean($identifier, $entity);
+
+                if (is_object($entity)) {
+                    $this->saveToCache($identifier, $entity);
+                    $this->unitOfWork->registerClean($identifier, $entity);
+                }
             }
         }
 
@@ -157,10 +160,9 @@ class EntityRepository
     /**
      * find - finds one item of the entity based on the @REST\Id field in the entity
      *
-     * @param string|int|mixed $id          id of the element to fetch
      * @param array  $queryParams query parameters to add to the query
      */
-    public function find($id, array $queryParams = []): ?object
+    public function find(string|int $id, array $queryParams = []): ?object
     {
         $hydrator = $this->sdk->getModelHydrator();
         $id = $hydrator->convertId($id, $this->entityName);
@@ -169,7 +171,7 @@ class EntityRepository
 
         // if entity is found in cache, return it
         $entityFromCache = $this->fetchFromCache($id);
-        if (false != $entityFromCache) {
+        if ($entityFromCache) {
             return $entityFromCache;
         }
 
@@ -216,7 +218,12 @@ class EntityRepository
 
         // then cache each entity from list
         foreach ($entityList as $entity) {
+            if (!is_object($entity)) {
+                throw new \RuntimeException("Entity should be an object. This should not happen.");
+            }
+
             $identifier = $entity->{$this->getClassMetadata()->getIdGetter()}();
+
             $this->unitOfWork->registerClean($identifier, $entity);
             $this->saveToCache($identifier, $entity);
         }
@@ -325,10 +332,7 @@ class EntityRepository
         return $out;
     }
 
-    /**
-     * @return object|false
-     */
-    protected function fetchFromCache(string $key)
+    protected function fetchFromCache(string $key): object|false
     {
         $key = $this->normalizeCacheKey($key);
         $cacheItemPool = $this->sdk->getCacheItemPool();
@@ -337,6 +341,10 @@ class EntityRepository
             if ($cacheItemPool->hasItem($cacheKey)) {
                 $cacheItem = $cacheItemPool->getItem($cacheKey);
                 $cacheData = $cacheItem->get();
+
+                if (!is_object($cacheData)) {
+                    throw new \RuntimeException('Cache data should be an object. This should not happen.');
+                }
 
                 return $cacheData;
             }

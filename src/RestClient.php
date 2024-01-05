@@ -99,9 +99,21 @@ class RestClient
             if (null !== $response && 404 === $response->getStatusCode()) {
                 return null;
             }
-            throw new RestClientException('Error while getting resource', $path, [], 7, $e);
+            throw new RestClientException(
+                'Error while getting resource',
+                $path,
+                [],
+                7,
+                $e
+            );
         } catch (TransferException $e) {
-            throw new RestException('Error while getting resource', $path, [], 1, $e);
+            throw new RestException(
+                'Error while getting resource',
+                $path,
+                [],
+                1,
+                $e
+            );
         }
     }
 
@@ -115,7 +127,13 @@ class RestClient
         } catch (ClientException $e) {
             return;
         } catch (TransferException $e) {
-            throw new RestException('Error while deleting resource', $path, [], 2, $e);
+            throw new RestException(
+                'Error while deleting resource',
+                $path,
+                [],
+                2,
+                $e
+            );
         }
     }
 
@@ -135,9 +153,21 @@ class RestClient
                 $parameters
             );
         } catch (ClientException $e) {
-            throw new RestClientException('Cannot create resource', $path, [], 3, $e);
+            throw new RestClientException(
+                'Cannot create resource',
+                $path,
+                [],
+                3,
+                $e
+            );
         } catch (TransferException $e) {
-            throw new RestException('Error while posting resource', $path, [], 4, $e);
+            throw new RestException(
+                'Error while posting resource',
+                $path,
+                [],
+                4,
+                $e
+            );
         }
     }
 
@@ -158,9 +188,21 @@ class RestClient
                 $parameters
             );
         } catch (ClientException $e) {
-            throw new RestClientException('Cannot update resource', $path, [], 5, $e);
+            throw new RestClientException(
+                'Cannot update resource',
+                $path,
+                [],
+                5,
+                $e
+            );
         } catch (TransferException $e) {
-            throw new RestException('Error while puting resource', $path, [], 6, $e);
+            throw new RestException(
+                'Error while puting resource',
+                $path,
+                [],
+                6,
+                $e
+            );
         }
     }
 
@@ -180,7 +222,12 @@ class RestClient
         $out = array_replace_recursive($defaultParameters, $parameters);
 
         if (null === $out) {
-            throw new \RuntimeException(sprintf('Error while calling array_replace_recursive in %s. This should not happen.', __METHOD__));
+            throw new \RuntimeException(
+                sprintf(
+                    'Error while calling array_replace_recursive in %s. This should not happen.',
+                    __METHOD__
+                )
+            );
         }
 
         return $out;
@@ -261,7 +308,10 @@ class RestClient
         }
 
         if ($requestIsJson) {
-            return json_decode((string) $response->getBody(), true);
+            /** @var array $decodedJson */
+            $decodedJson = json_decode((string) $response->getBody(), true);
+
+            return $decodedJson;
         } else {
             return $response;
         }

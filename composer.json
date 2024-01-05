@@ -24,7 +24,7 @@
   "require-dev": {
     "symfony/cache": "^4.0 || ^5.0 || ^6.0",
     "phpunit/phpunit": "^10.0",
-    "phpstan/phpstan": "^0.12.38",
+    "phpstan/phpstan": "^1.10",
     "mapado/php-cs-fixer-config": "^3.2",
     "g1a/composer-test-scenarios": "^3.0",
     "giggsey/libphonenumber-for-php": "^8.0",

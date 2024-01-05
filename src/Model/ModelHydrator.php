@@ -27,10 +27,7 @@ class ModelHydrator
         $this->sdk = $sdk;
     }
 
-    /**
-     * @param string|int|mixed $id
-     */
-    public function convertId($id, string $modelName): string
+    public function convertId(string|int $id, string $modelName): string
     {
         $id = (string) $id;
 
@@ -48,9 +45,6 @@ class ModelHydrator
         return $id;
     }
 
-    /**
-     * convert data as array to entity
-     */
     public function hydrate(?array $data, string $modelName): ?object
     {
         $mapping = $this->sdk->getMapping();
@@ -62,6 +56,8 @@ class ModelHydrator
 
     /**
      * convert API response to Collection containing entities
+     *
+     * @param class-string $modelName
      */
     public function hydrateList(?array $data, string $modelName): Collection
     {
@@ -76,30 +72,45 @@ class ModelHydrator
 
     /**
      * convert list of data as array to Collection containing entities
+     *
+     * @param class-string $modelName
      */
     private function deserializeAll(array $data, string $modelName): Collection
     {
         $collectionKey = $this->sdk->getMapping()->getConfig()['collectionKey'];
 
-        $itemList = array_map(function ($member) use ($modelName) {
-            return $this->deserialize($member, $modelName);
-        }, ArrayHelper::arrayGet($data, $collectionKey));
+        $itemList = ArrayHelper::arrayGet($data, $collectionKey);
+
+        if (!is_array($itemList)) {
+            throw new \RuntimeException(sprintf(
+                'Unable to deserialize collection, %s key not found in response',
+                $collectionKey
+            ));
+        }
+
+        $itemList = array_map(fn (?array $member) => $this->deserialize($member, $modelName), $itemList);
 
         $extraProperties = array_filter(
             $data,
-            function ($key) use ($collectionKey) {
-                return $key !== $collectionKey;
-            },
-            ARRAY_FILTER_USE_KEY
+            fn ($key) => $key !== $collectionKey,
+            \ARRAY_FILTER_USE_KEY
         );
 
+        /** @var class-string $collectionClassName */
         $collectionClassName = $this->guessCollectionClassname($data);
 
+        if (!class_exists($collectionClassName)) {
+            throw new \RuntimeException("Seem's like $collectionClassName does not exist");
+        }
+
+        /** @var Collection */
         return new $collectionClassName($itemList, $extraProperties);
     }
 
     /**
      * convert array to entity
+     *
+     * @param class-string $modelName
      */
     private function deserialize(?array $data, string $modelName): ?object
     {
@@ -116,8 +127,8 @@ class ModelHydrator
     private function guessCollectionClassname(array $data): string
     {
         switch (true) {
-            case !empty($data['@type']) &&
-                'hydra:PagedCollection' === $data['@type']:
+            case !empty($data['@type'])
+            && 'hydra:PagedCollection' === $data['@type']:
                 return HydraPaginatedCollection::class;
 
             case array_key_exists('_embedded', $data):

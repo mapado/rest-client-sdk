@@ -52,6 +52,7 @@ class AnnotationDriver
             throw new MappingException($path . ' is not a valid directory');
         }
 
+        /** @var array<int, array|string> $iterator */
         $iterator = new \RegexIterator(
             new \RecursiveIteratorIterator(
                 new \RecursiveDirectoryIterator(
@@ -199,7 +200,7 @@ class AnnotationDriver
         $classMetadata = new ClassMetadata(
             $classAnnotation->key,
             $classname,
-            $classAnnotation->repository
+            $classAnnotation->getRepository()
         );
         $classMetadata->setAttributeList($attributeList);
         $classMetadata->setRelationList($relationList);

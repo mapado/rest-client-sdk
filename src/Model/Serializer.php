@@ -86,6 +86,10 @@ class Serializer
         return $out;
     }
 
+    /**
+     * @param array $data
+     * @param class-string $className
+     */
     public function deserialize(array $data, string $className): object
     {
         $className = $this->resolveRealClassName($data, $className);
@@ -95,6 +99,12 @@ class Serializer
         $attributeList = $classMetadata->getAttributeList();
 
         $instance = new $className();
+
+        if (!is_object($instance)) {
+            throw new \RuntimeException(
+                "The class $className is not instantiable"
+            );
+        }
 
         if ($attributeList) {
             foreach ($attributeList as $attribute) {
@@ -145,6 +155,12 @@ class Serializer
 
                 if (isset($value)) {
                     if ('datetime' === $attribute->getType()) {
+                        if (!is_string($value)) {
+                            throw new \RuntimeException(
+                                "The value for $attributeName to cast to datetime value should be a string"
+                            );
+                        }
+
                         $this->setDateTimeValue(
                             $instance,
                             $attributeName,
@@ -391,25 +407,6 @@ class Serializer
                         $e->getMessage(),
                         'Expected argument of type "DateTimeImmutable", "instance of DateTime" given' // symfony >= 4.4 message
                     )
-            ) {
-                // not an issue with DateTimeImmutable, then rethrow exception
-                throw $e;
-            }
-
-            // The excepted value is a DateTimeImmutable, so let's do that
-            $this->propertyAccessor->setValue(
-                $instance,
-                $attributeName,
-                new DateTimeImmutable($value)
-            );
-        } catch (\TypeError $e) {
-            // this `catch` block can be dropped when minimum support of symfony/property-access is 3.4
-            if (
-                false ===
-                mb_strpos(
-                    $e->getMessage(),
-                    'must be an instance of DateTimeImmutable, instance of DateTime given'
-                )
             ) {
                 // not an issue with DateTimeImmutable, then rethrow exception
                 throw $e;

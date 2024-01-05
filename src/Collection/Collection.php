@@ -59,7 +59,11 @@ class Collection implements
      */
     public function __unserialize($values): void
     {
-        $this->elements = unserialize($values);
+        $unserializedValues = unserialize($values);
+
+        if (is_array($unserializedValues)) {
+            $this->elements = $unserializedValues;
+        }
     }
 
     /**
@@ -165,6 +169,20 @@ class Collection implements
     public function getExtraProperties(): array
     {
         return $this->extraProperties;
+    }
+
+    public function getStringExtraProperty(string $key): ?string
+    {
+        $value = $this->getExtraProperty($key);
+
+        return is_string($value) ? $value : null;
+    }
+
+    public function getIntExtraProperty(string $key): ?int
+    {
+        $value = $this->getExtraProperty($key);
+
+        return is_int($value) ? $value : null;
     }
 
     /**

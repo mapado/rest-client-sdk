@@ -18,7 +18,7 @@ class ClassMetadata
     /**
      * Model name (entity class with full namespace, ie: "Foo\Entity\Article").
      *
-     * @var string
+     * @var class-string
      */
     private $modelName;
 
@@ -32,7 +32,7 @@ class ClassMetadata
     /**
      * Repository name (repository class with full namespace, ie: "Foo\Repository\ArticleRepository").
      *
-     * @var string
+     * @var class-string
      */
     private $repositoryName;
 
@@ -57,6 +57,10 @@ class ClassMetadata
      */
     private $identifierAttribute;
 
+    /**
+     * @param class-string $modelName
+     * @param class-string $repositoryName
+     */
     public function __construct(
         string $key,
         string $modelName,
@@ -69,11 +73,18 @@ class ClassMetadata
         $this->relationList = [];
     }
 
+    /**
+     * @return class-string
+     */
     public function getModelName(): string
     {
         return $this->modelName;
     }
 
+    /**
+     * @param class-string $modelName
+     * @return $this
+     */
     public function setModelName(string $modelName): self
     {
         $this->modelName = $modelName;
@@ -194,11 +205,17 @@ class ClassMetadata
         return null;
     }
 
+    /**
+     * @return class-string
+     */
     public function getRepositoryName(): string
     {
         return $this->repositoryName;
     }
 
+    /**
+     * @param class-string $repositoryName
+     */
     public function setRepositoryName(string $repositoryName): self
     {
         $this->repositoryName = $repositoryName;
