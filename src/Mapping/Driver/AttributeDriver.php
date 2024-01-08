@@ -157,7 +157,7 @@ class AttributeDriver
     }
 
     /**
-     * @template T of Attributes\AbstractPropertyAttribute
+     * @template T
      *
      * @param class-string<T> $classname
      *
@@ -169,7 +169,7 @@ class AttributeDriver
     }
 
     /**
-     * @template T of Attributes\AbstractClassAttribute
+     * @template T
      *
      * @param class-string<T> $className
      *
