@@ -165,10 +165,12 @@ class Collection implements \IteratorAggregate, \Serializable, \Countable, \Arra
     /**
      * return the value of an extra property
      */
-    public function getExtraProperty(string $key)
+    public function getExtraProperty(string $key): mixed
     {
         if (isset($this->extraProperties[$key])) {
             return $this->extraProperties[$key];
         }
+
+        return null;
     }
 }

@@ -71,9 +71,13 @@ class ModelHydrator
     }
 
     /**
+     * @template T
+     *
      * convert list of data as array to Collection containing entities
      *
-     * @param class-string $modelName
+     * @param class-string<T> $modelName
+     *
+     * @return Collection<T>
      */
     private function deserializeAll(array $data, string $modelName): Collection
     {
@@ -110,8 +114,15 @@ class ModelHydrator
             );
         }
 
-        /* @var Collection */
-        return new $collectionClassName($itemList, $extraProperties);
+        $collection = new $collectionClassName($itemList, $extraProperties);
+
+        if (!$collection instanceof Collection) {
+            throw new \RuntimeException(
+                "Seem's like $collectionClassName is not a collection class",
+            );
+        }
+
+        return $collection;
     }
 
     /**

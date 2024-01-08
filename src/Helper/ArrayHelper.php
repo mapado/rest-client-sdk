@@ -18,7 +18,7 @@ class ArrayHelper
     public static function arrayGet(
         array $array,
         ?string $key,
-        $default = null,
+        mixed $default = null,
     ): mixed {
         if (null === $key) {
             return $array;
@@ -100,7 +100,7 @@ class ArrayHelper
     /**
      * Return the default value of the given value.
      */
-    public static function value($value)
+    public static function value(mixed $value): mixed
     {
         return $value instanceof \Closure ? $value() : $value;
     }
