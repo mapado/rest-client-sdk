@@ -11,6 +11,10 @@ You just have to implements your model and a little configuration and it will hi
 composer require mapado/rest-client-sdk
 ```
 
+## Migration from v0 to v1
+
+Go see the [migration guide](MIGRATION-1.0.md) to see how to migrate from v0 to v1
+
 ## Usage
 
 Imagine you have those API endpoints:

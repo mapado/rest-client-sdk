@@ -4,6 +4,7 @@
 
 ### Changed
 
+- [BREAKING] Drop annotations support, replace by PHP8 attributes [#124](https://github.com/mapado/rest-client-sdk/pull/124) by [@JulienRAVIA](https://github.com/JulienRAVIA)
 - [BREAKING] Remove support of PHP < 8.1 and Symfony < 4.0 [#121](https://github.com/mapado/rest-client-sdk/pull/121) by [@jdeniau](https://github.com/jdeniau)
 - Migrate unit tests from atoum to phpunit [#123](https://github.com/mapado/rest-client-sdk/pull/123) by [@jdeniau](https://github.com/jdeniau)
 
