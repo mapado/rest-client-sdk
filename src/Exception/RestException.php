@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Mapado\RestClientSdk\Exception;
 
-use Exception;
 use GuzzleHttp\Exception\RequestException;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
@@ -41,7 +40,7 @@ class RestException extends \RuntimeException
         string $path,
         array $params = [],
         int $code = 0,
-        ?Exception $previous = null
+        \Exception $previous = null,
     ) {
         parent::__construct($message, $code, $previous);
         $this->path = $path;

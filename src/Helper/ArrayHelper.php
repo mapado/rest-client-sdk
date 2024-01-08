@@ -14,15 +14,11 @@ class ArrayHelper
 {
     /**
      * Get an item from an array using "dot" notation.
-     *
-     * @param  mixed   $default
-     *
-     * @return mixed
      */
     public static function arrayGet(
         array $array,
         ?string $key,
-        $default = null
+        $default = null,
     ): mixed {
         if (null === $key) {
             return $array;
@@ -76,7 +72,7 @@ class ArrayHelper
             if (is_array($value) && !empty($value)) {
                 $results = array_merge(
                     $results,
-                    static::arrayDot($value, $prepend . $key . '.')
+                    static::arrayDot($value, $prepend . $key . '.'),
                 );
             } else {
                 $results[$prepend . $key] = $value;
@@ -88,11 +84,11 @@ class ArrayHelper
 
     public static function arrayDiffAssocRecursive(
         array $array1,
-        array $array2
+        array $array2,
     ): array {
         return array_diff_assoc(
             static::arrayDot($array1),
-            static::arrayDot($array2)
+            static::arrayDot($array2),
         );
     }
 
@@ -103,10 +99,6 @@ class ArrayHelper
 
     /**
      * Return the default value of the given value.
-     *
-     * @param  mixed  $value
-     *
-     * @return mixed
      */
     public static function value($value)
     {
