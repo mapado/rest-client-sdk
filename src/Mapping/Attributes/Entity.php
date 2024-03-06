@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Mapado\RestClientSdk\Mapping\Attributes;
 
 #[\Attribute(\Attribute::TARGET_CLASS)]
-final class Entity extends AbstractClassAttribute
+final class Entity
 {
     /**
      * @param class-string|null $repository
