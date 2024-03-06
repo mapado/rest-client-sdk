@@ -4,30 +4,30 @@ declare(strict_types=1);
 
 namespace Mapado\RestClientSdk\Tests\Model\Issue46;
 
-use Mapado\RestClientSdk\Mapping\Annotations as Rest;
+use Mapado\RestClientSdk\Mapping\Attributes as Rest;
 
-/**
- * @Rest\Entity(key="articles")
- */
+#[Rest\Entity(key: 'articles')]
 class Article
 {
-    /**
-     * @Rest\Id
-     * @Rest\Attribute(name="@id", type="string")
-     */
+    #[
+        Rest\Id,
+        Rest\Attribute(name: '@id', type: 'string')
+    ]
     private $iri;
 
     /**
      * @Rest\Attribute(name="id", type="string")
      */
+    #[Rest\Attribute(name: 'id', type: 'string')]
     private $id;
 
     /**
      * @Rest\ManyToOne(name="section", targetEntity="Section")
      */
+    #[Rest\ManyToOne(name: 'section', targetEntity: 'Section')]
     private $section;
 
-    public function setId($id)
+    public function setId($id): void
     {
         $this->id = $id;
     }
@@ -61,7 +61,7 @@ class Article
         return $this;
     }
 
-    public function setSection(Section $section)
+    public function setSection(Section $section): void
     {
         $this->section = $section;
 

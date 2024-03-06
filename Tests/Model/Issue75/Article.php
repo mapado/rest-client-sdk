@@ -4,35 +4,32 @@ declare(strict_types=1);
 
 namespace Mapado\RestClientSdk\Tests\Model\Issue75;
 
-use Mapado\RestClientSdk\Mapping\Annotations as Rest;
+use Mapado\RestClientSdk\Mapping\Attributes as Rest;
 
-/**
- * @Rest\Entity(key="articles")
- */
+#[Rest\Entity(key: 'articles')]
 class Article
 {
     /**
      * @Rest\Id
+     *
      * @Rest\Attribute(name="@id", type="string")
      */
+    #[
+        Rest\Id,
+        Rest\Attribute(name: '@id', type: 'string')
+    ]
     private $iri;
 
-    /**
-     * @Rest\Attribute(name="title", type="string")
-     */
+    #[Rest\Attribute(name: 'title', type: 'string')]
     private $title;
 
-    /**
-     * @Rest\ManyToOne(name="tag", targetEntity="Tag")
-     */
+    #[Rest\ManyToOne(name: 'tag', targetEntity: 'Tag')]
     private $tag;
 
-    /**
-     * @Rest\OneToMany(name="tagList", targetEntity="Tag")
-     */
+    #[Rest\OneToMany(name: 'tagList', targetEntity: 'Tag')]
     private $tagList;
 
-    public function setTitle($title)
+    public function setTitle($title): void
     {
         $this->title = $title;
     }
@@ -66,7 +63,7 @@ class Article
         return $this;
     }
 
-    public function setTag($tag)
+    public function setTag($tag): void
     {
         $this->tag = $tag;
     }

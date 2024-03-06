@@ -4,17 +4,16 @@ declare(strict_types=1);
 
 namespace Mapado\RestClientSdk\Tests\Model\Issue80;
 
-use Mapado\RestClientSdk\Mapping\Annotations as Rest;
+use Mapado\RestClientSdk\Mapping\Attributes as Rest;
 
-/**
- * @Rest\Entity(key="article")
- */
+#[Rest\Entity(key: 'article')]
 class Article
 {
     /**
      * @var int
      *
      * @Rest\Id
+     *
      * @Rest\Attribute(name="id", type="int")
      */
     private $id;
@@ -22,6 +21,7 @@ class Article
     /**
      * @Rest\Attribute(name="title", type="string")
      */
+    #[Rest\Attribute(name: 'title', type: 'string')]
     private $title;
 
     public function setId(int $id): void

@@ -4,43 +4,17 @@ declare(strict_types=1);
 
 namespace Mapado\RestClientSdk\Mapping\Driver;
 
-use Doctrine\Common\Annotations\AnnotationReader;
-use Doctrine\Common\Annotations\AnnotationRegistry;
-use Doctrine\Common\Annotations\FileCacheReader;
-use Doctrine\Common\Annotations\Reader;
 use Mapado\RestClientSdk\Exception\MappingException;
-use Mapado\RestClientSdk\Mapping\Annotations;
 use Mapado\RestClientSdk\Mapping\Attribute;
+use Mapado\RestClientSdk\Mapping\Attributes;
 use Mapado\RestClientSdk\Mapping\ClassMetadata;
 use Mapado\RestClientSdk\Mapping\Relation;
 
 /**
- * Class AnnotationDriver
- *
- * @author Julien Deniau <julien.deniau@mapado.com>
+ * Class AttributeDriver
  */
-class AnnotationDriver
+class AttributeDriver
 {
-    /**
-     * @var string
-     */
-    private $cachePath;
-
-    /**
-     * @var bool
-     */
-    private $debug;
-
-    public function __construct(string $cachePath, bool $debug = false)
-    {
-        $this->cachePath = $cachePath;
-        $this->debug = $debug;
-
-        AnnotationRegistry::registerFile(
-            __DIR__ . '/../Annotations/AllAnnotations.php'
-        );
-    }
-
     /**
      * @return array<ClassMetadata>
      *
@@ -52,7 +26,6 @@ class AnnotationDriver
             throw new MappingException($path . ' is not a valid directory');
         }
 
-        /** @var array<int, array|string> $iterator */
         $iterator = new \RegexIterator(
             new \RecursiveIteratorIterator(
                 new \RecursiveDirectoryIterator(
@@ -68,9 +41,10 @@ class AnnotationDriver
         $classes = [];
         $includedFiles = [];
 
+        /** @var array $file */
         foreach ($iterator as $file) {
-            $sourceFile = $file[0];
-            if (!preg_match('(^phar:)i', $sourceFile)) {
+            $sourceFile = $file[0] ?? null;
+            if (is_string($sourceFile) && !preg_match('(^phar:)i', $sourceFile)) {
                 $sourceFile = realpath($sourceFile);
             }
 
@@ -118,20 +92,10 @@ class AnnotationDriver
     private function getClassMetadataForClassname(
         string $classname
     ): ?ClassMetadata {
-        $reader = new FileCacheReader(
-            new AnnotationReader(),
-            $this->cachePath,
-            $this->debug
-        );
-
         $reflClass = new \ReflectionClass($classname);
-        /** @var Annotations\Entity|null */
-        $classAnnotation = $reader->getClassAnnotation(
-            $reflClass,
-            Annotations\Entity::class
-        );
+        $classAttribute = $this->getClassAttribute($reflClass, Attributes\Entity::class);
 
-        if (!$classAnnotation) {
+        if (!$classAttribute) {
             return null;
         }
 
@@ -139,37 +103,21 @@ class AnnotationDriver
         $relationList = [];
         foreach ($reflClass->getProperties() as $property) {
             // manage attributes
-            /** @var Annotations\Attribute|null */
-            $propertyAnnotation = $this->getPropertyAnnotation(
-                $reader,
-                $property,
-                'Attribute'
-            );
+            $propertyAttribute = $this->getPropertyAttribute($property, Attributes\Attribute::class);
 
-            if ($propertyAnnotation) {
-                $isId = $this->getPropertyAnnotation($reader, $property, 'Id');
+            if ($propertyAttribute) {
+                $propertyIdAttribute = $this->getPropertyAttribute($property, Attributes\Id::class);
 
                 $attributeList[] = new Attribute(
-                    $propertyAnnotation->name,
+                    $propertyAttribute->name,
                     $property->getName(),
-                    $propertyAnnotation->type,
-                    (bool) $isId
+                    $propertyAttribute->type,
+                    $propertyIdAttribute instanceof Attributes\Id
                 );
             } else {
-                // manage relations
-                /** @var Annotations\OneToMany|null */
-                $relation = $this->getPropertyAnnotation(
-                    $reader,
-                    $property,
-                    'OneToMany'
-                );
+                $relation = $this->getPropertyAttribute($property, Attributes\OneToMany::class);
                 if (!$relation) {
-                    /** @var Annotations\ManyToOne|null */
-                    $relation = $this->getPropertyAnnotation(
-                        $reader,
-                        $property,
-                        'ManyToOne'
-                    );
+                    $relation = $this->getPropertyAttribute($property, Attributes\ManyToOne::class);
                 }
 
                 if ($relation) {
@@ -198,9 +146,9 @@ class AnnotationDriver
         }
 
         $classMetadata = new ClassMetadata(
-            $classAnnotation->key,
+            $classAttribute->key,
             $classname,
-            $classAnnotation->getRepository()
+            $classAttribute->repository
         );
         $classMetadata->setAttributeList($attributeList);
         $classMetadata->setRelationList($relationList);
@@ -209,17 +157,44 @@ class AnnotationDriver
     }
 
     /**
-     * @return object|null the Annotation or NULL, if the requested annotation does not exist
+     * @template T
+     *
+     * @param class-string<T> $classname
+     *
+     * @return T|null
      */
-    private function getPropertyAnnotation(
-        Reader $reader,
-        \ReflectionProperty $property,
-        string $classname
-    ): ?object {
-        /** @var class-string $classname */
-        $classname =
-            'Mapado\\RestClientSdk\\Mapping\\Annotations\\' . $classname;
+    private function getPropertyAttribute(\ReflectionProperty $property, string $classname)
+    {
+        return $this->getAttribute($property, $classname);
+    }
 
-        return $reader->getPropertyAnnotation($property, $classname);
+    /**
+     * @template T
+     *
+     * @param class-string<T> $className
+     *
+     * @return T|null
+     */
+    private function getClassAttribute(\ReflectionClass $reflectionClass, string $className)
+    {
+        return $this->getAttribute($reflectionClass, $className);
+    }
+
+    /**
+     * @template T
+     *
+     * @param class-string<T> $className
+     *
+     * @return T|null
+     */
+    private function getAttribute(\ReflectionClass|\ReflectionProperty $reflection, string $className)
+    {
+        $attribute = $reflection->getAttributes($className, \ReflectionAttribute::IS_INSTANCEOF)[0] ?? null;
+
+        if (!$attribute instanceof \ReflectionAttribute) {
+            return null;
+        }
+
+        return $attribute->newInstance();
     }
 }

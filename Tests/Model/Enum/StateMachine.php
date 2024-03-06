@@ -4,30 +4,25 @@ declare(strict_types=1);
 
 namespace Mapado\RestClientSdk\Tests\Model\Enum;
 
-use Mapado\RestClientSdk\Mapping\Annotations as Rest;
+use Mapado\RestClientSdk\Mapping\Attributes as Rest;
 
-/**
- * @Rest\Entity(key="cart")
- */
+#[Rest\Entity(key: 'cart')]
 class StateMachine
 {
-    /**
-     * id
-     *
-     * @var mixed
-     *
-     * @Rest\Id
-     * @Rest\Attribute(name="id", type="string")
-     */
+    #[
+        Rest\Id,
+        Rest\Attribute(name: 'id', type: 'string')
+    ]
     private $id;
 
     /**
      * status
      *
      * @var mixed
-     *
-     * @Rest\Attribute(name="status", type="string")
      */
+    #[
+        Rest\Attribute(name: 'status', type: 'string')
+    ]
     private StateEnum $state;
 
     public function getId()
@@ -35,7 +30,7 @@ class StateMachine
         return $this->id;
     }
 
-    public function setId($id): StateMachine
+    public function setId($id): self
     {
         $this->id = $id;
 
@@ -47,7 +42,7 @@ class StateMachine
         return $this->state;
     }
 
-    public function setState(StateEnum $state): StateMachine
+    public function setState(StateEnum $state): self
     {
         $this->state = $state;
 

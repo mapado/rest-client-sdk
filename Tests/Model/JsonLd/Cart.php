@@ -4,72 +4,42 @@ declare(strict_types=1);
 
 namespace Mapado\RestClientSdk\Tests\Model\JsonLd;
 
-use DateTime;
-use Mapado\RestClientSdk\Mapping\Annotations as Rest;
+use Mapado\RestClientSdk\Mapping\Attributes as Rest;
 
 /**
  * Class Cart
  *
  * @author Julien Deniau <julien.deniau@mapado.com>
- *
- * @Rest\Entity(key="cart")
  */
+#[Rest\Entity(key: 'cart')]
 class Cart
 {
-    /**
-     * id
-     *
-     * @var mixed
-     *
-     * @Rest\Id
-     * @Rest\Attribute(name="id", type="string")
-     */
+    #[Rest\Id]
+    #[Rest\Attribute(name: 'id', type: 'string')]
     private $id;
 
-    /**
-     * status
-     *
-     * @var mixed
-     *
-     * @Rest\Attribute(name="status", type="string")
-     */
+    #[Rest\Attribute(name: 'status', type: 'string')]
     private $status;
 
     /**
      * createdAt
-     *
-     * @var mixed
-     *
-     * @Rest\Attribute(name="created_at", type="datetime")
      */
+    #[Rest\Attribute(name: 'created_at', type: 'datetime')]
     private $createdAt;
 
-    /**
-     * cartItemList
-     *
-     * @var mixed
-     *
-     * @Rest\OneToMany(name="cart_items", targetEntity="CartItem")
-     */
+    #[Rest\OneToMany(name: 'cart_items', targetEntity: 'CartItem')]
     private $cartItemList = [];
 
     /**
      * clientPhoneNumber
      *
      * @var string
-     *
-     * @Rest\Attribute(name="clientPhoneNumber", type="phone_number")
      */
+    #[Rest\Attribute(name: 'clientPhoneNumber', type: 'phone_number')]
     private $clientPhoneNumber;
 
-    /**
-     * order
-     *
-     * @var mixed
-     *
-     * @Rest\ManyToOne(name="order", targetEntity="Order")
-     */
-    private $order = null;
+    #[Rest\ManyToOne(name: 'order', targetEntity: 'Order')]
+    private $order;
 
     /**
      * Getter for id
@@ -122,7 +92,7 @@ class Cart
     /**
      * Getter for createdAt
      *
-     * @return DateTime
+     * @return \DateTime
      */
     public function getCreatedAt()
     {
@@ -132,11 +102,9 @@ class Cart
     /**
      * Setter for createdAt
      *
-     * @param DateTime $createdAt
-     *
      * @return Cart
      */
-    public function setCreatedAt(DateTime $createdAt)
+    public function setCreatedAt(\DateTime $createdAt)
     {
         $this->createdAt = $createdAt;
 
@@ -167,7 +135,7 @@ class Cart
         return $this;
     }
 
-    public function addCartItemList($cartItem)
+    public function addCartItemList($cartItem): void
     {
         $this->cartItemList[] = $cartItem;
     }

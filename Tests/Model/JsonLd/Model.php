@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Mapado\RestClientSdk\Tests\Model\JsonLd;
 
-use Mapado\RestClientSdk\Mapping\Annotations as Rest;
+use Mapado\RestClientSdk\Mapping\Attributes as Rest;
 
 /**
  * Class Model
@@ -15,8 +15,11 @@ class Model
 {
     /**
      * @Rest\Id
+     *
      * @Rest\Attribute(name="id", type="string")
      */
+    #[Rest\Id]
+    #[Rest\Attribute(name: 'id', type: 'string')]
     private $id;
 
     /**

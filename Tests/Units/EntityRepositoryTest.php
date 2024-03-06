@@ -9,7 +9,7 @@ use Mapado\RestClientSdk\EntityRepository;
 use Mapado\RestClientSdk\Mapping as RestMapping;
 use Mapado\RestClientSdk\Mapping\Attribute;
 use Mapado\RestClientSdk\Mapping\ClassMetadata;
-use Mapado\RestClientSdk\Mapping\Driver\AnnotationDriver;
+use Mapado\RestClientSdk\Mapping\Driver\AttributeDriver;
 use Mapado\RestClientSdk\Model\ModelHydrator;
 use Mapado\RestClientSdk\RestClient;
 use Mapado\RestClientSdk\SdkClient;
@@ -25,7 +25,7 @@ use Symfony\Component\Cache\Adapter\ArrayAdapter;
 class EntityRepositoryTest extends TestCase
 {
     #[DataProvider('findDataProvider')]
-    public function testFindUs(callable $doFind, string $path)
+    public function testFindUs(callable $doFind, string $path): void
     {
         [
             'restClient' => $mockedRestClient,
@@ -322,11 +322,11 @@ class EntityRepositoryTest extends TestCase
 
     public function testCacheWithIriAsId(): void
     {
-        $annotationDriver = new AnnotationDriver(__DIR__ . '/../cache/');
+        $attributeDriver = new AttributeDriver(__DIR__ . '/../cache/');
 
         $mapping = new RestMapping();
         $mapping->setMapping(
-            $annotationDriver->loadDirectory(__DIR__ . '/../Model/Issue46/')
+            $attributeDriver->loadDirectory(__DIR__ . '/../Model/Issue46/')
         );
 
         [
@@ -530,7 +530,7 @@ class EntityRepositoryTest extends TestCase
         ];
     }
 
-    public function testFindOneByWithHal()
+    public function testFindOneByWithHal(): void
     {
         $mapping = new RestMapping('v12');
         $classMetadata = new ClassMetadata(
@@ -572,7 +572,7 @@ class EntityRepositoryTest extends TestCase
         $this->assertSame('/orders/2', $order->getId());
     }
 
-    public function testFindOneByWithoutResult()
+    public function testFindOneByWithoutResult(): void
     {
         $mapping = new RestMapping('v12');
         $classMetadata = new ClassMetadata(
@@ -609,12 +609,12 @@ class EntityRepositoryTest extends TestCase
         $this->assertNull($order);
     }
 
-    public function testPersistWithUnitOfWork()
+    public function testPersistWithUnitOfWork(): void
     {
-        $annotationDriver = new AnnotationDriver(__DIR__ . '/../cache/');
+        $attributeDriver = new AttributeDriver(__DIR__ . '/../cache/');
         $mapping = new RestMapping();
         $mapping->setMapping(
-            $annotationDriver->loadDirectory(__DIR__ . '/../Model/JsonLd/')
+            $attributeDriver->loadDirectory(__DIR__ . '/../Model/JsonLd/')
         );
 
         [
@@ -654,12 +654,12 @@ class EntityRepositoryTest extends TestCase
         $cartRepository->persist($cart);
     }
 
-    public function testUpdatingInstanceDoesGetDataFromUnitOfWork()
+    public function testUpdatingInstanceDoesGetDataFromUnitOfWork(): void
     {
-        $annotationDriver = new AnnotationDriver(__DIR__ . '/../cache/');
+        $attributeDriver = new AttributeDriver(__DIR__ . '/../cache/');
         $mapping = new RestMapping();
         $mapping->setMapping(
-            $annotationDriver->loadDirectory(__DIR__ . '/../Model/JsonLd/')
+            $attributeDriver->loadDirectory(__DIR__ . '/../Model/JsonLd/')
         );
 
         [
@@ -718,12 +718,12 @@ class EntityRepositoryTest extends TestCase
         $cartRepository->update($cart);
     }
 
-    public function testUpdatingInstanceDoesGetDataFromUnitOfWorkWithQueryParam()
+    public function testUpdatingInstanceDoesGetDataFromUnitOfWorkWithQueryParam(): void
     {
-        $annotationDriver = new AnnotationDriver(__DIR__ . '/../cache/');
+        $attributeDriver = new AttributeDriver(__DIR__ . '/../cache/');
         $mapping = new RestMapping();
         $mapping->setMapping(
-            $annotationDriver->loadDirectory(__DIR__ . '/../Model/JsonLd/')
+            $attributeDriver->loadDirectory(__DIR__ . '/../Model/JsonLd/')
         );
 
         [
@@ -792,8 +792,8 @@ class EntityRepositoryTest extends TestCase
      * }
      */
     private function getRepository(
-        ?RestMapping $mapping = null,
-        ?string $modelName = null,
+        RestMapping $mapping = null,
+        string $modelName = null,
         bool $mockHydrator = false,
         bool $mockUnitOfWork = false
     ): array {
@@ -809,8 +809,8 @@ class EntityRepositoryTest extends TestCase
         }
 
         // extract first model name from mapping
-        $modelName =
-            $modelName ?? $mapping->getModelName($mapping->getMappingKeys()[0]);
+        $modelName ??=
+              $mapping->getModelName($mapping->getMappingKeys()[0]);
 
         $mockedSdk = $this->createMock(SdkClient::class);
         $mockedRestClient = $this->createMock(RestClient::class);

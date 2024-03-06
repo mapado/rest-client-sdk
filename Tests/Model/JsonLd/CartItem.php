@@ -4,75 +4,55 @@ declare(strict_types=1);
 
 namespace Mapado\RestClientSdk\Tests\Model\JsonLd;
 
-use DateTimeImmutable;
-use Mapado\RestClientSdk\Mapping\Annotations as Rest;
+use Mapado\RestClientSdk\Mapping\Attributes as Rest;
 
 /**
  * Class CartItem
  *
  * @author Julien Deniau <julien.deniau@mapado.com>
- *
- * @Rest\Entity(key="cart_item")
  */
+#[Rest\Entity(key: 'cart_item')]
 class CartItem
 {
     /**
      * id
-     *
-     * @var mixed
-     *
-     * @Rest\Id
-     * @Rest\Attribute(name="id", type="string")
      */
+    #[Rest\Id, Rest\Attribute(name: 'id', type: 'string')]
     private $id;
 
     /**
      * amount
-     *
-     * @var mixed
-     *
-     * @Rest\Attribute(name="amount", type="float")
      */
+    #[Rest\Attribute(name: 'amount', type: 'float')]
     private $amount;
 
     /**
      * createdAt
      *
-     * @var ?DateTimeImmutable
-     *
-     * @Rest\Attribute(name="created_at", type="datetime")
+     * @var ?\DateTimeImmutable
      */
+    #[Rest\Attribute(name: 'created_at', type: 'datetime')]
     private $createdAt;
 
     /**
      * data
-     *
-     * @var mixed
-     *
-     * @Rest\Attribute(name="data", type="array")
      */
+    #[Rest\Attribute(name: 'data', type: 'array')]
     private $data = [];
 
     /**
      * cart
-     *
-     * @var mixed
-     *
-     * @Rest\ManyToOne(name="cart", targetEntity="Cart")
      */
+    #[Rest\ManyToOne(name: 'cart', targetEntity: 'Cart')]
     private $cart;
 
     /**
      * product
-     *
-     * @var mixed
      */
     private $product;
 
     /**
      * cartItemDetailList
-     *
-     * @var mixed
      */
     private $cartItemDetailList = [];
 
@@ -124,12 +104,12 @@ class CartItem
         return $this;
     }
 
-    public function getCreatedAt(): ?DateTimeImmutable
+    public function getCreatedAt(): ?\DateTimeImmutable
     {
         return $this->createdAt;
     }
 
-    public function setCreatedAt(DateTimeImmutable $createdAt): self
+    public function setCreatedAt(\DateTimeImmutable $createdAt): self
     {
         $this->createdAt = $createdAt;
 
@@ -148,8 +128,6 @@ class CartItem
 
     /**
      * Setter for data
-     *
-     * @param array $data
      *
      * @return CartItem
      */
@@ -172,8 +150,6 @@ class CartItem
 
     /**
      * Setter for cart
-     *
-     * @param Cart $cart
      *
      * @return CartItem
      */
@@ -198,8 +174,6 @@ class CartItem
     /**
      * Setter for product
      *
-     * @param Product $product
-     *
      * @return CartItem
      */
     public function setProduct(Product $product)
@@ -221,8 +195,6 @@ class CartItem
 
     /**
      * Setter for cartItemDetailList
-     *
-     * @param array $cartItemDetailList
      *
      * @return CartItem
      */

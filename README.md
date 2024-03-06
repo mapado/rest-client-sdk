@@ -36,32 +36,21 @@ Imagine the following entities:
 ```php
 namespace Acme\Foo\Bar;
 
-use Mapado\RestClientSdk\Mapping\Annotations as Rest;
+use Mapado\RestClientSdk\Mapping\Attributes as Rest;
 
-/**
- * @Rest\Entity(key="carts")
- */
+#[Rest\Entity(key: "carts")]
 class Cart
 {
-  /**
-   * @Rest\Id
-   * @Rest\Attribute(name="@id", type="string")
-   */
+   #[Rest\Id, Rest\Attribute(name: "@id", type: "string")]
   private $iri;
 
-  /**
-   * @Rest\Attribute(name="status", type="string")
-   */
+   #[Rest\Attribute(name: "status", type: "string")]
   private $status;
 
-  /**
-   * @Rest\Attribute(name="created_at", type="datetime")
-   */
+  #[Rest\Attribute(name: "created_at", type: "datetime")]
   private $createdAt;
-
-  /**
-   * @Rest\OneToMany(name="cart_items", targetEntity="CartItem")
-   */
+  
+  #[Rest\OneToMany(name: "cart_items", targetEntity: "CartItem")]
   private $cartItemList;
 
   // getters & setters ...
@@ -70,22 +59,16 @@ class Cart
 /**
  * @Rest\Entity(key="cart_items")
  */
+#[Rest\Entity(key: "cart_items")]
 class CartItem
 {
-  /**
-   * @Rest\Id
-   * @Rest\Attribute(name="@id", type="string")
-   */
+  #[Rest\Id, Rest\Attribute(name: "@id", type: "string")]
   private $iri;
 
-  /**
-   * @Rest\Attribute(name="number", type="integer")
-   */
+  #[Rest\Attribute(name: "number", type: "integer")]
   private $number;
 
-  /**
-   * @Rest\ManyToOne(name="cart", targetEntity="Cart")
-   */
+  #[Rest\ManyToOne(name: "cart", targetEntity: "Cart")]
   private $cart;
 }
 ```
@@ -132,7 +115,7 @@ You need to configure client this way:
 use Mapado\RestClientSdk\Mapping;
 use Mapado\RestClientSdk\RestClient;
 use Mapado\RestClientSdk\SdkClient;
-use Mapado\RestClientSdk\Mapping\Driver\AnnotationDriver;
+use Mapado\RestClientSdk\Mapping\Driver\AttributeDriver;
 
 $restClient = new RestClient(
   new GuzzleHttp\Client(),
@@ -146,7 +129,7 @@ $restClient = new RestClient(
 // );
 // See guzzle documentation for more informations
 
-$annotationDriver = new AnnotationDriver($cachePath, ($debug = true));
+$annotationDriver = new AttributeDriver($cachePath, ($debug = true));
 
 $mapping = new Mapping('/v2'); // /v2 is the prefix of your routes
 $mapping->setMapping($annotationDriver->loadDirectory($pathToEntityDirectory));
@@ -265,16 +248,14 @@ class CartRepository extends EntityRepository
 }
 ```
 
-Update your entity `@Rest` annotation to let the entity be aware of it's repository:
+Update your entity `Rest` attribute to let the entity be aware of it's repository:
 
 ```php
 namespace Acme\Foo\Bar;
 
-use Mapado\RestClientSdk\Mapping\Annotations as Rest;
+use Mapado\RestClientSdk\Mapping\Attributes as Rest;
 
-/**
- * @Rest\Entity(key="carts", repository="Acme\Foo\Bar\Repository\CartRepository")
- */
+#[Rest\Entity(key: "carts", repository: Acme\Foo\Bar\Repository\CartRepository::class)]
 class Cart {
 ```
 

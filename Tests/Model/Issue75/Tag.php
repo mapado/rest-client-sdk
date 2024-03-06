@@ -4,16 +4,12 @@ declare(strict_types=1);
 
 namespace Mapado\RestClientSdk\Tests\Model\Issue75;
 
-use Mapado\RestClientSdk\Mapping\Annotations as Rest;
+use Mapado\RestClientSdk\Mapping\Attributes as Rest;
 
-/**
- * @Rest\Entity(key="tags")
- */
+#[Rest\Entity(key: 'tags')]
 class Tag
 {
-    /**
-     * @Rest\Attribute(name="name", type="string")
-     */
+    #[Rest\Attribute(name: 'name', type: 'string')]
     private $name;
 
     /**
