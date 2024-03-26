@@ -9,11 +9,7 @@ namespace Mapado\RestClientSdk\Collection;
  *
  * @author Florent Clerc <florent.clerc@mapado.com>
  */
-class Collection implements
-    \IteratorAggregate,
-    \Serializable,
-    \Countable,
-    \ArrayAccess
+class Collection implements \IteratorAggregate, \Serializable, \Countable, \ArrayAccess
 {
     /**
      * The elements of the collection.
@@ -38,7 +34,7 @@ class Collection implements
      */
     public function __construct(
         array $elements = [],
-        array $extraProperties = []
+        array $extraProperties = [],
     ) {
         $this->elements = $elements;
         $this->extraProperties = $extraProperties;
@@ -53,8 +49,6 @@ class Collection implements
     }
 
     /**
-     * {@inheritdoc}
-     *
      * @param string $values
      */
     public function __unserialize($values): void
@@ -75,8 +69,6 @@ class Collection implements
     }
 
     /**
-     * {@inheritdoc}
-     *
      * @deprecated `serialize` method is deprecated, `__serialize` is used instead. See https://php.watch/versions/8.1/serializable-deprecated
      */
     public function serialize(): string
@@ -92,9 +84,6 @@ class Collection implements
         $this->__unserialize($data);
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function count(): int
     {
         return count($this->elements);
@@ -109,10 +98,7 @@ class Collection implements
     }
 
     /**
-     * {@inheritdoc}
-     *
      * @param mixed|null $offset
-     * @param mixed $value
      */
     public function offsetSet($offset, $value): void
     {
@@ -124,8 +110,6 @@ class Collection implements
     }
 
     /**
-     * {@inheritdoc}
-     *
      * @param mixed|null $offset
      */
     public function offsetExists($offset): bool
@@ -134,8 +118,6 @@ class Collection implements
     }
 
     /**
-     * {@inheritdoc}
-     *
      * @param mixed|null $offset
      */
     public function offsetUnset($offset): void
@@ -144,8 +126,6 @@ class Collection implements
     }
 
     /**
-     * {@inheritdoc}
-     *
      * @param mixed|null $offset
      *
      * @return mixed|null
@@ -155,9 +135,6 @@ class Collection implements
         return $this->elements[$offset] ?? null;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function getIterator(): \ArrayIterator
     {
         return new \ArrayIterator($this->elements);
@@ -187,13 +164,13 @@ class Collection implements
 
     /**
      * return the value of an extra property
-     *
-     * @return mixed
      */
-    public function getExtraProperty(string $key)
+    public function getExtraProperty(string $key): mixed
     {
         if (isset($this->extraProperties[$key])) {
             return $this->extraProperties[$key];
         }
+
+        return null;
     }
 }

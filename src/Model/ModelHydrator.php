@@ -71,9 +71,13 @@ class ModelHydrator
     }
 
     /**
+     * @template T
+     *
      * convert list of data as array to Collection containing entities
      *
-     * @param class-string $modelName
+     * @param class-string<T> $modelName
+     *
+     * @return Collection<T>
      */
     private function deserializeAll(array $data, string $modelName): Collection
     {
@@ -82,29 +86,43 @@ class ModelHydrator
         $itemList = ArrayHelper::arrayGet($data, $collectionKey);
 
         if (!is_array($itemList)) {
-            throw new \RuntimeException(sprintf(
-                'Unable to deserialize collection, %s key not found in response',
-                $collectionKey
-            ));
+            throw new \RuntimeException(
+                sprintf(
+                    'Unable to deserialize collection, %s key not found in response',
+                    $collectionKey,
+                ),
+            );
         }
 
-        $itemList = array_map(fn (?array $member) => $this->deserialize($member, $modelName), $itemList);
+        $itemList = array_map(
+            fn(?array $member) => $this->deserialize($member, $modelName),
+            $itemList,
+        );
 
         $extraProperties = array_filter(
             $data,
-            fn ($key) => $key !== $collectionKey,
-            \ARRAY_FILTER_USE_KEY
+            fn($key) => $key !== $collectionKey,
+            \ARRAY_FILTER_USE_KEY,
         );
 
         /** @var class-string $collectionClassName */
         $collectionClassName = $this->guessCollectionClassname($data);
 
         if (!class_exists($collectionClassName)) {
-            throw new \RuntimeException("Seem's like $collectionClassName does not exist");
+            throw new \RuntimeException(
+                "Seem's like $collectionClassName does not exist",
+            );
         }
 
-        /** @var Collection */
-        return new $collectionClassName($itemList, $extraProperties);
+        $collection = new $collectionClassName($itemList, $extraProperties);
+
+        if (!$collection instanceof Collection) {
+            throw new \RuntimeException(
+                "Seem's like $collectionClassName is not a collection class",
+            );
+        }
+
+        return $collection;
     }
 
     /**

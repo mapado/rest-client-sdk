@@ -1,5 +1,6 @@
 {
-    "phpVersion": "8.1",
-    "singleQuote": true,
-    "trailingCommaPHP": true
+  "plugins": ["@prettier/plugin-php"],
+  "phpVersion": "8.1",
+  "trailingComma": "all",
+  "singleQuote": true
 }

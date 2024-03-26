@@ -25,7 +25,7 @@ class SdkClientRegistry
 
         if (!$client) {
             throw new SdkClientNotFoundException(
-                'Sdk client not found for name ' . $name
+                'Sdk client not found for name ' . $name,
             );
         }
 
@@ -49,7 +49,7 @@ class SdkClientRegistry
         }
 
         throw new SdkClientNotFoundException(
-            'Sdk client not found for entity class ' . $entityClassname
+            'Sdk client not found for entity class ' . $entityClassname,
         );
     }
 }

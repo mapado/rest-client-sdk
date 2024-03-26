@@ -92,9 +92,7 @@ class Mapping
      */
     public function getMappingKeys(): array
     {
-        return array_map(function (ClassMetadata $classMetadata) {
-            return $classMetadata->getKey();
-        }, $this->classMetadataList);
+        return array_map(fn (ClassMetadata $classMetadata) => $classMetadata->getKey(), $this->classMetadataList);
     }
 
     /**
@@ -126,7 +124,7 @@ class Mapping
         }
 
         throw new MappingException(
-            'Model name ' . $modelName . ' not found in mapping'
+            'Model name ' . $modelName . ' not found in mapping',
         );
     }
 
@@ -201,7 +199,7 @@ class Mapping
 
     private function checkMappingExistence(
         string $key,
-        bool $checkModelName = false
+        bool $checkModelName = false,
     ): void {
         if (empty($key)) {
             throw new MappingException('key is not set');
@@ -215,7 +213,7 @@ class Mapping
         if ($checkModelName) {
             if (empty($metadata->getModelName())) {
                 throw new MappingException(
-                    $key . ' key is mapped but the model name is empty'
+                    $key . ' key is mapped but the model name is empty',
                 );
             }
         }
@@ -224,8 +222,8 @@ class Mapping
     private function removePrefix(string $value): string
     {
         if (
-            $this->idPrefixLength > 0 &&
-            0 === mb_strpos($value, $this->idPrefix)
+            $this->idPrefixLength > 0
+            && 0 === mb_strpos($value, $this->idPrefix)
         ) {
             return mb_substr($value, $this->idPrefixLength);
         }

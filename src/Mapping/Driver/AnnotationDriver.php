@@ -37,7 +37,7 @@ class AnnotationDriver
         $this->debug = $debug;
 
         AnnotationRegistry::registerFile(
-            __DIR__ . '/../Annotations/AllAnnotations.php'
+            __DIR__ . '/../Annotations/AllAnnotations.php',
         );
     }
 
@@ -57,12 +57,12 @@ class AnnotationDriver
             new \RecursiveIteratorIterator(
                 new \RecursiveDirectoryIterator(
                     $path,
-                    \FilesystemIterator::SKIP_DOTS
+                    \FilesystemIterator::SKIP_DOTS,
                 ),
-                \RecursiveIteratorIterator::LEAVES_ONLY
+                \RecursiveIteratorIterator::LEAVES_ONLY,
             ),
             '/^.+\.php$/i',
-            \RecursiveRegexIterator::GET_MATCH
+            \RecursiveRegexIterator::GET_MATCH,
         );
 
         $classes = [];
@@ -116,19 +116,19 @@ class AnnotationDriver
      * @throws \ReflectionException
      */
     private function getClassMetadataForClassname(
-        string $classname
+        string $classname,
     ): ?ClassMetadata {
         $reader = new FileCacheReader(
             new AnnotationReader(),
             $this->cachePath,
-            $this->debug
+            $this->debug,
         );
 
         $reflClass = new \ReflectionClass($classname);
         /** @var Annotations\Entity|null */
         $classAnnotation = $reader->getClassAnnotation(
             $reflClass,
-            Annotations\Entity::class
+            Annotations\Entity::class,
         );
 
         if (!$classAnnotation) {
@@ -143,7 +143,7 @@ class AnnotationDriver
             $propertyAnnotation = $this->getPropertyAnnotation(
                 $reader,
                 $property,
-                'Attribute'
+                'Attribute',
             );
 
             if ($propertyAnnotation) {
@@ -153,7 +153,7 @@ class AnnotationDriver
                     $propertyAnnotation->name,
                     $property->getName(),
                     $propertyAnnotation->type,
-                    (bool) $isId
+                    (bool) $isId,
                 );
             } else {
                 // manage relations
@@ -161,21 +161,21 @@ class AnnotationDriver
                 $relation = $this->getPropertyAnnotation(
                     $reader,
                     $property,
-                    'OneToMany'
+                    'OneToMany',
                 );
                 if (!$relation) {
                     /** @var Annotations\ManyToOne|null */
                     $relation = $this->getPropertyAnnotation(
                         $reader,
                         $property,
-                        'ManyToOne'
+                        'ManyToOne',
                     );
                 }
 
                 if ($relation) {
                     $attributeList[] = new Attribute(
                         $relation->name,
-                        $property->getName()
+                        $property->getName(),
                     );
 
                     $targetEntity = $relation->targetEntity;
@@ -184,14 +184,14 @@ class AnnotationDriver
                             mb_substr(
                                 $classname,
                                 0,
-                                mb_strrpos($classname, '\\') + 1
+                                mb_strrpos($classname, '\\') + 1,
                             ) . $targetEntity;
                     }
 
                     $relationList[] = new Relation(
                         $relation->name,
                         $relation->type,
-                        $targetEntity
+                        $targetEntity,
                     );
                 }
             }
@@ -200,7 +200,7 @@ class AnnotationDriver
         $classMetadata = new ClassMetadata(
             $classAnnotation->key,
             $classname,
-            $classAnnotation->getRepository()
+            $classAnnotation->getRepository(),
         );
         $classMetadata->setAttributeList($attributeList);
         $classMetadata->setRelationList($relationList);
@@ -214,7 +214,7 @@ class AnnotationDriver
     private function getPropertyAnnotation(
         Reader $reader,
         \ReflectionProperty $property,
-        string $classname
+        string $classname,
     ): ?object {
         /** @var class-string $classname */
         $classname =

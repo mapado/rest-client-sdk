@@ -32,7 +32,7 @@ class Relation
     public function __construct(
         string $serializedKey,
         string $type,
-        string $targetEntity
+        string $targetEntity,
     ) {
         $this->serializedKey = $serializedKey;
         $this->type = $type;
