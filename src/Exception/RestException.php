@@ -9,11 +9,6 @@ use GuzzleHttp\Exception\RequestException;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 
-/**
- * Class RestException
- *
- * @author Julien Deniau <julien.deniau@mapado.com>
- */
 class RestException extends \RuntimeException
 {
     /**
@@ -22,7 +17,7 @@ class RestException extends \RuntimeException
     private $path;
 
     /**
-     * @var array
+     * @var array<mixed>
      */
     private $params;
 
@@ -36,6 +31,7 @@ class RestException extends \RuntimeException
      */
     private $request;
 
+    /** @param array<mixed> $params */
     public function __construct(
         string $message,
         string $path,
@@ -57,6 +53,7 @@ class RestException extends \RuntimeException
         return $this->path;
     }
 
+    /** @return array<mixed> */
     public function getParams(): array
     {
         return $this->params;

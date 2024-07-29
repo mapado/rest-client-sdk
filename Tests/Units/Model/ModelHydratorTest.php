@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Mapado\RestClientSdk\Tests\Units\Model;
 
-use PHPUnit\Framework\TestCase;
 use Mapado\RestClientSdk\Mapping;
 use Mapado\RestClientSdk\Mapping\Attribute;
 use Mapado\RestClientSdk\Mapping\ClassMetadata;
@@ -12,93 +11,95 @@ use Mapado\RestClientSdk\Model\ModelHydrator;
 use Mapado\RestClientSdk\Model\Serializer;
 use Mapado\RestClientSdk\SdkClient;
 use Mapado\RestClientSdk\UnitOfWork;
+use PHPUnit\Framework\MockObject\MockObject;
+use PHPUnit\Framework\TestCase;
 
 /**
- * @covers ModelHydrator
+ * @covers \ModelHydrator
  */
 class ModelHydratorTest extends TestCase
 {
-    private $sdk;
+    private SdkClient&MockObject $sdk;
 
-    private $unitOfWork;
+    private UnitOfWork $unitOfWork;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         parent::setUp();
 
-        $fooMetadata = new ClassMetadata("foo", "Acme\Foo", "");
+        $fooMetadata = new ClassMetadata('foo', "Acme\Foo", '');
 
-        $mapping = new Mapping("/v1");
+        $mapping = new Mapping('/v1');
         $mapping->setMapping([$fooMetadata]);
 
         $this->unitOfWork = new UnitOfWork($mapping);
 
-        $this->sdk = $this->createStub(\Mapado\RestClientSdk\SdkClient::class);
-        $this->sdk->method("getMapping")->willReturn($mapping);
+        $this->sdk = $this->createStub(SdkClient::class);
+        $this->sdk->method('getMapping')->willReturn($mapping);
     }
 
-    public function testConvertId()
+    public function testConvertId(): void
     {
         $testedInstance = new ModelHydrator($this->sdk);
 
         $this->assertEquals(
-            "/v1/foo/2",
+            '/v1/foo/2',
             $testedInstance->convertId(2, "Acme\Foo")
         );
         $this->assertEquals(
-            "/v1/foo/2",
-            $testedInstance->convertId("/v1/foo/2", "Acme\Foo")
+            '/v1/foo/2',
+            $testedInstance->convertId('/v1/foo/2', "Acme\Foo")
         );
     }
 
-    public function testConvertIdWithoutMappingPrefix()
+    public function testConvertIdWithoutMappingPrefix(): void
     {
-        $fooMetadata = new ClassMetadata("foo", "Acme\Foo", "");
+        $fooMetadata = new ClassMetadata('foo', "Acme\Foo", '');
 
         $mapping = new Mapping();
         $mapping->setMapping([$fooMetadata]);
 
         $sdk = $this->createMock(SdkClient::class);
-        $sdk->method("getMapping")->willReturn($mapping);
+        $sdk->method('getMapping')->willReturn($mapping);
 
         $testedInstance = new ModelHydrator($sdk);
 
         $this->assertEquals(
-            "/foo/2",
+            '/foo/2',
             $testedInstance->convertId(2, "Acme\Foo")
         );
         $this->assertEquals(
-            "/foo/2",
-            $testedInstance->convertId("/foo/2", "Acme\Foo")
+            '/foo/2',
+            $testedInstance->convertId('/foo/2', "Acme\Foo")
         );
     }
 
-    public function testHydrateJsonLdItem()
+    public function testHydrateJsonLdItem(): void
     {
         $productMetadata = new ClassMetadata(
-            "product",
+            'product',
             "Mapado\RestClientSdk\Tests\Model\JsonLd\Product",
             "Mapado\RestClientSdk\Tests\Model\JsonLd\ModelRepository"
         );
         $productMetadata->setAttributeList([
-            new Attribute("@id", "id", "string", true),
-            new Attribute("value", "value", "string"),
-            new Attribute("currency", "currency", "string"),
+            new Attribute('@id', 'id', 'string', true),
+            new Attribute('value', 'value', 'string'),
+            new Attribute('currency', 'currency', 'string'),
         ]);
 
         $mapping = new Mapping();
         $mapping->setMapping([$productMetadata]);
 
         $sdk = $this->createMock(SdkClient::class);
-        $sdk->method("getMapping")->willReturn($mapping);
-        $sdk->method("getSerializer")->willReturn(
+        $sdk->method('getMapping')->willReturn($mapping);
+        $sdk->method('getSerializer')->willReturn(
             new Serializer($mapping, $this->unitOfWork)
         );
 
         $testedInstance = new ModelHydrator($sdk);
         // test one json-ld entity
         $productArray = json_decode(
-            file_get_contents(__DIR__ . "/../../data/product.json-ld.json"),
+            file_get_contents(__DIR__ . '/../../data/product.json-ld.json'),
             true
         );
 
@@ -112,11 +113,11 @@ class ModelHydratorTest extends TestCase
             $product
         );
 
-        $this->assertEquals("/products/1", $product->getId());
+        $this->assertEquals('/products/1', $product->getId());
 
         // test a json-ld list
         $productListArray = json_decode(
-            file_get_contents(__DIR__ . "/../../data/productList.json-ld.json"),
+            file_get_contents(__DIR__ . '/../../data/productList.json-ld.json'),
             true
         );
 
@@ -138,35 +139,35 @@ class ModelHydratorTest extends TestCase
             "Mapado\RestClientSdk\Tests\Model\JsonLd\Product",
             $product
         );
-        $this->assertSame("/products/1", $product->getId());
+        $this->assertSame('/products/1', $product->getId());
 
-        $this->assertSame("/products/2", $productList[1]->getId());
+        $this->assertSame('/products/2', $productList[1]->getId());
     }
 
-    public function testHydrateHalItem()
+    public function testHydrateHalItem(): void
     {
         $orderMetadata = new ClassMetadata(
-            "order",
+            'order',
             "Mapado\RestClientSdk\Tests\Model\Hal\Order",
             "Mapado\RestClientSdk\Tests\Model\JsonLd\ModelRepository"
         );
         $orderMetadata->setAttributeList([
-            new Attribute("_links.self.href", "id", "string", true),
-            new Attribute("total", "total", "float"),
-            new Attribute("currency", "currency", "string"),
-            new Attribute("status", "status", "string"),
+            new Attribute('_links.self.href', 'id', 'string', true),
+            new Attribute('total', 'total', 'float'),
+            new Attribute('currency', 'currency', 'string'),
+            new Attribute('status', 'status', 'string'),
         ]);
 
         $mapping = new Mapping();
 
         $mapping->setConfig([
-            "collectionKey" => "_embedded.ea:order",
+            'collectionKey' => '_embedded.ea:order',
         ]);
         $mapping->setMapping([$orderMetadata]);
 
         $sdk = $this->createMock(SdkClient::class);
-        $sdk->method("getMapping")->willReturn($mapping);
-        $sdk->method("getSerializer")->willReturn(
+        $sdk->method('getMapping')->willReturn($mapping);
+        $sdk->method('getSerializer')->willReturn(
             new Serializer($mapping, $this->unitOfWork)
         );
 
@@ -174,7 +175,7 @@ class ModelHydratorTest extends TestCase
 
         // test one hal entity
         $orderArray = json_decode(
-            file_get_contents(__DIR__ . "/../../data/order.hal.json"),
+            file_get_contents(__DIR__ . '/../../data/order.hal.json'),
             true
         );
         $order = $testedInstance->hydrate(
@@ -186,12 +187,12 @@ class ModelHydratorTest extends TestCase
             "Mapado\RestClientSdk\Tests\Model\Hal\Order",
             $order
         );
-        $this->assertSame("shipped", $order->getStatus());
-        $this->assertSame("/orders/123", $order->getId());
+        $this->assertSame('shipped', $order->getStatus());
+        $this->assertSame('/orders/123', $order->getId());
 
         // test a json-ld list
         $orderListArray = json_decode(
-            file_get_contents(__DIR__ . "/../../data/orderList.hal.json"),
+            file_get_contents(__DIR__ . '/../../data/orderList.hal.json'),
             true
         );
         $orderList = $testedInstance->hydrateList(
@@ -212,7 +213,7 @@ class ModelHydratorTest extends TestCase
             $order
         );
 
-        $this->assertSame("/orders/123", $order->getId());
-        $this->assertSame("/orders/124", $orderList[1]->getId());
+        $this->assertSame('/orders/123', $order->getId());
+        $this->assertSame('/orders/124', $orderList[1]->getId());
     }
 }

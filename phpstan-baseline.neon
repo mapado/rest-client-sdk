@@ -1,0 +1,66 @@
+parameters:
+	ignoreErrors:
+		-
+			message: "#^Method Mapado\\\\RestClientSdk\\\\UnitOfWork\\:\\:addIdentifiers\\(\\) has parameter \\$dirtyFields with no value type specified in iterable type array\\.$#"
+			count: 1
+			path: src/UnitOfWork.php
+
+		-
+			message: "#^Method Mapado\\\\RestClientSdk\\\\UnitOfWork\\:\\:addIdentifiers\\(\\) has parameter \\$newSerializedModel with no value type specified in iterable type array\\.$#"
+			count: 1
+			path: src/UnitOfWork.php
+
+		-
+			message: "#^Method Mapado\\\\RestClientSdk\\\\UnitOfWork\\:\\:addIdentifiers\\(\\) return type has no value type specified in iterable type array\\.$#"
+			count: 1
+			path: src/UnitOfWork.php
+
+		-
+			message: "#^Method Mapado\\\\RestClientSdk\\\\UnitOfWork\\:\\:findOldRelation\\(\\) has parameter \\$oldValue with no value type specified in iterable type array\\.$#"
+			count: 1
+			path: src/UnitOfWork.php
+
+		-
+			message: "#^Method Mapado\\\\RestClientSdk\\\\UnitOfWork\\:\\:findOldRelation\\(\\) has parameter \\$relationValue with no value type specified in iterable type array\\.$#"
+			count: 1
+			path: src/UnitOfWork.php
+
+		-
+			message: "#^Method Mapado\\\\RestClientSdk\\\\UnitOfWork\\:\\:findOldRelation\\(\\) return type has no value type specified in iterable type array\\.$#"
+			count: 1
+			path: src/UnitOfWork.php
+
+		-
+			message: "#^Method Mapado\\\\RestClientSdk\\\\UnitOfWork\\:\\:getDirtyData\\(\\) has parameter \\$newSerializedModel with no value type specified in iterable type array\\.$#"
+			count: 1
+			path: src/UnitOfWork.php
+
+		-
+			message: "#^Method Mapado\\\\RestClientSdk\\\\UnitOfWork\\:\\:getDirtyData\\(\\) has parameter \\$oldSerializedModel with no value type specified in iterable type array\\.$#"
+			count: 1
+			path: src/UnitOfWork.php
+
+		-
+			message: "#^Method Mapado\\\\RestClientSdk\\\\UnitOfWork\\:\\:getDirtyData\\(\\) return type has no value type specified in iterable type array\\.$#"
+			count: 1
+			path: src/UnitOfWork.php
+
+		-
+			message: "#^Method Mapado\\\\RestClientSdk\\\\UnitOfWork\\:\\:getDirtyFields\\(\\) has parameter \\$newSerializedModel with no value type specified in iterable type array\\.$#"
+			count: 1
+			path: src/UnitOfWork.php
+
+		-
+			message: "#^Method Mapado\\\\RestClientSdk\\\\UnitOfWork\\:\\:getDirtyFields\\(\\) has parameter \\$oldSerializedModel with no value type specified in iterable type array\\.$#"
+			count: 1
+			path: src/UnitOfWork.php
+
+		-
+			message: "#^Method Mapado\\\\RestClientSdk\\\\UnitOfWork\\:\\:getDirtyFields\\(\\) return type has no value type specified in iterable type array\\.$#"
+			count: 1
+			path: src/UnitOfWork.php
+
+		-
+			message: "#^Method Mapado\\\\RestClientSdk\\\\UnitOfWork\\:\\:getEntityId\\(\\) has parameter \\$stringOrEntity with no value type specified in iterable type array\\.$#"
+			count: 1
+			path: src/UnitOfWork.php

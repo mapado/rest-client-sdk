@@ -13,37 +13,33 @@ use Mapado\RestClientSdk\Helper\ArrayHelper;
 use Mapado\RestClientSdk\Mapping\ClassMetadata;
 use Psr\Http\Message\ResponseInterface;
 
+/**
+ * @template E of object
+ * @template ExtraParams
+ */
 class EntityRepository
 {
     /**
-     * REST Client.
-     *
      * @var RestClient
      */
     protected $restClient;
 
     /**
-     * SDK Client.
-     *
      * @var SdkClient
      */
     protected $sdk;
 
     /**
-     * @var class-string
+     * @var class-string<E>
      */
     protected $entityName;
 
     /**
-     * classMetadataCache
-     *
      * @var ClassMetadata
      */
     private $classMetadataCache;
 
     /**
-     * unitOfWork
-     *
      * @var UnitOfWork
      */
     private $unitOfWork;
@@ -53,7 +49,7 @@ class EntityRepository
      *
      * @param SdkClient  $sdkClient  The client to connect to the datasource with
      * @param RestClient $restClient The client to process the http requests
-     * @param class-string     $entityName The entity to work with
+     * @param class-string<E>     $entityName The entity to work with
      */
     public function __construct(
         SdkClient $sdkClient,
@@ -69,8 +65,10 @@ class EntityRepository
 
     /**
      * Adds support for magic finders.
+     * 
+     * @param array<mixed> $arguments
      *
-     * @return array|object|null the found entity/entities
+     * @return array<mixed>|object|null the found entity/entities
      */
     public function __call(string $method, array $arguments)
     {
@@ -102,6 +100,7 @@ class EntityRepository
         if (!empty($fieldName)) {
             $queryParams = [$fieldName => current($arguments)];
         } else {
+            /** @var array<mixed> $queryParams */
             $queryParams = current($arguments);
         }
         $path .=
@@ -160,7 +159,8 @@ class EntityRepository
     /**
      * find - finds one item of the entity based on the @REST\Id field in the entity
      *
-     * @param array  $queryParams query parameters to add to the query
+     * @param array<mixed>  $queryParams query parameters to add to the query
+     * @phpstan-return ?E
      */
     public function find(string|int $id, array $queryParams = []): ?object
     {
@@ -170,6 +170,7 @@ class EntityRepository
         $id = $this->addQueryParameter($id, $queryParams);
 
         // if entity is found in cache, return it
+        /** @var ?E */
         $entityFromCache = $this->fetchFromCache($id);
         if ($entityFromCache) {
             return $entityFromCache;
@@ -178,6 +179,7 @@ class EntityRepository
         $data = $this->restClient->get($id);
         $data = $this->assertNotObject($data, __METHOD__);
 
+        /** @var ?E */
         $entity = $hydrator->hydrate($data, $this->entityName);
 
         // cache entity
@@ -189,6 +191,9 @@ class EntityRepository
         return $entity;
     }
 
+    /**
+     * @return Collection<E, ExtraParams>
+     */
     public function findAll(): Collection
     {
         $mapping = $this->sdk->getMapping();
@@ -211,6 +216,7 @@ class EntityRepository
         $data = $this->assertNotObject($data, __METHOD__);
 
         $hydrator = $this->sdk->getModelHydrator();
+        /** @var Collection<E, ExtraParams> */
         $entityList = $hydrator->hydrateList($data, $this->entityName);
 
         // cache entity list
@@ -233,6 +239,8 @@ class EntityRepository
 
     /**
      * remove entity
+     * 
+     * @phpstan-param E $model
      *
      * @TODO STILL NEEDS TO BE CONVERTED TO ENTITY MODEL
      */
@@ -245,6 +253,11 @@ class EntityRepository
         $this->restClient->delete($identifier);
     }
 
+    /**
+     * @phpstan-param E $model
+     * @phpstan-param SerializerContext $serializationContext
+     * @param array<mixed> $queryParams
+     */
     public function update(
         object $model,
         array $serializationContext = [],
@@ -289,6 +302,11 @@ class EntityRepository
         return $out;
     }
 
+    /**
+     * @phpstan-param E $model
+     * @phpstan-param SerializerContext $serializationContext
+     * @param array<mixed> $queryParams
+     */
     public function persist(
         object $model,
         array $serializationContext = [],
@@ -388,6 +406,9 @@ class EntityRepository
         return true;
     }
 
+    /**
+     * @param array<mixed> $params 
+     */
     protected function addQueryParameter(
         string $path,
         array $params = []
@@ -399,6 +420,10 @@ class EntityRepository
         return $path . '?' . http_build_query($params);
     }
 
+    /**
+     * @param array<mixed> $queryParameters 
+     * @return array<mixed>
+     */
     private function convertQueryParameters(array $queryParameters): array
     {
         $mapping = $this->sdk->getMapping();
@@ -443,7 +468,10 @@ class EntityRepository
     }
 
     /**
-     * @param array|ResponseInterface|null $data
+     * @template I
+     * @param array<I>|ResponseInterface|null $data
+     * @phpstan-assert array<I> $data
+     * @return array<I>
      */
     private function assertArray($data, string $methodName): array
     {
@@ -457,9 +485,11 @@ class EntityRepository
     }
 
     /**
-     * @param array|ResponseInterface|null $data
+     * @template I
+     * @param array<I>|ResponseInterface|null $data
      *
-     * @return array|null
+     *  @phpstan-assert array|null $data
+     * @return array<I>|null
      */
     private function assertNotObject($data, string $methodName)
     {

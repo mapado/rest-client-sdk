@@ -8,10 +8,11 @@ use Mapado\RestClientSdk\Exception\SdkClientNotFoundException;
 use Mapado\RestClientSdk\Mapping;
 use Mapado\RestClientSdk\SdkClient;
 use Mapado\RestClientSdk\SdkClientRegistry;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 
 /**
- * @covers SdkClientRegistry
+ * @covers \SdkClientRegistry
  */
 class SdkClientRegistryTest extends TestCase
 {
@@ -40,12 +41,8 @@ class SdkClientRegistryTest extends TestCase
         $sdkClientList = $this->createSdkClientList(['foo', 'bar']);
         $fooMapping = $this->createMock(Mapping::class);
         $barMapping = $this->createMock(Mapping::class);
-        $fooMapping->method('hasClassMetadata')->willReturnCallback(function ($name) {
-            return 0 === mb_strpos($name, 'Foo');
-        });
-        $barMapping->method('hasClassMetadata')->willReturnCallback(function ($name) {
-            return 0 === mb_strpos($name, 'Bar');
-        });
+        $fooMapping->method('hasClassMetadata')->willReturnCallback(fn ($name) => 0 === mb_strpos($name, 'Foo'));
+        $barMapping->method('hasClassMetadata')->willReturnCallback(fn ($name) => 0 === mb_strpos($name, 'Bar'));
         $sdkClientList['foo']->method('getMapping')->willReturn($fooMapping);
         $sdkClientList['bar']->method('getMapping')->willReturn($barMapping);
 
@@ -65,7 +62,7 @@ class SdkClientRegistryTest extends TestCase
     /**
      * @param array<string> $nameList
      *
-     * @return array<SdkClient>
+     * @return array<SdkClient&MockObject>
      */
     private function createSdkClientList(array $nameList): array
     {

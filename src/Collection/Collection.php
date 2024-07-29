@@ -5,9 +5,11 @@ declare(strict_types=1);
 namespace Mapado\RestClientSdk\Collection;
 
 /**
- * Class Collection
- *
- * @author Florent Clerc <florent.clerc@mapado.com>
+ * @template E
+ * @template ExtraProperty
+ * 
+ * @implements \IteratorAggregate<E>
+ * @implements \ArrayAccess<int, E>
  */
 class Collection implements
     \IteratorAggregate,
@@ -18,7 +20,7 @@ class Collection implements
     /**
      * The elements of the collection.
      *
-     * @var array
+     * @var array<E>
      */
     private $elements;
 
@@ -28,13 +30,13 @@ class Collection implements
      * or "hydra:totalItems" for JSON-LD
      * or anything you want to really ("foo" is OK for exemple)
      *
-     * @var array
+     * @var array<string, ExtraProperty>
      */
     private $extraProperties;
 
     /**
-     * @param array $elements the data elements as an array
-     * @param array $extraProperties the extra properties
+     * @param array<E> $elements the data elements as an array
+     * @param array<string, ExtraProperty> $extraProperties the extra properties
      */
     public function __construct(
         array $elements = [],
@@ -45,7 +47,7 @@ class Collection implements
     }
 
     /**
-     *  @return array<string, mixed>
+     *  @return array<E>
      */
     public function __serialize(): array
     {
@@ -68,6 +70,8 @@ class Collection implements
 
     /**
      * Returns inner elements collection.
+     * 
+     * @return array<E>
      */
     public function toArray(): array
     {
@@ -113,6 +117,7 @@ class Collection implements
      *
      * @param mixed|null $offset
      * @param mixed $value
+     * @phpstan-param E $value
      */
     public function offsetSet($offset, $value): void
     {
@@ -149,6 +154,7 @@ class Collection implements
      * @param mixed|null $offset
      *
      * @return mixed|null
+     * @phpstan-return E|null
      */
     public function offsetGet($offset): mixed
     {
@@ -157,6 +163,8 @@ class Collection implements
 
     /**
      * {@inheritdoc}
+     * 
+     * @return \ArrayIterator<int, E>
      */
     public function getIterator(): \ArrayIterator
     {
@@ -164,7 +172,7 @@ class Collection implements
     }
 
     /**
-     * getExtraProperties
+     * @return array<ExtraProperty>
      */
     public function getExtraProperties(): array
     {
@@ -188,12 +196,14 @@ class Collection implements
     /**
      * return the value of an extra property
      *
-     * @return mixed
+     * @phpstan-return ?ExtraProperty
      */
     public function getExtraProperty(string $key)
     {
         if (isset($this->extraProperties[$key])) {
             return $this->extraProperties[$key];
         }
+
+        return null;
     }
 }

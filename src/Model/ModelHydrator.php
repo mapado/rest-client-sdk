@@ -10,11 +10,6 @@ use Mapado\RestClientSdk\Collection\HydraPaginatedCollection;
 use Mapado\RestClientSdk\Helper\ArrayHelper;
 use Mapado\RestClientSdk\SdkClient;
 
-/**
- * Class ModelHydrator
- *
- * @author Julien Deniau <julien.deniau@mapado.com>
- */
 class ModelHydrator
 {
     /**
@@ -45,6 +40,10 @@ class ModelHydrator
         return $id;
     }
 
+    /**
+     * @param array<string, mixed>|null $data
+     * @param class-string $modelName
+     */
     public function hydrate(?array $data, string $modelName): ?object
     {
         $mapping = $this->sdk->getMapping();
@@ -57,7 +56,9 @@ class ModelHydrator
     /**
      * convert API response to Collection containing entities
      *
+     * @param ?array<mixed> $data
      * @param class-string $modelName
+     * @return Collection<mixed, mixed>
      */
     public function hydrateList(?array $data, string $modelName): Collection
     {
@@ -73,7 +74,10 @@ class ModelHydrator
     /**
      * convert list of data as array to Collection containing entities
      *
+     * @param array<mixed> $data
      * @param class-string $modelName
+     * 
+     * @return Collection<mixed, mixed>
      */
     private function deserializeAll(array $data, string $modelName): Collection
     {
@@ -103,13 +107,16 @@ class ModelHydrator
             throw new \RuntimeException("Seem's like $collectionClassName does not exist");
         }
 
-        /** @var Collection */
-        return new $collectionClassName($itemList, $extraProperties);
+        /** @var Collection<mixed, mixed> */
+        $out = new $collectionClassName($itemList, $extraProperties);
+
+        return $out;
     }
 
     /**
      * convert array to entity
      *
+     * @param array<string, mixed>|null $data
      * @param class-string $modelName
      */
     private function deserialize(?array $data, string $modelName): ?object
@@ -123,6 +130,8 @@ class ModelHydrator
 
     /**
      * guess collection classname according to response data
+     * 
+     * @param array<string, mixed> $data
      */
     private function guessCollectionClassname(array $data): string
     {

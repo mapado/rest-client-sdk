@@ -4,18 +4,17 @@ declare(strict_types=1);
 
 namespace Mapado\RestClientSdk;
 
+use Mapado\RestClientSdk\Exception\MappingException;
 use Mapado\RestClientSdk\Model\ModelHydrator;
 use Mapado\RestClientSdk\Model\Serializer;
 use ProxyManager\Configuration;
 use ProxyManager\Factory\LazyLoadingGhostFactory;
 use ProxyManager\Proxy\GhostObjectInterface;
 use Psr\Cache\CacheItemPoolInterface;
+use RuntimeException;
 use Symfony\Component\PropertyAccess\PropertyAccess;
 use Symfony\Component\PropertyAccess\PropertyAccessor;
 
-/**
- * Sdk Client
- */
 class SdkClient
 {
     /**
@@ -53,7 +52,7 @@ class SdkClient
     private $modelHydrator;
 
     /**
-     * @var array
+     * @var array<class-string, EntityRepository<object, mixed>>
      */
     private $repositoryList = [];
 
@@ -117,6 +116,9 @@ class SdkClient
         return $this->cachePrefix;
     }
 
+    /**
+     * @return EntityRepository<object, mixed>
+     */
     public function getRepository(string $modelName): EntityRepository
     {
         // get repository by key
@@ -130,6 +132,13 @@ class SdkClient
 
         if (!isset($this->repositoryList[$modelName])) {
             $repositoryName = $metadata->getRepositoryName();
+
+            if (!(is_a($repositoryName, EntityRepository::class, true))) {
+                throw new \RuntimeException(
+                    "Repository class {$repositoryName} must extend " .
+                        EntityRepository::class
+                );
+            }
 
             $this->repositoryList[$modelName] = new $repositoryName(
                 $this,
@@ -162,6 +171,9 @@ class SdkClient
         return $this->modelHydrator;
     }
 
+    /**
+     * @return GhostObjectInterface<object>
+     */
     public function createProxy(string $id): GhostObjectInterface
     {
         $key = $this->mapping->getKeyFromId($id);

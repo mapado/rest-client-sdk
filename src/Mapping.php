@@ -8,9 +8,8 @@ use Mapado\RestClientSdk\Exception\MappingException;
 use Mapado\RestClientSdk\Mapping\ClassMetadata;
 
 /**
- * Class Mapping
- *
- * @author Julien Deniau <julien.deniau@mapado.com>
+ * @phpstan-type MappingConfigInput array{collectionKey?: string}
+ * @phpstan-type MappingConfig array{collectionKey: string}
  */
 class Mapping
 {
@@ -32,10 +31,14 @@ class Mapping
     private $classMetadataList = [];
 
     /**
-     * @var array
+     * @var array<mixed>
+     * @phpstan-var MappingConfig
      */
     private $config;
 
+    /**
+     * @phpstan-param MappingConfigInput $config 
+     */
     public function __construct(string $idPrefix = '', array $config = [])
     {
         $this->idPrefix = $idPrefix;
@@ -48,11 +51,17 @@ class Mapping
         return $this->idPrefix;
     }
 
+    /**
+     * @phpstan-return MappingConfig
+     */
     public function getConfig(): array
     {
         return $this->config;
     }
 
+    /**
+     * @phpstan-param MappingConfigInput $config 
+     */
     public function setConfig(array $config): self
     {
         $this->config = array_merge(self::DEFAULT_CONFIG, $config);

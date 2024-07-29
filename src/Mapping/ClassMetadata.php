@@ -236,7 +236,7 @@ class ClassMetadata
     /**
      * return default serialize model with null value or empty array on relations
      *
-     * @return array<string, array|null>
+     * @return array<string, array<void>|null>
      */
     public function getDefaultSerializedModel(): array
     {

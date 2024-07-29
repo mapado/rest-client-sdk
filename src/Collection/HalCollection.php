@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace Mapado\RestClientSdk\Collection;
 
 /**
- * Class HalCollection
- *
- * @author Julien Deniau <julien.deniau@mapado.com>
+ * @template E
+ * @template ExtraProperty
+ * @extends Collection<E, ExtraProperty>
  */
 class HalCollection extends Collection
 {

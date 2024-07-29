@@ -8,8 +8,8 @@ use Mapado\RestClientSdk\Exception\SdkClientNotFoundException;
 
 class SdkClientRegistry
 {
-    /** var array<string, SdkClient> $sdkClientList */
-    private $sdkClientList;
+    /** @var array<string, SdkClient> $sdkClientList */
+    private array $sdkClientList;
 
     /**
      * @param array<string, SdkClient> $sdkClientList

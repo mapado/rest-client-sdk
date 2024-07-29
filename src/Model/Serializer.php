@@ -22,9 +22,7 @@ use Symfony\Component\PropertyAccess\PropertyAccess;
 use Symfony\Component\PropertyAccess\PropertyAccessor;
 
 /**
- * Class Serializer
- *
- * @author Julien Deniau <julien.deniau@mapado.com>
+ *  @phpstan-type SerializerData array<mixed>
  */
 class Serializer
 {
@@ -69,6 +67,10 @@ class Serializer
 
     /**
      * serialize entity for POST and PUT
+     * 
+     * @phpstan-param SerializerContext $context
+     * 
+     * @return array<mixed>
      */
     public function serialize(
         object $entity,
@@ -87,7 +89,7 @@ class Serializer
     }
 
     /**
-     * @param array $data
+     * @param SerializerData $data
      * @param class-string $className
      */
     public function deserialize(array $data, string $className): object
@@ -202,12 +204,14 @@ class Serializer
     /**
      * If provided class name is abstract (a base class), the real class name (child class)
      * may be available in some data fields.
+     * 
+     * @phpstan-param SerializerData $data
      */
     private function resolveRealClassName(
         array $data,
         string $className
     ): string {
-        if (!empty($data['@id'])) {
+        if (!empty($data['@id']) && is_string($data['@id'])) {
             $classMetadata = $this->mapping->tryGetClassMetadataById(
                 $data['@id']
             );
@@ -222,7 +226,9 @@ class Serializer
     }
 
     /**
-     * @return array|string
+     * @param array{"serializeRelation"?: bool}|SerializerContext $context
+     * 
+     * @return array<mixed>|string
      */
     private function recursiveSerialize(
         object $entity,

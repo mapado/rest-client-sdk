@@ -7,6 +7,7 @@ namespace Mapado\RestClientSdk\Mapping\Driver;
 use Mapado\RestClientSdk\Exception\MappingException;
 use Mapado\RestClientSdk\Mapping\Attribute;
 use Mapado\RestClientSdk\Mapping\Attributes;
+use Mapado\RestClientSdk\Mapping\Attributes\Entity;
 use Mapado\RestClientSdk\Mapping\ClassMetadata;
 use Mapado\RestClientSdk\Mapping\Relation;
 
@@ -41,9 +42,8 @@ class AttributeDriver
         $classes = [];
         $includedFiles = [];
 
-        /** @var array $file */
         foreach ($iterator as $file) {
-            $sourceFile = $file[0] ?? null;
+            $sourceFile = is_array($file) ? $file[0]  : null;
             if (is_string($sourceFile) && !preg_match('(^phar:)i', $sourceFile)) {
                 $sourceFile = realpath($sourceFile);
             }
@@ -157,11 +157,11 @@ class AttributeDriver
     }
 
     /**
-     * @template T
+     * @template T of object
      *
      * @param class-string<T> $classname
      *
-     * @return T|null
+     * @return new<T>|null
      */
     private function getPropertyAttribute(\ReflectionProperty $property, string $classname)
     {
@@ -169,27 +169,29 @@ class AttributeDriver
     }
 
     /**
-     * @template T
+     * @template T of Attributes\Entity
      *
-     * @param class-string<T> $className
-     *
-     * @return T|null
+     * @param class-string<T> $classname
+     * @param \ReflectionClass<object> $reflectionClass
+     * 
+     * @return new<T>|null
      */
-    private function getClassAttribute(\ReflectionClass $reflectionClass, string $className)
+    private function getClassAttribute(\ReflectionClass $reflectionClass, string $classname)
     {
-        return $this->getAttribute($reflectionClass, $className);
+        return $this->getAttribute($reflectionClass, $classname);
     }
 
     /**
-     * @template T
+     * @template T of object
      *
-     * @param class-string<T> $className
+     * @param \ReflectionClass<object>|\ReflectionProperty $reflection
+     * @param class-string<T> $classname
      *
-     * @return T|null
+     * @return new<T>|null
      */
-    private function getAttribute(\ReflectionClass|\ReflectionProperty $reflection, string $className)
+    private function getAttribute(\ReflectionClass|\ReflectionProperty $reflection, string $classname)
     {
-        $attribute = $reflection->getAttributes($className, \ReflectionAttribute::IS_INSTANCEOF)[0] ?? null;
+        $attribute = $reflection->getAttributes($classname, \ReflectionAttribute::IS_INSTANCEOF)[0] ?? null;
 
         if (!$attribute instanceof \ReflectionAttribute) {
             return null;

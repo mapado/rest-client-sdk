@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace Mapado\RestClientSdk\Tests\Units\Model;
 
-use DateTime;
-use DateTimeImmutable;
 use libphonenumber\PhoneNumberFormat;
 use libphonenumber\PhoneNumberUtil;
 use Mapado\RestClientSdk\EntityRepository;
@@ -28,14 +26,11 @@ use Mapado\RestClientSdk\UnitOfWork;
 use PHPUnit\Framework\TestCase;
 
 /**
- * @covers Serializer
+ * @covers \Serializer
  */
 class SerializerTest extends TestCase
 {
-    /**
-     * @var UnitOfWork
-     */
-    private $unitOfWork;
+    private UnitOfWork $unitOfWork;
 
     private Serializer $testedInstance;
 
@@ -55,8 +50,8 @@ class SerializerTest extends TestCase
                 '@id' => '/v1/carts/8',
                 'status' => 'payed',
                 'clientPhoneNumber' => '+33 1 23 45 67 89',
-                'createdAt' => (new DateTime('2015-09-20T12:08:00'))->format(
-                    DateTime::RFC3339
+                'createdAt' => (new \DateTime('2015-09-20T12:08:00'))->format(
+                    \DateTime::RFC3339
                 ),
                 'cart_items' => [],
                 'order' => null,
@@ -77,7 +72,7 @@ class SerializerTest extends TestCase
         $this->assertSame('/v1/carts/8', $cart->getId());
         $this->assertSame('payed', $cart->getStatus());
         $this->assertEquals(
-            new DateTime('2015-09-20T12:08:00'),
+            new \DateTime('2015-09-20T12:08:00'),
             $cart->getCreatedAt()
         );
         $this->assertEmpty($cart->getCartItemList());
@@ -102,20 +97,20 @@ class SerializerTest extends TestCase
                 '@id' => '/v1/carts/8',
                 'status' => 'payed',
                 'clientPhoneNumber' => '+33 1 23 45 67 89',
-                'createdAt' => (new DateTime('2015-09-20T12:08:00'))->format(
-                    DateTime::RFC3339
+                'createdAt' => (new \DateTime('2015-09-20T12:08:00'))->format(
+                    \DateTime::RFC3339
                 ),
                 'cart_items' => [
                     [
                         '@id' => '/v1/cart_items/16',
                         'amount' => 1,
-                        'createdAt' => (new DateTime(
+                        'createdAt' => (new \DateTime(
                             '2015-11-04 15:13:00'
-                        ))->format(DateTime::RFC3339),
+                        ))->format(\DateTime::RFC3339),
                         'data' => [
-                            'when' => (new DateTime(
+                            'when' => (new \DateTime(
                                 '2015-11-04 15:00:00'
-                            ))->format(DateTime::RFC3339),
+                            ))->format(\DateTime::RFC3339),
                             'who' => 'Jane',
                         ],
                         'cart' => '/v1/carts/8',
@@ -157,19 +152,19 @@ class SerializerTest extends TestCase
                 '@id' => '/v1/carts/8',
                 'status' => 'payed',
                 'clientPhoneNumber' => '+33 1 23 45 67 89',
-                'createdAt' => (new DateTime('2015-09-20T12:08:00'))->format(
-                    DateTime::RFC3339
+                'createdAt' => (new \DateTime('2015-09-20T12:08:00'))->format(
+                    \DateTime::RFC3339
                 ),
                 'cart_items' => [
                     [
                         'amount' => 2,
-                        'createdAt' => (new DateTime(
+                        'createdAt' => (new \DateTime(
                             '2015-09-20T12:11:00'
-                        ))->format(DateTime::RFC3339),
+                        ))->format(\DateTime::RFC3339),
                         'data' => [
-                            'when' => (new DateTime(
+                            'when' => (new \DateTime(
                                 '2015-09-20T15:00:00'
-                            ))->format(DateTime::RFC3339),
+                            ))->format(\DateTime::RFC3339),
                             'who' => 'John',
                         ],
                         'product' => '/v1/products/10',
@@ -210,19 +205,19 @@ class SerializerTest extends TestCase
             [
                 'status' => 'payed',
                 'clientPhoneNumber' => '+33 1 23 45 67 89',
-                'createdAt' => (new DateTime('2015-09-20T12:08:00'))->format(
-                    DateTime::RFC3339
+                'createdAt' => (new \DateTime('2015-09-20T12:08:00'))->format(
+                    \DateTime::RFC3339
                 ),
                 'cart_items' => [
                     [
                         'amount' => 2,
-                        'createdAt' => (new DateTime(
+                        'createdAt' => (new \DateTime(
                             '2015-09-20T12:11:00'
-                        ))->format(DateTime::RFC3339),
+                        ))->format(\DateTime::RFC3339),
                         'data' => [
-                            'when' => (new DateTime(
+                            'when' => (new \DateTime(
                                 '2015-09-20T15:00:00'
-                            ))->format(DateTime::RFC3339),
+                            ))->format(\DateTime::RFC3339),
                             'who' => 'John',
                         ],
                         'product' => '/v1/products/10',
@@ -254,19 +249,19 @@ class SerializerTest extends TestCase
                 '@id' => '/v1/carts/8',
                 'status' => 'payed',
                 'clientPhoneNumber' => '+33 1 23 45 67 89',
-                'createdAt' => (new DateTime('2015-09-20T12:08:00'))->format(
-                    DateTime::RFC3339
+                'createdAt' => (new \DateTime('2015-09-20T12:08:00'))->format(
+                    \DateTime::RFC3339
                 ),
                 'cart_items' => [
                     [
                         'amount' => 2,
-                        'createdAt' => (new DateTime(
+                        'createdAt' => (new \DateTime(
                             '2015-09-20T12:11:00'
-                        ))->format(DateTime::RFC3339),
+                        ))->format(\DateTime::RFC3339),
                         'data' => [
-                            'when' => (new DateTime(
+                            'when' => (new \DateTime(
                                 '2015-09-20T15:00:00'
-                            ))->format(DateTime::RFC3339),
+                            ))->format(\DateTime::RFC3339),
                             'who' => 'John',
                         ],
                         'cartItemDetailList' => [
@@ -301,20 +296,20 @@ class SerializerTest extends TestCase
                 '@id' => '/v1/carts/8',
                 'status' => 'payed',
                 'clientPhoneNumber' => '+33 1 23 45 67 89',
-                'createdAt' => (new DateTime('2015-09-20T12:08:00'))->format(
-                    DateTime::RFC3339
+                'createdAt' => (new \DateTime('2015-09-20T12:08:00'))->format(
+                    \DateTime::RFC3339
                 ),
                 'cart_items' => [
                     [
                         '@id' => '/v1/cart_items/16',
                         'amount' => 1,
-                        'createdAt' => (new DateTime(
+                        'createdAt' => (new \DateTime(
                             '2015-11-04 15:13:00'
-                        ))->format(DateTime::RFC3339),
+                        ))->format(\DateTime::RFC3339),
                         'data' => [
-                            'when' => (new DateTime(
+                            'when' => (new \DateTime(
                                 '2015-11-04 15:00:00'
-                            ))->format(DateTime::RFC3339),
+                            ))->format(\DateTime::RFC3339),
                             'who' => 'Jane',
                         ],
                         'cart' => '/v1/carts/8',
@@ -323,13 +318,13 @@ class SerializerTest extends TestCase
                     ],
                     [
                         'amount' => 2,
-                        'createdAt' => (new DateTime(
+                        'createdAt' => (new \DateTime(
                             '2015-09-20T12:11:00'
-                        ))->format(DateTime::RFC3339),
+                        ))->format(\DateTime::RFC3339),
                         'data' => [
-                            'when' => (new DateTime(
+                            'when' => (new \DateTime(
                                 '2015-09-20T15:00:00'
-                            ))->format(DateTime::RFC3339),
+                            ))->format(\DateTime::RFC3339),
                             'who' => 'John',
                         ],
                         'product' => '/v1/products/10',
@@ -392,19 +387,19 @@ class SerializerTest extends TestCase
             [
                 'status' => 'payed',
                 'clientPhoneNumber' => '+33 1 23 45 67 89',
-                'createdAt' => (new DateTime('2015-09-20T12:08:00'))->format(
-                    DateTime::RFC3339
+                'createdAt' => (new \DateTime('2015-09-20T12:08:00'))->format(
+                    \DateTime::RFC3339
                 ),
                 'cart_items' => [
                     [
                         'amount' => 2,
-                        'createdAt' => (new DateTime(
+                        'createdAt' => (new \DateTime(
                             '2015-09-20T12:11:00'
-                        ))->format(DateTime::RFC3339),
+                        ))->format(\DateTime::RFC3339),
                         'data' => [
-                            'when' => (new DateTime(
+                            'when' => (new \DateTime(
                                 '2015-09-20T15:00:00'
-                            ))->format(DateTime::RFC3339),
+                            ))->format(\DateTime::RFC3339),
                             'who' => 'John',
                         ],
                         'product' => '/v1/products/10',
@@ -432,20 +427,20 @@ class SerializerTest extends TestCase
                 '+330123456789',
                 PhoneNumberFormat::INTERNATIONAL
             ),
-            'createdAt' => (new DateTime('2015-09-20T12:08:00'))->format(
-                DateTime::RFC3339
+            'createdAt' => (new \DateTime('2015-09-20T12:08:00'))->format(
+                \DateTime::RFC3339
             ),
             'cart_items' => [
                 [
                     '@id' => '/v1/cart_items/16',
                     'amount' => 2,
-                    'createdAt' => (new DateTime(
+                    'createdAt' => (new \DateTime(
                         '2015-09-20T12:11:00+00:00'
-                    ))->format(DateTime::RFC3339),
+                    ))->format(\DateTime::RFC3339),
                     'data' => [
-                        'when' => (new DateTime(
+                        'when' => (new \DateTime(
                             '2015-09-20T15:00:00+00:00'
-                        ))->format(DateTime::RFC3339),
+                        ))->format(\DateTime::RFC3339),
                         'who' => 'John',
                     ],
                     'product' => '/v1/products/10',
@@ -483,13 +478,13 @@ class SerializerTest extends TestCase
         $this->assertSame('/v1/cart_items/16', $cartItem->getId());
         $this->assertSame(2, $cartItem->getAmount());
         $this->assertEquals(
-            new DateTime('2015-09-20T12:11:00+00:00'),
+            new \DateTime('2015-09-20T12:11:00+00:00'),
             $cartItem->getCreatedAt()
         );
         $this->assertSame(
             [
-                'when' => (new DateTime('2015-09-20T15:00:00+00:00'))->format(
-                    DateTime::RFC3339
+                'when' => (new \DateTime('2015-09-20T15:00:00+00:00'))->format(
+                    \DateTime::RFC3339
                 ),
                 'who' => 'John',
             ],
@@ -553,8 +548,8 @@ class SerializerTest extends TestCase
             [
                 'status' => null,
                 'clientPhoneNumber' => '+33 1 23 45 67 89',
-                'createdAt' => (new DateTime('2015-09-20T12:08:00'))->format(
-                    DateTime::RFC3339
+                'createdAt' => (new \DateTime('2015-09-20T12:08:00'))->format(
+                    \DateTime::RFC3339
                 ),
                 'cart_items' => [],
                 'order' => null,
@@ -599,20 +594,20 @@ class SerializerTest extends TestCase
                 'weirdId' => '/v1/carts/8',
                 'status' => 'payed',
                 'clientPhoneNumber' => '+33 1 23 45 67 89',
-                'createdAt' => (new DateTime('2015-09-20T12:08:00'))->format(
-                    DateTime::RFC3339
+                'createdAt' => (new \DateTime('2015-09-20T12:08:00'))->format(
+                    \DateTime::RFC3339
                 ),
                 'cart_items' => [
                     [
                         'weirdId' => '/v1/cart_items/16',
                         'amount' => 1,
-                        'createdAt' => (new DateTime(
+                        'createdAt' => (new \DateTime(
                             '2015-11-04 15:13:00'
-                        ))->format(DateTime::RFC3339),
+                        ))->format(\DateTime::RFC3339),
                         'data' => [
-                            'when' => (new DateTime(
+                            'when' => (new \DateTime(
                                 '2015-11-04 15:00:00'
-                            ))->format(DateTime::RFC3339),
+                            ))->format(\DateTime::RFC3339),
                             'who' => 'Jane',
                         ],
                         'cart' => '/v1/carts/8',
@@ -635,20 +630,20 @@ class SerializerTest extends TestCase
                 'weirdId' => '/v1/carts/8',
                 'status' => 'payed',
                 'clientPhoneNumber' => '+33 1 23 45 67 89',
-                'createdAt' => (new DateTime('2015-09-20T12:08:00'))->format(
-                    DateTime::RFC3339
+                'createdAt' => (new \DateTime('2015-09-20T12:08:00'))->format(
+                    \DateTime::RFC3339
                 ),
                 'cart_items' => [
                     [
                         'weirdId' => '/v1/cart_items/16',
                         'amount' => 1,
-                        'createdAt' => (new DateTime(
+                        'createdAt' => (new \DateTime(
                             '2015-11-04 15:13:00'
-                        ))->format(DateTime::RFC3339),
+                        ))->format(\DateTime::RFC3339),
                         'data' => [
-                            'when' => (new DateTime(
+                            'when' => (new \DateTime(
                                 '2015-11-04 15:00:00'
-                            ))->format(DateTime::RFC3339),
+                            ))->format(\DateTime::RFC3339),
                             'who' => 'Jane',
                         ],
                         'cart' => '/v1/carts/8',
@@ -694,8 +689,8 @@ class SerializerTest extends TestCase
             '@id' => '/v1/carts/8',
             'status' => 'payed',
             'clientPhoneNumber' => '+33 1 23 45 67 89',
-            'createdAt' => (new DateTime('2015-09-20T12:08:00'))->format(
-                DateTime::RFC3339
+            'createdAt' => (new \DateTime('2015-09-20T12:08:00'))->format(
+                \DateTime::RFC3339
             ),
             'cart_items' => [],
             'order' => null,
@@ -1110,7 +1105,7 @@ class SerializerTest extends TestCase
     {
         $cart = new \Mapado\RestClientSdk\Tests\Model\JsonLd\Cart();
         $cart->setStatus('payed');
-        $cart->setCreatedAt(new DateTime('2015-09-20 12:08:00'));
+        $cart->setCreatedAt(new \DateTime('2015-09-20 12:08:00'));
 
         $phoneNumberUtil = PhoneNumberUtil::getInstance();
         $clientPhoneNumber = $phoneNumberUtil->parse(
@@ -1135,9 +1130,9 @@ class SerializerTest extends TestCase
         $cartItem = $this->createNewCartItem();
         $cartItem->setId('/v1/cart_items/16');
         $cartItem->setAmount(1);
-        $cartItem->setCreatedAt(new DateTimeImmutable('2015-11-04 15:13:00'));
+        $cartItem->setCreatedAt(new \DateTimeImmutable('2015-11-04 15:13:00'));
         $cartItem->setData([
-            'when' => new DateTimeImmutable('2015-11-04 15:00:00'),
+            'when' => new \DateTimeImmutable('2015-11-04 15:00:00'),
             'who' => 'Jane',
         ]);
         $cartItem->setCart($this->createCart());
@@ -1150,9 +1145,9 @@ class SerializerTest extends TestCase
     ): \Mapado\RestClientSdk\Tests\Model\JsonLd\CartItem {
         $cartItem = new \Mapado\RestClientSdk\Tests\Model\JsonLd\CartItem();
         $cartItem->setAmount(2);
-        $cartItem->setCreatedAt(new DateTimeImmutable('2015-09-20 12:11:00'));
+        $cartItem->setCreatedAt(new \DateTimeImmutable('2015-09-20 12:11:00'));
         $cartItem->setData([
-            'when' => new DateTime('2015-09-20 15:00:00'),
+            'when' => new \DateTime('2015-09-20 15:00:00'),
             'who' => 'John',
         ]);
 
@@ -1197,9 +1192,9 @@ class SerializerTest extends TestCase
         $this->testedInstance = new Serializer($mapping, $this->unitOfWork);
 
         $restClient = $this->createMock(
-            \Mapado\RestClientSdk\RestClient::class
+            RestClient::class
         );
-        $sdk = $this->getMockBuilder(\Mapado\RestClientSdk\SdkClient::class)
+        $sdk = $this->getMockBuilder(SdkClient::class)
             ->setConstructorArgs([
                 $restClient,
                 $mapping,
@@ -1239,7 +1234,7 @@ class SerializerTest extends TestCase
         string $modelName
     ): EntityRepository {
         $repository = $this->getMockBuilder(
-            \Mapado\RestClientSdk\EntityRepository::class
+            EntityRepository::class
         )
             ->setConstructorArgs([$sdk, $restClient, $unitOfWork, $modelName])
             ->getMock();
