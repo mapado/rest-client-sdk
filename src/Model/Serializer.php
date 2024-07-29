@@ -4,9 +4,7 @@ declare(strict_types=1);
 
 namespace Mapado\RestClientSdk\Model;
 
-use DateTime;
 use DateTimeImmutable;
-use DateTimeInterface;
 use libphonenumber\PhoneNumber;
 use libphonenumber\PhoneNumberFormat;
 use libphonenumber\PhoneNumberUtil;
@@ -67,21 +65,21 @@ class Serializer
 
     /**
      * serialize entity for POST and PUT
-     * 
+     *
      * @phpstan-param SerializerContext $context
-     * 
+     *
      * @return array<mixed>
      */
     public function serialize(
         object $entity,
         string $modelName,
-        array $context = []
+        array $context = [],
     ): array {
         $out = $this->recursiveSerialize($entity, $modelName, 0, $context);
 
         if (is_string($out)) {
             throw new \RuntimeException(
-                'recursiveSerialize should return an array for level 0 of serialization. This should not happen.'
+                'recursiveSerialize should return an array for level 0 of serialization. This should not happen.',
             );
         }
 
@@ -104,7 +102,7 @@ class Serializer
 
         if (!is_object($instance)) {
             throw new \RuntimeException(
-                "The class $className is not instantiable"
+                "The class $className is not instantiable",
             );
         }
 
@@ -128,13 +126,13 @@ class Serializer
                     } elseif (is_array($value)) {
                         $targetEntity = $relation->getTargetEntity();
                         $relationClassMetadata = $this->mapping->getClassMetadata(
-                            $targetEntity
+                            $targetEntity,
                         );
 
                         if ($relation->isManyToOne()) {
                             $value = $this->deserialize(
                                 $value,
-                                $relationClassMetadata->getModelName()
+                                $relationClassMetadata->getModelName(),
                             );
                         } else {
                             // One-To-Many association
@@ -145,7 +143,7 @@ class Serializer
                                 } elseif (is_array($item)) {
                                     $list[] = $this->deserialize(
                                         $item,
-                                        $relationClassMetadata->getModelName()
+                                        $relationClassMetadata->getModelName(),
                                     );
                                 }
                             }
@@ -159,20 +157,20 @@ class Serializer
                     if ('datetime' === $attribute->getType()) {
                         if (!is_string($value)) {
                             throw new \RuntimeException(
-                                "The value for $attributeName to cast to datetime value should be a string"
+                                "The value for $attributeName to cast to datetime value should be a string",
                             );
                         }
 
                         $this->setDateTimeValue(
                             $instance,
                             $attributeName,
-                            $value
+                            $value,
                         );
                     } else {
                         $this->propertyAccessor->setValue(
                             $instance,
                             $attributeName,
-                            $value
+                            $value,
                         );
                     }
                 }
@@ -192,7 +190,7 @@ class Serializer
                 if ($identifier) {
                     $this->unitOfWork->registerClean(
                         (string) $identifier,
-                        $instance
+                        $instance,
                     );
                 }
             }
@@ -204,16 +202,16 @@ class Serializer
     /**
      * If provided class name is abstract (a base class), the real class name (child class)
      * may be available in some data fields.
-     * 
+     *
      * @phpstan-param SerializerData $data
      */
     private function resolveRealClassName(
         array $data,
-        string $className
+        string $className,
     ): string {
         if (!empty($data['@id']) && is_string($data['@id'])) {
             $classMetadata = $this->mapping->tryGetClassMetadataById(
-                $data['@id']
+                $data['@id'],
             );
 
             if ($classMetadata) {
@@ -227,14 +225,14 @@ class Serializer
 
     /**
      * @param array{"serializeRelation"?: bool}|SerializerContext $context
-     * 
+     *
      * @return array<mixed>|string
      */
     private function recursiveSerialize(
         object $entity,
         string $modelName,
         int $level = 0,
-        array $context = []
+        array $context = [],
     ) {
         $classMetadata = $this->mapping->getClassMetadata($modelName);
 
@@ -258,16 +256,16 @@ class Serializer
                     continue;
                 }
                 $relation = $classMetadata->getRelation(
-                    $attribute->getSerializedKey()
+                    $attribute->getSerializedKey(),
                 );
 
                 $data = $entity->{$method}();
 
                 if (
-                    null === $data &&
-                    $relation &&
-                    $relation->isManyToOne() &&
-                    $level > 0
+                    null === $data
+                    && $relation
+                    && $relation->isManyToOne()
+                    && $level > 0
                 ) {
                     /*
                         We only serialize the root many-to-one relations to prevent, hopefully,
@@ -276,23 +274,23 @@ class Serializer
                         CartItem entities explicitly bound to a null Cart instead of the created/updated Cart.
                      */
                     continue;
-                } elseif ($data instanceof DateTimeInterface) {
+                } elseif ($data instanceof \DateTimeInterface) {
                     $data = $data->format('c');
                 } elseif (is_object($data) && $data instanceof PhoneNumber) {
                     $phoneNumberUtil = PhoneNumberUtil::getInstance();
                     $data = $phoneNumberUtil->format(
                         $data,
-                        PhoneNumberFormat::INTERNATIONAL
+                        PhoneNumberFormat::INTERNATIONAL,
                     );
                 } elseif (
-                    is_object($data) &&
-                    $relation &&
-                    $this->mapping->hasClassMetadata(
-                        $relation->getTargetEntity()
+                    is_object($data)
+                    && $relation
+                    && $this->mapping->hasClassMetadata(
+                        $relation->getTargetEntity(),
                     )
                 ) {
                     $relationClassMetadata = $this->mapping->getClassMetadata(
-                        $relation->getTargetEntity()
+                        $relation->getTargetEntity(),
                     );
 
                     if (!$relationClassMetadata->hasIdentifierAttribute()) {
@@ -300,7 +298,7 @@ class Serializer
                             $data,
                             $relation->getTargetEntity(),
                             $level + 1,
-                            $context
+                            $context,
                         );
                     } else {
                         $idAttribute = $relationClassMetadata->getIdentifierAttribute();
@@ -308,8 +306,8 @@ class Serializer
                             'get' . ucfirst($idAttribute->getAttributeName());
 
                         if (
-                            method_exists($data, $idGetter) &&
-                            $data->{$idGetter}()
+                            method_exists($data, $idGetter)
+                            && $data->{$idGetter}()
                         ) {
                             $data = $data->{$idGetter}();
                         } elseif ($relation->isManyToOne()) {
@@ -317,7 +315,7 @@ class Serializer
                                 continue;
                             } else {
                                 throw new SdkException(
-                                    'Case not allowed for now'
+                                    'Case not allowed for now',
                                 );
                             }
                         }
@@ -325,27 +323,27 @@ class Serializer
                 } elseif (is_array($data)) {
                     $newData = [];
                     foreach ($data as $key => $item) {
-                        if ($item instanceof DateTimeInterface) {
+                        if ($item instanceof \DateTimeInterface) {
                             $newData[$key] = $item->format('c');
                         } elseif (
-                            is_object($item) &&
-                            $relation &&
-                            $this->mapping->hasClassMetadata(
-                                $relation->getTargetEntity()
+                            is_object($item)
+                            && $relation
+                            && $this->mapping->hasClassMetadata(
+                                $relation->getTargetEntity(),
                             )
                         ) {
                             $serializeRelation =
-                                !empty($context['serializeRelations']) &&
-                                in_array(
+                                !empty($context['serializeRelations'])
+                                && in_array(
                                     $relation->getSerializedKey(),
-                                    $context['serializeRelations']
+                                    $context['serializeRelations'],
                                 );
 
                             $newData[$key] = $this->recursiveSerialize(
                                 $item,
                                 $relation->getTargetEntity(),
                                 $level + 1,
-                                ['serializeRelation' => $serializeRelation]
+                                ['serializeRelation' => $serializeRelation],
                             );
                         } else {
                             $newData[$key] = $item;
@@ -372,20 +370,20 @@ class Serializer
 
     private function getClassMetadata(object $entity): ClassMetadata
     {
-        return $this->mapping->getClassMetadata(get_class($entity));
+        return $this->mapping->getClassMetadata($entity::class);
     }
 
     private function throwIfAttributeIsNotWritable(
         object $instance,
-        string $attribute
+        string $attribute,
     ): void {
         if (!$this->propertyAccessor->isWritable($instance, $attribute)) {
             throw new MissingSetterException(
                 sprintf(
                     'Property %s is not writable for class %s. Please make it writable. You can check the property-access documentation here : https://symfony.com/doc/current/components/property_access.html#writing-to-objects',
                     $attribute,
-                    get_class($instance)
-                )
+                    $instance::class,
+                ),
             );
         }
     }
@@ -393,25 +391,25 @@ class Serializer
     private function setDateTimeValue(
         object $instance,
         string $attributeName,
-        string $value
+        string $value,
     ): void {
         try {
             $this->propertyAccessor->setValue(
                 $instance,
                 $attributeName,
-                new DateTime($value)
+                new \DateTime($value),
             );
         } catch (InvalidArgumentException $e) {
             if (
                 false ===
                     mb_strpos(
                         $e->getMessage(),
-                        'Expected argument of type "DateTimeImmutable", "DateTime" given' // symfony < 4.4 message
-                    ) &&
-                false ===
+                        'Expected argument of type "DateTimeImmutable", "DateTime" given', // symfony < 4.4 message
+                    )
+                && false ===
                     mb_strpos(
                         $e->getMessage(),
-                        'Expected argument of type "DateTimeImmutable", "instance of DateTime" given' // symfony >= 4.4 message
+                        'Expected argument of type "DateTimeImmutable", "instance of DateTime" given', // symfony >= 4.4 message
                     )
             ) {
                 // not an issue with DateTimeImmutable, then rethrow exception
@@ -422,7 +420,7 @@ class Serializer
             $this->propertyAccessor->setValue(
                 $instance,
                 $attributeName,
-                new DateTimeImmutable($value)
+                new \DateTimeImmutable($value),
             );
         }
     }

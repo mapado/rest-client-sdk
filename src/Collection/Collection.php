@@ -7,15 +7,11 @@ namespace Mapado\RestClientSdk\Collection;
 /**
  * @template E
  * @template ExtraProperty
- * 
+ *
  * @implements \IteratorAggregate<E>
  * @implements \ArrayAccess<int, E>
  */
-class Collection implements
-    \IteratorAggregate,
-    \Serializable,
-    \Countable,
-    \ArrayAccess
+class Collection implements \IteratorAggregate, \Serializable, \Countable, \ArrayAccess
 {
     /**
      * The elements of the collection.
@@ -40,7 +36,7 @@ class Collection implements
      */
     public function __construct(
         array $elements = [],
-        array $extraProperties = []
+        array $extraProperties = [],
     ) {
         $this->elements = $elements;
         $this->extraProperties = $extraProperties;
@@ -55,8 +51,6 @@ class Collection implements
     }
 
     /**
-     * {@inheritdoc}
-     *
      * @param string $values
      */
     public function __unserialize($values): void
@@ -70,7 +64,7 @@ class Collection implements
 
     /**
      * Returns inner elements collection.
-     * 
+     *
      * @return array<E>
      */
     public function toArray(): array
@@ -79,8 +73,6 @@ class Collection implements
     }
 
     /**
-     * {@inheritdoc}
-     *
      * @deprecated `serialize` method is deprecated, `__serialize` is used instead. See https://php.watch/versions/8.1/serializable-deprecated
      */
     public function serialize(): string
@@ -96,9 +88,6 @@ class Collection implements
         $this->__unserialize($data);
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function count(): int
     {
         return count($this->elements);
@@ -113,10 +102,8 @@ class Collection implements
     }
 
     /**
-     * {@inheritdoc}
-     *
      * @param mixed|null $offset
-     * @param mixed $value
+     *
      * @phpstan-param E $value
      */
     public function offsetSet($offset, $value): void
@@ -129,8 +116,6 @@ class Collection implements
     }
 
     /**
-     * {@inheritdoc}
-     *
      * @param mixed|null $offset
      */
     public function offsetExists($offset): bool
@@ -139,8 +124,6 @@ class Collection implements
     }
 
     /**
-     * {@inheritdoc}
-     *
      * @param mixed|null $offset
      */
     public function offsetUnset($offset): void
@@ -149,11 +132,10 @@ class Collection implements
     }
 
     /**
-     * {@inheritdoc}
-     *
      * @param mixed|null $offset
      *
      * @return mixed|null
+     *
      * @phpstan-return E|null
      */
     public function offsetGet($offset): mixed
@@ -162,8 +144,6 @@ class Collection implements
     }
 
     /**
-     * {@inheritdoc}
-     * 
      * @return \ArrayIterator<int, E>
      */
     public function getIterator(): \ArrayIterator

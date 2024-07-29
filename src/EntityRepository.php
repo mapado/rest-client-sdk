@@ -55,7 +55,7 @@ class EntityRepository
         SdkClient $sdkClient,
         RestClient $restClient,
         UnitOfWork $unitOfWork,
-        string $entityName
+        string $entityName,
     ) {
         $this->sdk = $sdkClient;
         $this->restClient = $restClient;
@@ -65,7 +65,7 @@ class EntityRepository
 
     /**
      * Adds support for magic finders.
-     * 
+     *
      * @param array<mixed> $arguments
      *
      * @return array<mixed>|object|null the found entity/entities
@@ -84,12 +84,18 @@ class EntityRepository
                 break;
 
             default:
-                throw new \BadMethodCallException('Undefined method \'' . $method . '\'. The method name must start with
-                    either findBy or findOneBy!');
+                throw new \BadMethodCallException(
+                    'Undefined method \'' .
+                        $method .
+                        '\'. The method name must start with
+                    either findBy or findOneBy!',
+                );
         }
 
         if (empty($arguments)) {
-            throw new SdkException('You need to pass a parameter to ' . $method);
+            throw new SdkException(
+                'You need to pass a parameter to ' . $method,
+            );
         }
 
         $mapping = $this->sdk->getMapping();
@@ -129,7 +135,7 @@ class EntityRepository
                 if (null !== $hydratedData) {
                     $this->unitOfWork->registerClean(
                         $identifier,
-                        $hydratedData
+                        $hydratedData,
                     );
                 }
                 $this->saveToCache($identifier, $hydratedData);
@@ -160,6 +166,7 @@ class EntityRepository
      * find - finds one item of the entity based on the @REST\Id field in the entity
      *
      * @param array<mixed>  $queryParams query parameters to add to the query
+     *
      * @phpstan-return ?E
      */
     public function find(string|int $id, array $queryParams = []): ?object
@@ -206,7 +213,11 @@ class EntityRepository
         // if entityList is found in cache, return it
         if (false !== $entityListFromCache) {
             if (!$entityListFromCache instanceof Collection) {
-                throw new \RuntimeException('Entity list in cache should be an instance of ' . Collection::class . '. This should not happen.');
+                throw new \RuntimeException(
+                    'Entity list in cache should be an instance of ' .
+                        Collection::class .
+                        '. This should not happen.',
+                );
             }
 
             return $entityListFromCache;
@@ -225,7 +236,9 @@ class EntityRepository
         // then cache each entity from list
         foreach ($entityList as $entity) {
             if (!is_object($entity)) {
-                throw new \RuntimeException("Entity should be an object. This should not happen.");
+                throw new \RuntimeException(
+                    'Entity should be an object. This should not happen.',
+                );
             }
 
             $identifier = $entity->{$this->getClassMetadata()->getIdGetter()}();
@@ -239,7 +252,7 @@ class EntityRepository
 
     /**
      * remove entity
-     * 
+     *
      * @phpstan-param E $model
      *
      * @TODO STILL NEEDS TO BE CONVERTED TO ENTITY MODEL
@@ -256,19 +269,20 @@ class EntityRepository
     /**
      * @phpstan-param E $model
      * @phpstan-param SerializerContext $serializationContext
+     *
      * @param array<mixed> $queryParams
      */
     public function update(
         object $model,
         array $serializationContext = [],
-        array $queryParams = []
+        array $queryParams = [],
     ): object {
         $identifier = $model->{$this->getClassMetadata()->getIdGetter()}();
         $serializer = $this->sdk->getSerializer();
         $newSerializedModel = $serializer->serialize(
             $model,
             $this->entityName,
-            $serializationContext
+            $serializationContext,
         );
 
         $oldModel = $this->unitOfWork->getDirtyEntity($identifier);
@@ -276,12 +290,12 @@ class EntityRepository
             $oldSerializedModel = $serializer->serialize(
                 $oldModel,
                 $this->entityName,
-                $serializationContext
+                $serializationContext,
             );
             $newSerializedModel = $this->unitOfWork->getDirtyData(
                 $newSerializedModel,
                 $oldSerializedModel,
-                $this->getClassMetadata()
+                $this->getClassMetadata(),
             );
         }
 
@@ -296,7 +310,9 @@ class EntityRepository
         $out = $hydrator->hydrate($data, $this->entityName);
 
         if (null === $out) {
-            throw new HydratorException("Unable to convert data from PUT request ({$path}) to an instance of {$this->entityName}. Maybe you have a custom hydrator returning null?");
+            throw new HydratorException(
+                "Unable to convert data from PUT request ({$path}) to an instance of {$this->entityName}. Maybe you have a custom hydrator returning null?",
+            );
         }
 
         return $out;
@@ -305,12 +321,13 @@ class EntityRepository
     /**
      * @phpstan-param E $model
      * @phpstan-param SerializerContext $serializationContext
+     *
      * @param array<mixed> $queryParams
      */
     public function persist(
         object $model,
         array $serializationContext = [],
-        array $queryParams = []
+        array $queryParams = [],
     ): object {
         $mapping = $this->sdk->getMapping();
         $prefix = $mapping->getIdPrefix();
@@ -326,17 +343,20 @@ class EntityRepository
         $diff = $this->unitOfWork->getDirtyData(
             $newSerializedModel,
             $oldSerializedModel,
-            $this->getClassMetadata()
+            $this->getClassMetadata(),
         );
 
         $data = $this->restClient->post(
             $this->addQueryParameter($path, $queryParams),
-            $diff
+            $diff,
         );
         $data = $this->assertNotObject($data, __METHOD__);
 
         if (null === $data) {
-            throw new RestException("No data found after sending a `POST` request to {$path}. Did the server returned a 4xx or 5xx status code?", $path);
+            throw new RestException(
+                "No data found after sending a `POST` request to {$path}. Did the server returned a 4xx or 5xx status code?",
+                $path,
+            );
         }
 
         $hydrator = $this->sdk->getModelHydrator();
@@ -344,7 +364,9 @@ class EntityRepository
         $out = $hydrator->hydrate($data, $this->entityName);
 
         if (null === $out) {
-            throw new HydratorException("Unable to convert data from POST request ({$path}) to an instance of {$this->entityName}. Maybe you have a custom hydrator returning null?");
+            throw new HydratorException(
+                "Unable to convert data from POST request ({$path}) to an instance of {$this->entityName}. Maybe you have a custom hydrator returning null?",
+            );
         }
 
         return $out;
@@ -361,7 +383,9 @@ class EntityRepository
                 $cacheData = $cacheItem->get();
 
                 if (!is_object($cacheData)) {
-                    throw new \RuntimeException('Cache data should be an object. This should not happen.');
+                    throw new \RuntimeException(
+                        'Cache data should be an object. This should not happen.',
+                    );
                 }
 
                 return $cacheData;
@@ -407,11 +431,11 @@ class EntityRepository
     }
 
     /**
-     * @param array<mixed> $params 
+     * @param array<mixed> $params
      */
     protected function addQueryParameter(
         string $path,
-        array $params = []
+        array $params = [],
     ): string {
         if (empty($params)) {
             return $path;
@@ -421,7 +445,8 @@ class EntityRepository
     }
 
     /**
-     * @param array<mixed> $queryParameters 
+     * @param array<mixed> $queryParameters
+     *
      * @return array<mixed>
      */
     private function convertQueryParameters(array $queryParameters): array
@@ -430,7 +455,7 @@ class EntityRepository
 
         return array_map(function ($item) use ($mapping) {
             if (is_object($item)) {
-                $classname = get_class($item);
+                $classname = $item::class;
 
                 if ($mapping->hasClassMetadata($classname)) {
                     $idGetter = $mapping
@@ -450,7 +475,9 @@ class EntityRepository
         $out = preg_replace('~[\\/\{\}@:\(\)]~', '_', $key);
 
         if (null === $out) {
-            throw new \RuntimeException('Unable to normalize cache key. This should not happen.');
+            throw new \RuntimeException(
+                'Unable to normalize cache key. This should not happen.',
+            );
         }
 
         return $out;
@@ -469,8 +496,11 @@ class EntityRepository
 
     /**
      * @template I
+     *
      * @param array<I>|ResponseInterface|null $data
+     *
      * @phpstan-assert array<I> $data
+     *
      * @return array<I>
      */
     private function assertArray($data, string $methodName): array
@@ -479,16 +509,20 @@ class EntityRepository
             return $data;
         }
 
-        $type = null === $data ? 'null' : get_class($data);
+        $type = null === $data ? 'null' : $data::class;
 
-        throw new UnexpectedTypeException("Return of method {$methodName} should be an array. {$type} given.");
+        throw new UnexpectedTypeException(
+            "Return of method {$methodName} should be an array. {$type} given.",
+        );
     }
 
     /**
      * @template I
+     *
      * @param array<I>|ResponseInterface|null $data
      *
      *  @phpstan-assert array|null $data
+     *
      * @return array<I>|null
      */
     private function assertNotObject($data, string $methodName)
@@ -497,8 +531,10 @@ class EntityRepository
             return $data;
         }
 
-        $type = get_class($data);
+        $type = $data::class;
 
-        throw new UnexpectedTypeException("Return of method {$methodName} should be an array. {$type} given.");
+        throw new UnexpectedTypeException(
+            "Return of method {$methodName} should be an array. {$type} given.",
+        );
     }
 }

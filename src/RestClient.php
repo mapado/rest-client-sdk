@@ -43,6 +43,7 @@ class RestClient
 
     /**
      * @var array<array<mixed>>
+     *
      * @phpstan-var array<RequestHistory>
      */
     private $requestHistory;
@@ -54,7 +55,7 @@ class RestClient
 
     public function __construct(
         ClientInterface $httpClient,
-        ?string $baseUrl = null
+        string $baseUrl = null,
     ) {
         $this->httpClient = $httpClient;
         $this->baseUrl =
@@ -84,8 +85,9 @@ class RestClient
         return $this;
     }
 
-    /** 
+    /**
      * @return array<array<mixed>>
+     *
      * @phpstan-return array<RequestHistory>
      */
     public function getRequestHistory(): array
@@ -97,6 +99,7 @@ class RestClient
      * get a path
      *
      * @param array<mixed> $parameters
+     *
      * @return array<mixed>|ResponseInterface|null
      *
      * @throws RestException
@@ -116,7 +119,7 @@ class RestClient
                 $path,
                 [],
                 7,
-                $e
+                $e,
             );
         } catch (TransferException $e) {
             throw new RestException(
@@ -124,7 +127,7 @@ class RestClient
                 $path,
                 [],
                 1,
-                $e
+                $e,
             );
         }
     }
@@ -144,7 +147,7 @@ class RestClient
                 $path,
                 [],
                 2,
-                $e
+                $e,
             );
         }
     }
@@ -152,6 +155,7 @@ class RestClient
     /**
      * @param array<mixed> $data
      * @param array<mixed> $parameters
+     *
      * @return array<mixed>|ResponseInterface
      *
      * @throws RestClientException
@@ -164,7 +168,7 @@ class RestClient
             return $this->executeRequest(
                 'POST',
                 $this->baseUrl . $path,
-                $parameters
+                $parameters,
             );
         } catch (ClientException $e) {
             throw new RestClientException(
@@ -172,7 +176,7 @@ class RestClient
                 $path,
                 [],
                 3,
-                $e
+                $e,
             );
         } catch (TransferException $e) {
             throw new RestException(
@@ -180,7 +184,7 @@ class RestClient
                 $path,
                 [],
                 4,
-                $e
+                $e,
             );
         }
     }
@@ -188,6 +192,7 @@ class RestClient
     /**
      * @param array<mixed> $data
      * @param array<mixed> $parameters
+     *
      * @return array<mixed>|ResponseInterface
      *
      * @throws RestClientException
@@ -201,7 +206,7 @@ class RestClient
             return $this->executeRequest(
                 'PUT',
                 $this->baseUrl . $path,
-                $parameters
+                $parameters,
             );
         } catch (ClientException $e) {
             throw new RestClientException(
@@ -209,7 +214,7 @@ class RestClient
                 $path,
                 [],
                 5,
-                $e
+                $e,
             );
         } catch (TransferException $e) {
             throw new RestException(
@@ -217,16 +222,16 @@ class RestClient
                 $path,
                 [],
                 6,
-                $e
+                $e,
             );
         }
     }
 
     /**
      * Merge default parameters.
-     * 
+     *
      * @param array<mixed> $parameters
-     * 
+     *
      * @return array<mixed>
      */
     protected function mergeDefaultParameters(array $parameters): array
@@ -245,8 +250,8 @@ class RestClient
             throw new \RuntimeException(
                 sprintf(
                     'Error while calling array_replace_recursive in %s. This should not happen.',
-                    __METHOD__
-                )
+                    __METHOD__,
+                ),
             );
         }
 
@@ -271,6 +276,7 @@ class RestClient
      * Executes request.
      *
      * @param array<mixed> $parameters
+     *
      * @return ResponseInterface|array<mixed>
      *
      * @throws TransferException
@@ -278,7 +284,7 @@ class RestClient
     private function executeRequest(
         string $method,
         string $url,
-        array $parameters = []
+        array $parameters = [],
     ) {
         $parameters = $this->mergeDefaultParameters($parameters);
 
@@ -294,7 +300,7 @@ class RestClient
                 $method,
                 $url,
                 $parameters,
-                $response
+                $response,
             );
         } catch (RequestException $e) {
             $this->logRequest(
@@ -302,7 +308,7 @@ class RestClient
                 $method,
                 $url,
                 $parameters,
-                $e->getResponse()
+                $e->getResponse(),
             );
             throw $e;
         } catch (TransferException $e) {
@@ -316,7 +322,7 @@ class RestClient
         $requestIsJson = false;
 
         $responseContentType =
-            $headers['Content-Type'] ?? $headers['content-type'] ?? null;
+            $headers['Content-Type'] ?? ($headers['content-type'] ?? null);
         if ($responseContentType) {
             foreach ($jsonContentTypeList as $contentType) {
                 if (
@@ -346,7 +352,7 @@ class RestClient
         string $method,
         string $url,
         array $parameters,
-        ?ResponseInterface $response = null
+        ResponseInterface $response = null,
     ): void {
         if ($this->isHistoryLogged()) {
             $queryTime = microtime(true) - $startTime;
@@ -360,7 +366,7 @@ class RestClient
                     ? json_decode((string) $response->getBody(), true)
                     : null,
                 'queryTime' => $queryTime,
-                'backtrace' => debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS),
+                'backtrace' => debug_backtrace(\DEBUG_BACKTRACE_IGNORE_ARGS),
             ];
         }
     }

@@ -23,7 +23,7 @@ class ArrayHelper
     public static function arrayGet(
         array $array,
         ?string $key,
-        $default = null
+        $default = null,
     ): mixed {
         if (null === $key) {
             return $array;
@@ -45,7 +45,7 @@ class ArrayHelper
 
     /**
      * Check if an item exists in an array using "dot" notation.
-     * 
+     *
      * @param array<T> $array
      */
     public static function arrayHas(array $array, ?string $key): bool
@@ -71,9 +71,9 @@ class ArrayHelper
 
     /**
      * Flatten a multi-dimensional associative array with dots.
-     * 
+     *
      * @param array<T> $array
-     * 
+     *
      * @return array<T>
      */
     public static function arrayDot(array $array, string $prepend = ''): array
@@ -83,7 +83,7 @@ class ArrayHelper
             if (is_array($value) && !empty($value)) {
                 $results = array_merge(
                     $results,
-                    static::arrayDot($value, $prepend . $key . '.')
+                    static::arrayDot($value, $prepend . $key . '.'),
                 );
             } else {
                 $results[$prepend . $key] = $value;
@@ -94,24 +94,24 @@ class ArrayHelper
     }
 
     /**
-     * 
-     * @param array<T> $array1 
-     * @param array<T> $array2 
+     * @param array<T> $array1
+     * @param array<T> $array2
+     *
      * @return array<T>
      */
     public static function arrayDiffAssocRecursive(
         array $array1,
-        array $array2
+        array $array2,
     ): array {
         return array_diff_assoc(
             static::arrayDot($array1),
-            static::arrayDot($array2)
+            static::arrayDot($array2),
         );
     }
- /**
-     * 
-     * @param array<T> $array1 
-     * @param array<T> $array2 
+
+    /**
+     * @param array<T> $array1
+     * @param array<T> $array2
      */
     public static function arraySame(array $array1, array $array2): bool
     {
