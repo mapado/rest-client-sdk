@@ -1,14 +1,18 @@
 # Changelog
 
-## Unreleased - 1.0.0
+## 2.0.0
 
 ### Changed
 
-Go see the [migration guide](MIGRATION-1.0.md) to see how to migrate from v0 to v1
+Go see the [migration guide](MIGRATION-2.0.md) to see how to migrate from v0 to v2
 
 - [BREAKING] Drop annotations support, replace by PHP8 attributes [#124](https://github.com/mapado/rest-client-sdk/pull/124) by [@JulienRAVIA](https://github.com/JulienRAVIA)
 - [BREAKING] Remove support of PHP < 8.1 and Symfony < 4.0 [#121](https://github.com/mapado/rest-client-sdk/pull/121) by [@jdeniau](https://github.com/jdeniau)
 - Migrate unit tests from atoum to phpunit [#123](https://github.com/mapado/rest-client-sdk/pull/123) by [@jdeniau](https://github.com/jdeniau)
+
+## 1.0.0
+
+(wrongly pushed version, removed from packagist)
 
 ## 0.36.1
 - Collection.php compatibility with PHP 8.1
