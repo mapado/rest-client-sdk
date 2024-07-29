@@ -6,7 +6,7 @@
     "prettier": "^1.18.2"
   },
   "scripts": {
-    "stan": "vendor/bin/phpstan analyse src/ -c phpstan.neon",
+    "phpstan": "vendor/bin/phpstan analyse src/ -c phpstan.neon",
     "phpunit": "vendor/bin/phpunit"
   },
   "husky": {
