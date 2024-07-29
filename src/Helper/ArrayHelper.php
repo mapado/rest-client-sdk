@@ -8,21 +8,22 @@ namespace Mapado\RestClientSdk\Helper;
  * Some array helpers.
  * Greatly inspired by Laravel's helper: https://github.com/rappasoft/laravel-helpers
  *
- * @author Julien Deniau <julien.deniau@mapado.com>
+ * @template T
  */
 class ArrayHelper
 {
     /**
      * Get an item from an array using "dot" notation.
      *
-     * @param  mixed   $default
+     * @param array<T> $array
+     * @param T $default
      *
-     * @return mixed
+     * @return array<T>|T
      */
     public static function arrayGet(
         array $array,
         ?string $key,
-        $default = null
+        $default = null,
     ): mixed {
         if (null === $key) {
             return $array;
@@ -44,6 +45,8 @@ class ArrayHelper
 
     /**
      * Check if an item exists in an array using "dot" notation.
+     *
+     * @param array<T> $array
      */
     public static function arrayHas(array $array, ?string $key): bool
     {
@@ -68,6 +71,10 @@ class ArrayHelper
 
     /**
      * Flatten a multi-dimensional associative array with dots.
+     *
+     * @param array<T> $array
+     *
+     * @return array<T>
      */
     public static function arrayDot(array $array, string $prepend = ''): array
     {
@@ -76,7 +83,7 @@ class ArrayHelper
             if (is_array($value) && !empty($value)) {
                 $results = array_merge(
                     $results,
-                    static::arrayDot($value, $prepend . $key . '.')
+                    static::arrayDot($value, $prepend . $key . '.'),
                 );
             } else {
                 $results[$prepend . $key] = $value;
@@ -86,16 +93,26 @@ class ArrayHelper
         return $results;
     }
 
+    /**
+     * @param array<T> $array1
+     * @param array<T> $array2
+     *
+     * @return array<T>
+     */
     public static function arrayDiffAssocRecursive(
         array $array1,
-        array $array2
+        array $array2,
     ): array {
         return array_diff_assoc(
             static::arrayDot($array1),
-            static::arrayDot($array2)
+            static::arrayDot($array2),
         );
     }
 
+    /**
+     * @param array<T> $array1
+     * @param array<T> $array2
+     */
     public static function arraySame(array $array1, array $array2): bool
     {
         return empty(static::arrayDiffAssocRecursive($array1, $array2));
@@ -104,9 +121,9 @@ class ArrayHelper
     /**
      * Return the default value of the given value.
      *
-     * @param  mixed  $value
+     * @param T|\Closure  $value
      *
-     * @return mixed
+     * @return T
      */
     public static function value($value)
     {

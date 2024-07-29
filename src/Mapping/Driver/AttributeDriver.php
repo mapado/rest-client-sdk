@@ -30,21 +30,23 @@ class AttributeDriver
             new \RecursiveIteratorIterator(
                 new \RecursiveDirectoryIterator(
                     $path,
-                    \FilesystemIterator::SKIP_DOTS
+                    \FilesystemIterator::SKIP_DOTS,
                 ),
-                \RecursiveIteratorIterator::LEAVES_ONLY
+                \RecursiveIteratorIterator::LEAVES_ONLY,
             ),
             '/^.+\.php$/i',
-            \RecursiveRegexIterator::GET_MATCH
+            \RecursiveRegexIterator::GET_MATCH,
         );
 
         $classes = [];
         $includedFiles = [];
 
-        /** @var array $file */
         foreach ($iterator as $file) {
-            $sourceFile = $file[0] ?? null;
-            if (is_string($sourceFile) && !preg_match('(^phar:)i', $sourceFile)) {
+            $sourceFile = is_array($file) ? $file[0] : null;
+            if (
+                is_string($sourceFile)
+                && !preg_match('(^phar:)i', $sourceFile)
+            ) {
                 $sourceFile = realpath($sourceFile);
             }
 
@@ -90,10 +92,13 @@ class AttributeDriver
      * @throws \ReflectionException
      */
     private function getClassMetadataForClassname(
-        string $classname
+        string $classname,
     ): ?ClassMetadata {
         $reflClass = new \ReflectionClass($classname);
-        $classAttribute = $this->getClassAttribute($reflClass, Attributes\Entity::class);
+        $classAttribute = $this->getClassAttribute(
+            $reflClass,
+            Attributes\Entity::class,
+        );
 
         if (!$classAttribute) {
             return null;
@@ -103,27 +108,39 @@ class AttributeDriver
         $relationList = [];
         foreach ($reflClass->getProperties() as $property) {
             // manage attributes
-            $propertyAttribute = $this->getPropertyAttribute($property, Attributes\Attribute::class);
+            $propertyAttribute = $this->getPropertyAttribute(
+                $property,
+                Attributes\Attribute::class,
+            );
 
             if ($propertyAttribute) {
-                $propertyIdAttribute = $this->getPropertyAttribute($property, Attributes\Id::class);
+                $propertyIdAttribute = $this->getPropertyAttribute(
+                    $property,
+                    Attributes\Id::class,
+                );
 
                 $attributeList[] = new Attribute(
                     $propertyAttribute->name,
                     $property->getName(),
                     $propertyAttribute->type,
-                    $propertyIdAttribute instanceof Attributes\Id
+                    $propertyIdAttribute instanceof Attributes\Id,
                 );
             } else {
-                $relation = $this->getPropertyAttribute($property, Attributes\OneToMany::class);
+                $relation = $this->getPropertyAttribute(
+                    $property,
+                    Attributes\OneToMany::class,
+                );
                 if (!$relation) {
-                    $relation = $this->getPropertyAttribute($property, Attributes\ManyToOne::class);
+                    $relation = $this->getPropertyAttribute(
+                        $property,
+                        Attributes\ManyToOne::class,
+                    );
                 }
 
                 if ($relation) {
                     $attributeList[] = new Attribute(
                         $relation->name,
-                        $property->getName()
+                        $property->getName(),
                     );
 
                     $targetEntity = $relation->targetEntity;
@@ -132,14 +149,14 @@ class AttributeDriver
                             mb_substr(
                                 $classname,
                                 0,
-                                mb_strrpos($classname, '\\') + 1
+                                mb_strrpos($classname, '\\') + 1,
                             ) . $targetEntity;
                     }
 
                     $relationList[] = new Relation(
                         $relation->name,
                         $relation->type,
-                        $targetEntity
+                        $targetEntity,
                     );
                 }
             }
@@ -148,7 +165,7 @@ class AttributeDriver
         $classMetadata = new ClassMetadata(
             $classAttribute->key,
             $classname,
-            $classAttribute->repository
+            $classAttribute->repository,
         );
         $classMetadata->setAttributeList($attributeList);
         $classMetadata->setRelationList($relationList);
@@ -157,39 +174,51 @@ class AttributeDriver
     }
 
     /**
-     * @template T
+     * @template T of object
      *
      * @param class-string<T> $classname
      *
-     * @return T|null
+     * @return new<T>|null
      */
-    private function getPropertyAttribute(\ReflectionProperty $property, string $classname)
-    {
+    private function getPropertyAttribute(
+        \ReflectionProperty $property,
+        string $classname,
+    ) {
         return $this->getAttribute($property, $classname);
     }
 
     /**
-     * @template T
+     * @template T of Attributes\Entity
      *
-     * @param class-string<T> $className
+     * @param class-string<T> $classname
+     * @param \ReflectionClass<object> $reflectionClass
      *
-     * @return T|null
+     * @return new<T>|null
      */
-    private function getClassAttribute(\ReflectionClass $reflectionClass, string $className)
-    {
-        return $this->getAttribute($reflectionClass, $className);
+    private function getClassAttribute(
+        \ReflectionClass $reflectionClass,
+        string $classname,
+    ) {
+        return $this->getAttribute($reflectionClass, $classname);
     }
 
     /**
-     * @template T
+     * @template T of object
      *
-     * @param class-string<T> $className
+     * @param \ReflectionClass<object>|\ReflectionProperty $reflection
+     * @param class-string<T> $classname
      *
-     * @return T|null
+     * @return new<T>|null
      */
-    private function getAttribute(\ReflectionClass|\ReflectionProperty $reflection, string $className)
-    {
-        $attribute = $reflection->getAttributes($className, \ReflectionAttribute::IS_INSTANCEOF)[0] ?? null;
+    private function getAttribute(
+        \ReflectionClass|\ReflectionProperty $reflection,
+        string $classname,
+    ) {
+        $attribute =
+            $reflection->getAttributes(
+                $classname,
+                \ReflectionAttribute::IS_INSTANCEOF,
+            )[0] ?? null;
 
         if (!$attribute instanceof \ReflectionAttribute) {
             return null;

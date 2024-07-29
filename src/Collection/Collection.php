@@ -5,20 +5,18 @@ declare(strict_types=1);
 namespace Mapado\RestClientSdk\Collection;
 
 /**
- * Class Collection
+ * @template E
+ * @template ExtraProperty
  *
- * @author Florent Clerc <florent.clerc@mapado.com>
+ * @implements \IteratorAggregate<E>
+ * @implements \ArrayAccess<int, E>
  */
-class Collection implements
-    \IteratorAggregate,
-    \Serializable,
-    \Countable,
-    \ArrayAccess
+class Collection implements \IteratorAggregate, \Serializable, \Countable, \ArrayAccess
 {
     /**
      * The elements of the collection.
      *
-     * @var array
+     * @var array<E>
      */
     private $elements;
 
@@ -28,24 +26,24 @@ class Collection implements
      * or "hydra:totalItems" for JSON-LD
      * or anything you want to really ("foo" is OK for exemple)
      *
-     * @var array
+     * @var array<string, ExtraProperty>
      */
     private $extraProperties;
 
     /**
-     * @param array $elements the data elements as an array
-     * @param array $extraProperties the extra properties
+     * @param array<E> $elements the data elements as an array
+     * @param array<string, ExtraProperty> $extraProperties the extra properties
      */
     public function __construct(
         array $elements = [],
-        array $extraProperties = []
+        array $extraProperties = [],
     ) {
         $this->elements = $elements;
         $this->extraProperties = $extraProperties;
     }
 
     /**
-     *  @return array<string, mixed>
+     *  @return array<E>
      */
     public function __serialize(): array
     {
@@ -53,8 +51,6 @@ class Collection implements
     }
 
     /**
-     * {@inheritdoc}
-     *
      * @param string $values
      */
     public function __unserialize($values): void
@@ -68,6 +64,8 @@ class Collection implements
 
     /**
      * Returns inner elements collection.
+     *
+     * @return array<E>
      */
     public function toArray(): array
     {
@@ -75,8 +73,6 @@ class Collection implements
     }
 
     /**
-     * {@inheritdoc}
-     *
      * @deprecated `serialize` method is deprecated, `__serialize` is used instead. See https://php.watch/versions/8.1/serializable-deprecated
      */
     public function serialize(): string
@@ -92,9 +88,6 @@ class Collection implements
         $this->__unserialize($data);
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function count(): int
     {
         return count($this->elements);
@@ -109,10 +102,9 @@ class Collection implements
     }
 
     /**
-     * {@inheritdoc}
-     *
      * @param mixed|null $offset
-     * @param mixed $value
+     *
+     * @phpstan-param E $value
      */
     public function offsetSet($offset, $value): void
     {
@@ -124,8 +116,6 @@ class Collection implements
     }
 
     /**
-     * {@inheritdoc}
-     *
      * @param mixed|null $offset
      */
     public function offsetExists($offset): bool
@@ -134,8 +124,6 @@ class Collection implements
     }
 
     /**
-     * {@inheritdoc}
-     *
      * @param mixed|null $offset
      */
     public function offsetUnset($offset): void
@@ -144,11 +132,11 @@ class Collection implements
     }
 
     /**
-     * {@inheritdoc}
-     *
      * @param mixed|null $offset
      *
      * @return mixed|null
+     *
+     * @phpstan-return E|null
      */
     public function offsetGet($offset): mixed
     {
@@ -156,7 +144,7 @@ class Collection implements
     }
 
     /**
-     * {@inheritdoc}
+     * @return \ArrayIterator<int, E>
      */
     public function getIterator(): \ArrayIterator
     {
@@ -164,7 +152,7 @@ class Collection implements
     }
 
     /**
-     * getExtraProperties
+     * @return array<ExtraProperty>
      */
     public function getExtraProperties(): array
     {
@@ -188,12 +176,14 @@ class Collection implements
     /**
      * return the value of an extra property
      *
-     * @return mixed
+     * @phpstan-return ?ExtraProperty
      */
     public function getExtraProperty(string $key)
     {
         if (isset($this->extraProperties[$key])) {
             return $this->extraProperties[$key];
         }
+
+        return null;
     }
 }

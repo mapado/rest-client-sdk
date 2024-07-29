@@ -13,9 +13,6 @@ use Psr\Cache\CacheItemPoolInterface;
 use Symfony\Component\PropertyAccess\PropertyAccess;
 use Symfony\Component\PropertyAccess\PropertyAccessor;
 
-/**
- * Sdk Client
- */
 class SdkClient
 {
     /**
@@ -53,7 +50,7 @@ class SdkClient
     private $modelHydrator;
 
     /**
-     * @var array
+     * @var array<class-string, EntityRepository<object, mixed>>
      */
     private $repositoryList = [];
 
@@ -79,8 +76,8 @@ class SdkClient
     public function __construct(
         RestClient $restClient,
         Mapping $mapping,
-        ?UnitOfWork $unitOfWork = null,
-        ?Serializer $serializer = null
+        UnitOfWork $unitOfWork = null,
+        Serializer $serializer = null,
     ) {
         $this->restClient = $restClient;
         $this->mapping = $mapping;
@@ -99,7 +96,7 @@ class SdkClient
 
     public function setCacheItemPool(
         CacheItemPoolInterface $cacheItemPool,
-        string $cachePrefix = ''
+        string $cachePrefix = '',
     ): self {
         $this->cacheItemPool = $cacheItemPool;
         $this->cachePrefix = $cachePrefix;
@@ -117,6 +114,9 @@ class SdkClient
         return $this->cachePrefix;
     }
 
+    /**
+     * @return EntityRepository<object, mixed>
+     */
     public function getRepository(string $modelName): EntityRepository
     {
         // get repository by key
@@ -131,11 +131,18 @@ class SdkClient
         if (!isset($this->repositoryList[$modelName])) {
             $repositoryName = $metadata->getRepositoryName();
 
+            if (!is_a($repositoryName, EntityRepository::class, true)) {
+                throw new \RuntimeException(
+                    "Repository class {$repositoryName} must extend " .
+                        EntityRepository::class,
+                );
+            }
+
             $this->repositoryList[$modelName] = new $repositoryName(
                 $this,
                 $this->restClient,
                 $this->unitOfWork,
-                $modelName
+                $modelName,
             );
         }
 
@@ -162,13 +169,18 @@ class SdkClient
         return $this->modelHydrator;
     }
 
+    /**
+     * @return GhostObjectInterface<object>
+     */
     public function createProxy(string $id): GhostObjectInterface
     {
         $key = $this->mapping->getKeyFromId($id);
         $classMetadata = $this->mapping->getClassMetadataByKey($key);
 
         if (null === $classMetadata) {
-            throw new \RuntimeException("Unable to get classMetadata for key {$key}. This should not happen.");
+            throw new \RuntimeException(
+                "Unable to get classMetadata for key {$key}. This should not happen.",
+            );
         }
 
         /** @var class-string $modelName */
@@ -192,19 +204,19 @@ class SdkClient
             string $method,
             array $parameters,
             \Closure|null &$initializer,
-            array $properties
+            array $properties,
         ) use ($sdk, $classMetadata, $id, $proxyModelName) {
             $isAllowedMethod =
-                'jsonSerialize' === $method ||
-                '__set' === $method ||
-                ('__isset' === $method && 'id' === $parameters['name']);
+                'jsonSerialize' === $method
+                || '__set' === $method
+                || ('__isset' === $method && 'id' === $parameters['name']);
 
             if (!$isAllowedMethod) {
                 $initializer = null; // disable initialization
                 // load data and modify the object here
                 if ($id) {
                     $repository = $sdk->getRepository(
-                        $classMetadata->getModelName()
+                        $classMetadata->getModelName(),
                     );
                     $model = $repository->find($id);
 
@@ -214,7 +226,7 @@ class SdkClient
                         foreach ($attributeList as $attribute) {
                             $value = $this->getPropertyAccessor()->getValue(
                                 $model,
-                                $attribute->getAttributeName()
+                                $attribute->getAttributeName(),
                             );
                             $properties[
                                 "\0" .
@@ -238,7 +250,7 @@ class SdkClient
         // set the id of the object
         $idReflexion = new \ReflectionProperty(
             $modelName,
-            $classMetadata->getIdentifierAttribute()->getAttributeName()
+            $classMetadata->getIdentifierAttribute()->getAttributeName(),
         );
         $idReflexion->setAccessible(true);
         $idReflexion->setValue($instance, $id);

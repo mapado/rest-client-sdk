@@ -64,7 +64,7 @@ class ClassMetadata
     public function __construct(
         string $key,
         string $modelName,
-        ?string $repositoryName = null
+        string $repositoryName = null,
     ) {
         $this->key = $key;
         $this->modelName = $modelName;
@@ -83,6 +83,7 @@ class ClassMetadata
 
     /**
      * @param class-string $modelName
+     *
      * @return $this
      */
     public function setModelName(string $modelName): self
@@ -124,8 +125,8 @@ class ClassMetadata
                 sprintf(
                     'Ressource "%s" does not contains an identifier. You can not call %s. You may want to call `hasIdentifierAttribute` before.',
                     $this->modelName,
-                    __METHOD__
-                )
+                    __METHOD__,
+                ),
             );
         }
 
@@ -158,8 +159,8 @@ class ClassMetadata
                         sprintf(
                             'Class metadata for model "%s" already has an identifier named "%s". Only one identifier is allowed.',
                             $this->modelName,
-                            $this->identifierAttribute->getSerializedKey()
-                        )
+                            $this->identifierAttribute->getSerializedKey(),
+                        ),
                     );
                 }
 
@@ -236,7 +237,7 @@ class ClassMetadata
     /**
      * return default serialize model with null value or empty array on relations
      *
-     * @return array<string, array|null>
+     * @return array<string, array<void>|null>
      */
     public function getDefaultSerializedModel(): array
     {

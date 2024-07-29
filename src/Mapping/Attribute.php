@@ -36,9 +36,9 @@ class Attribute
      */
     public function __construct(
         string $serializedKey,
-        ?string $attributeName = null,
-        ?string $type = null,
-        bool $isIdentifier = false
+        string $attributeName = null,
+        string $type = null,
+        bool $isIdentifier = false,
     ) {
         if (empty($serializedKey)) {
             throw new \InvalidArgumentException('attribute name must be set');

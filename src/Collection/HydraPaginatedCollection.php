@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace Mapado\RestClientSdk\Collection;
 
 /**
- * Class HydraPaginatedCollection
- *
- * @author Florent Clerc <florent.clerc@mapado.com>
+ * @template E
+ * @template ExtraProperty
+ * @extends Collection<E, ExtraProperty>
  */
 class HydraPaginatedCollection extends Collection
 {
