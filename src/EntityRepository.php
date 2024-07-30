@@ -35,7 +35,7 @@ class EntityRepository
     protected $entityName;
 
     /**
-     * @var ClassMetadata
+     * @var ?ClassMetadata
      */
     private $classMetadataCache;
 
