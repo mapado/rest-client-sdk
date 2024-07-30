@@ -35,7 +35,7 @@ class EntityRepository
     protected $entityName;
 
     /**
-     * @var ClassMetadata
+     * @var ?ClassMetadata
      */
     private $classMetadataCache;
 
@@ -485,7 +485,7 @@ class EntityRepository
 
     private function getClassMetadata(): ClassMetadata
     {
-        if (!isset($this->classMetadata)) {
+        if (!isset($this->classMetadataCache)) {
             $this->classMetadataCache = $this->sdk
                 ->getMapping()
                 ->getClassMetadata($this->entityName);
