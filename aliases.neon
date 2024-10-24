@@ -1,0 +1,3 @@
+parameters:
+    typeAliases:
+      SerializerContext: 'array{serializeRelations?: array<string>}'

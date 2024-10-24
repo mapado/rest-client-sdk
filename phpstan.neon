@@ -1,12 +1,10 @@
 includes:
   - 'phpstan-baseline.neon'
+  - 'aliases.neon'
 
 parameters:
     level: max
     ignoreErrors: []
-
-    typeAliases:
-      SerializerContext: 'array{serializeRelations?: array<string>}'
 
     paths:
         - src
