@@ -1,3 +1,6 @@
+includes:
+  - 'aliases.neon'
+
 parameters:
     rest_client_sdk:
       registryFile: null
