@@ -21,7 +21,7 @@ class Section
     #[Rest\Attribute(name: 'title', type: 'string')]
     private $title;
 
-    #[Rest\OneToMany(name: 'articleList', targetEntity: 'Article')]
+    #[Rest\OneToMany(name: 'articleList', targetEntity: Article::class)]
     private $articleList = [];
 
     public function setId($id): void

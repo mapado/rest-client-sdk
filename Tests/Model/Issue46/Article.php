@@ -15,16 +15,10 @@ class Article
     ]
     private $iri;
 
-    /**
-     * @Rest\Attribute(name="id", type="string")
-     */
     #[Rest\Attribute(name: 'id', type: 'string')]
     private $id;
 
-    /**
-     * @Rest\ManyToOne(name="section", targetEntity="Section")
-     */
-    #[Rest\ManyToOne(name: 'section', targetEntity: 'Section')]
+    #[Rest\ManyToOne(name: 'section', targetEntity: Section::class)]
     private $section;
 
     public function setId($id): void

@@ -43,7 +43,7 @@ class CartItem
     /**
      * cart
      */
-    #[Rest\ManyToOne(name: 'cart', targetEntity: 'Cart')]
+    #[Rest\ManyToOne(name: 'cart', targetEntity: Cart::class)]
     private $cart;
 
     /**

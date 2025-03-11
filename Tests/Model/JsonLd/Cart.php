@@ -27,7 +27,7 @@ class Cart
     #[Rest\Attribute(name: 'created_at', type: 'datetime')]
     private $createdAt;
 
-    #[Rest\OneToMany(name: 'cart_items', targetEntity: 'CartItem')]
+    #[Rest\OneToMany(name: 'cart_items', targetEntity: CartItem::class)]
     private $cartItemList = [];
 
     /**
@@ -38,7 +38,7 @@ class Cart
     #[Rest\Attribute(name: 'clientPhoneNumber', type: 'phone_number')]
     private $clientPhoneNumber;
 
-    #[Rest\ManyToOne(name: 'order', targetEntity: 'Order')]
+    #[Rest\ManyToOne(name: 'order', targetEntity: Order::class)]
     private $order;
 
     /**

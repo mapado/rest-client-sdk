@@ -9,11 +9,6 @@ use Mapado\RestClientSdk\Mapping\Attributes as Rest;
 #[Rest\Entity(key: 'articles')]
 class Article
 {
-    /**
-     * @Rest\Id
-     *
-     * @Rest\Attribute(name="@id", type="string")
-     */
     #[
         Rest\Id,
         Rest\Attribute(name: '@id', type: 'string')
@@ -23,10 +18,10 @@ class Article
     #[Rest\Attribute(name: 'title', type: 'string')]
     private $title;
 
-    #[Rest\ManyToOne(name: 'tag', targetEntity: 'Tag')]
+    #[Rest\ManyToOne(name: 'tag', targetEntity: Tag::class)]
     private $tag;
 
-    #[Rest\OneToMany(name: 'tagList', targetEntity: 'Tag')]
+    #[Rest\OneToMany(name: 'tagList', targetEntity: Tag::class)]
     private $tagList;
 
     public function setTitle($title): void

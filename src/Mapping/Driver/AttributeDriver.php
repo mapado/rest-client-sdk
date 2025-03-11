@@ -137,7 +137,7 @@ class AttributeDriver
                     );
                 }
 
-                if ($relation) {
+                if ($relation instanceof Attributes\Relation) {
                     $attributeList[] = new Attribute(
                         $relation->name,
                         $property->getName(),
@@ -145,6 +145,7 @@ class AttributeDriver
 
                     $targetEntity = $relation->targetEntity;
                     if (false === mb_strpos($targetEntity, '/')) {
+                        /** @var class-string $targetEntity */
                         $targetEntity =
                             mb_substr(
                                 $classname,
