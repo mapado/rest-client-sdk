@@ -25,10 +25,13 @@ class Relation
     private $type;
 
     /**
-     * @var string
+     * @var class-string
      */
     private $targetEntity;
 
+    /**
+     * @param class-string $targetEntity
+     */
     public function __construct(
         string $serializedKey,
         string $type,
@@ -73,6 +76,9 @@ class Relation
         return self::MANY_TO_ONE === $this->getType();
     }
 
+    /**
+     * @return class-string
+     */
     public function getTargetEntity(): string
     {
         return $this->targetEntity;

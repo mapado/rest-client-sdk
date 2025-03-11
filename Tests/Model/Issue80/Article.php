@@ -11,16 +11,11 @@ class Article
 {
     /**
      * @var int
-     *
-     * @Rest\Id
-     *
-     * @Rest\Attribute(name="id", type="int")
      */
+    #[Rest\Id]
+    #[Rest\Attribute(name: 'id', type: 'string')]
     private $id;
 
-    /**
-     * @Rest\Attribute(name="title", type="string")
-     */
     #[Rest\Attribute(name: 'title', type: 'string')]
     private $title;
 
