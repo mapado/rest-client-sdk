@@ -84,6 +84,9 @@ class Relation
         return $this->targetEntity;
     }
 
+    /**
+     * @param class-string $targetEntity
+     */
     public function setTargetEntity(string $targetEntity): self
     {
         $this->targetEntity = $targetEntity;
