@@ -9,6 +9,7 @@ use Mapado\RestClientSdk\Mapping\Attribute;
 use Mapado\RestClientSdk\Mapping\Attributes;
 use Mapado\RestClientSdk\Mapping\ClassMetadata;
 use Mapado\RestClientSdk\Mapping\Relation;
+use function PHPStan\dumpType;
 
 /**
  * Class AttributeDriver
@@ -144,15 +145,6 @@ class AttributeDriver
                     );
 
                     $targetEntity = $relation->targetEntity;
-                    if (false === mb_strpos($targetEntity, '/')) {
-                        /** @var class-string $targetEntity */
-                        $targetEntity =
-                            mb_substr(
-                                $classname,
-                                0,
-                                mb_strrpos($classname, '\\') + 1,
-                            ) . $targetEntity;
-                    }
 
                     $relationList[] = new Relation(
                         $relation->name,

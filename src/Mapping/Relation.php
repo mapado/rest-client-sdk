@@ -15,31 +15,13 @@ class Relation
     public const ONE_TO_MANY = 'OneToMany';
 
     /**
-     * @var string
-     */
-    private $serializedKey;
-
-    /**
-     * @var string
-     */
-    private $type;
-
-    /**
-     * @var class-string
-     */
-    private $targetEntity;
-
-    /**
      * @param class-string $targetEntity
      */
     public function __construct(
-        string $serializedKey,
-        string $type,
-        string $targetEntity,
+        private string $serializedKey,
+        private string $type,
+        private string $targetEntity,
     ) {
-        $this->serializedKey = $serializedKey;
-        $this->type = $type;
-        $this->targetEntity = $targetEntity;
     }
 
     public function getSerializedKey(): string

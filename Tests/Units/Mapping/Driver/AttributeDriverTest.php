@@ -6,6 +6,8 @@ namespace Mapado\RestClientSdk\Tests\Units\Mapping\Driver;
 
 use Mapado\RestClientSdk\Mapping\Driver\AttributeDriver;
 use Mapado\RestClientSdk\Mapping\Relation;
+use Mapado\RestClientSdk\Tests\Model\JsonLd\Cart;
+use Mapado\RestClientSdk\Tests\Model\JsonLd\CartItem;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -56,7 +58,7 @@ class AttributeDriverTest extends TestCase
     {
         $testedInstance = new AttributeDriver($this->getCacheDir(), true);
 
-        $mapping = $testedInstance->loadClassname('Mapado\RestClientSdk\Tests\Model\JsonLd\Cart');
+        $mapping = $testedInstance->loadClassname(Cart::class);
         $this->assertCount(1, $mapping);
 
         $classMetadata = current($mapping);
@@ -70,7 +72,7 @@ class AttributeDriverTest extends TestCase
         $this->assertCount(2, $relationList);
         $this->assertEquals(Relation::ONE_TO_MANY, current($relationList)->getType());
 
-        $mapping = $testedInstance->loadClassname('Mapado\RestClientSdk\Tests\Model\JsonLd\CartItem');
+        $mapping = $testedInstance->loadClassname(CartItem::class);
         $this->assertCount(1, $mapping);
 
         $classMetadata = current($mapping);
@@ -84,7 +86,7 @@ class AttributeDriverTest extends TestCase
         $this->assertCount(1, $relationList);
         $relation = current($relationList);
         $this->assertEquals(Relation::MANY_TO_ONE, $relation->getType());
-        $this->assertEquals('Mapado\RestClientSdk\Tests\Model\JsonLd\Cart', $relation->getTargetEntity());
+        $this->assertEquals(Cart::class, $relation->getTargetEntity());
     }
 
     public function testLoadDirectory(): void
