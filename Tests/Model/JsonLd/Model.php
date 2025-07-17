@@ -13,11 +13,6 @@ use Mapado\RestClientSdk\Mapping\Attributes as Rest;
  */
 class Model
 {
-    /**
-     * @Rest\Id
-     *
-     * @Rest\Attribute(name="id", type="string")
-     */
     #[Rest\Id]
     #[Rest\Attribute(name: 'id', type: 'string')]
     private $id;

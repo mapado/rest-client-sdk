@@ -732,7 +732,7 @@ class SerializerTest extends TestCase
             ],
             $this->testedInstance->serialize(
                 $article,
-                'Mapado\RestClientSdk\Tests\Model\Issue46\Article'
+                Issue46\Article::class
             )
         );
 
@@ -747,7 +747,7 @@ class SerializerTest extends TestCase
             ],
             $this->testedInstance->serialize(
                 $section,
-                'Mapado\RestClientSdk\Tests\Model\Issue46\Section'
+                Issue46\Section::class
             )
         );
 
@@ -766,7 +766,7 @@ class SerializerTest extends TestCase
             ],
             $this->testedInstance->serialize(
                 $section,
-                'Mapado\RestClientSdk\Tests\Model\Issue46\Section',
+                Issue46\Section::class,
                 ['serializeRelations' => ['articleList']]
             )
         );
