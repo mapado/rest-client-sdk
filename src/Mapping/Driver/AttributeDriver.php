@@ -145,6 +145,9 @@ class AttributeDriver
                     );
 
                     $targetEntity = $relation->targetEntity;
+                    if (null === $this->getClassMetadataForClassname($targetEntity)) {
+                        throw new MappingException("Invalid targetEntity");
+                    }
 
                     $relationList[] = new Relation(
                         $relation->name,

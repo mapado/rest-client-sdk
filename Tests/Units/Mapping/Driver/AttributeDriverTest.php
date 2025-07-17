@@ -4,10 +4,17 @@ declare(strict_types=1);
 
 namespace Mapado\RestClientSdk\Tests\Units\Mapping\Driver;
 
+use Mapado\RestClientSdk\Exception\MappingException;
+use Mapado\RestClientSdk\Mapping\Attribute;
+use Mapado\RestClientSdk\Mapping\ClassMetadata;
 use Mapado\RestClientSdk\Mapping\Driver\AttributeDriver;
 use Mapado\RestClientSdk\Mapping\Relation;
 use Mapado\RestClientSdk\Tests\Model\JsonLd\Cart;
 use Mapado\RestClientSdk\Tests\Model\JsonLd\CartItem;
+use Mapado\RestClientSdk\Tests\Model\JsonLd\Client;
+use Mapado\RestClientSdk\Tests\Model\JsonLd\Invalid;
+use Mapado\RestClientSdk\Tests\Model\JsonLd\ModelRepository;
+use Mapado\RestClientSdk\Tests\Model\JsonLd\Product;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -22,8 +29,20 @@ class AttributeDriverTest extends TestCase
     {
         $testedInstance = new AttributeDriver($this->getCacheDir(), true);
 
-        $mapping = $testedInstance->loadClassname('Mapado\RestClientSdk\Tests\Model\JsonLd\Client');
+        $mapping = $testedInstance->loadClassname(Client::class);
         $this->assertEmpty($mapping);
+    }
+
+    /**
+     * testClassWithoutEntityAnnotation
+     */
+    public function testClassWithInvalidProperty(): void
+    {
+        $testedInstance = new AttributeDriver($this->getCacheDir(), true);
+
+        $this->expectException(MappingException::class);
+
+        $mapping = $testedInstance->loadClassname(Invalid::class);
     }
 
     /**
@@ -33,20 +52,20 @@ class AttributeDriverTest extends TestCase
     {
         $testedInstance = new AttributeDriver($this->getCacheDir(), true);
 
-        $mapping = $testedInstance->loadClassname('Mapado\RestClientSdk\Tests\Model\JsonLd\Product');
+        $mapping = $testedInstance->loadClassname(Product::class);
         $this->assertCount(1, $mapping);
 
         $classMetadata = current($mapping);
-        $this->assertInstanceOf('Mapado\RestClientSdk\Mapping\ClassMetadata', $classMetadata);
+        $this->assertInstanceOf(ClassMetadata::class, $classMetadata);
         $this->assertEquals('product', $classMetadata->getKey());
-        $this->assertEquals('Mapado\RestClientSdk\Tests\Model\JsonLd\Product', $classMetadata->getModelName());
-        $this->assertEquals('Mapado\RestClientSdk\Tests\Model\JsonLd\ModelRepository', $classMetadata->getRepositoryName());
+        $this->assertEquals(Product::class, $classMetadata->getModelName());
+        $this->assertEquals(ModelRepository::class, $classMetadata->getRepositoryName());
 
         $attributeList = $classMetadata->getAttributeList();
         $this->assertCount(3, $attributeList);
 
         $attribute = current($attributeList);
-        $this->assertInstanceOf('Mapado\RestClientSdk\Mapping\Attribute', $attribute);
+        $this->assertInstanceOf(Attribute::class, $attribute);
         $this->assertEquals('id', $attribute->getSerializedKey());
 
         $attribute = next($attributeList);
@@ -62,7 +81,7 @@ class AttributeDriverTest extends TestCase
         $this->assertCount(1, $mapping);
 
         $classMetadata = current($mapping);
-        $this->assertInstanceOf('Mapado\RestClientSdk\Mapping\ClassMetadata', $classMetadata);
+        $this->assertInstanceOf(ClassMetadata::class, $classMetadata);
         $this->assertEquals('cart', $classMetadata->getKey());
 
         $attributeList = $classMetadata->getAttributeList();
@@ -76,7 +95,7 @@ class AttributeDriverTest extends TestCase
         $this->assertCount(1, $mapping);
 
         $classMetadata = current($mapping);
-        $this->assertInstanceOf('Mapado\RestClientSdk\Mapping\ClassMetadata', $classMetadata);
+        $this->assertInstanceOf(ClassMetadata::class, $classMetadata);
         $this->assertEquals('cart_item', $classMetadata->getKey());
 
         $attributeList = $classMetadata->getAttributeList();
