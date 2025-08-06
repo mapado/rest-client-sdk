@@ -1,6 +1,10 @@
 # Changelog
 
-## 2.0.2
+## 2.1.1
+
+- fix an error with phpstan-extension where phpstan was looking for an `aliases.neon` file
+
+## 2.1.0
 
 - allow null values in cache
 
