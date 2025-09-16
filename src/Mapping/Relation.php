@@ -15,28 +15,13 @@ class Relation
     public const ONE_TO_MANY = 'OneToMany';
 
     /**
-     * @var string
+     * @param class-string $targetEntity
      */
-    private $serializedKey;
-
-    /**
-     * @var string
-     */
-    private $type;
-
-    /**
-     * @var string
-     */
-    private $targetEntity;
-
     public function __construct(
-        string $serializedKey,
-        string $type,
-        string $targetEntity,
+        private string $serializedKey,
+        private string $type,
+        private string $targetEntity,
     ) {
-        $this->serializedKey = $serializedKey;
-        $this->type = $type;
-        $this->targetEntity = $targetEntity;
     }
 
     public function getSerializedKey(): string
@@ -73,11 +58,17 @@ class Relation
         return self::MANY_TO_ONE === $this->getType();
     }
 
+    /**
+     * @return class-string
+     */
     public function getTargetEntity(): string
     {
         return $this->targetEntity;
     }
 
+    /**
+     * @param class-string $targetEntity
+     */
     public function setTargetEntity(string $targetEntity): self
     {
         $this->targetEntity = $targetEntity;
