@@ -38,8 +38,8 @@ class Attribute
      */
     public function __construct(
         string $serializedKey,
-        string $attributeName = null,
-        string $type = null,
+        ?string $attributeName = null,
+        ?string $type = null,
         bool $isIdentifier = false,
     ) {
         if (empty($serializedKey)) {
