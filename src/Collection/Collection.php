@@ -80,14 +80,6 @@ class Collection implements \IteratorAggregate, \Countable, \ArrayAccess
         return serialize($this->__serialize());
     }
 
-    /**
-     * @deprecated `unserialize` method is deprecated, `__unserialize` is used instead. See https://php.watch/versions/8.1/serializable-deprecated
-     */
-    public function unserialize(string $data): void
-    {
-        $this->__unserialize($data);
-    }
-
     public function count(): int
     {
         return count($this->elements);
