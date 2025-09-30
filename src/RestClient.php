@@ -55,7 +55,7 @@ class RestClient
 
     public function __construct(
         ClientInterface $httpClient,
-        string $baseUrl = null,
+        ?string $baseUrl = null,
     ) {
         $this->httpClient = $httpClient;
         $this->baseUrl =
@@ -352,7 +352,7 @@ class RestClient
         string $method,
         string $url,
         array $parameters,
-        ResponseInterface $response = null,
+        ?ResponseInterface $response = null,
     ): void {
         if ($this->isHistoryLogged()) {
             $queryTime = microtime(true) - $startTime;

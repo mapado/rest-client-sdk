@@ -64,7 +64,7 @@ class ClassMetadata
     public function __construct(
         string $key,
         string $modelName,
-        string $repositoryName = null,
+        ?string $repositoryName = null,
     ) {
         $this->key = $key;
         $this->modelName = $modelName;
