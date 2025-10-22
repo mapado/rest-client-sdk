@@ -372,7 +372,7 @@ class EntityRepository
         return $out;
     }
 
-    protected function fetchFromCache(string $key): object|false
+    protected function fetchFromCache(string $key): object|null|false
     {
         $key = $this->normalizeCacheKey($key);
         $cacheItemPool = $this->sdk->getCacheItemPool();
@@ -382,9 +382,9 @@ class EntityRepository
                 $cacheItem = $cacheItemPool->getItem($cacheKey);
                 $cacheData = $cacheItem->get();
 
-                if (!is_object($cacheData)) {
+                if (!is_object($cacheData) && null !== $cacheData) {
                     throw new \RuntimeException(
-                        'Cache data should be an object. This should not happen.',
+                        'Cache data should either be null or an object. This should not happen.',
                     );
                 }
 

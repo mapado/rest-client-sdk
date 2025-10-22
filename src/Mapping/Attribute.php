@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Mapado\RestClientSdk\Mapping;
 
+use Mapado\RestClientSdk\Types;
+
 /**
  * Class Attribute
  *
@@ -36,8 +38,8 @@ class Attribute
      */
     public function __construct(
         string $serializedKey,
-        string $attributeName = null,
-        string $type = null,
+        ?string $attributeName = null,
+        ?string $type = null,
         bool $isIdentifier = false,
     ) {
         if (empty($serializedKey)) {
@@ -46,7 +48,7 @@ class Attribute
 
         $this->serializedKey = $serializedKey;
         $this->attributeName = $attributeName ?? $this->serializedKey;
-        $this->type = $type ?? 'string';
+        $this->type = $type ?? Types::STRING;
         $this->isIdentifier = $isIdentifier;
     }
 

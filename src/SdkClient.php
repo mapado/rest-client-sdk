@@ -76,8 +76,8 @@ class SdkClient
     public function __construct(
         RestClient $restClient,
         Mapping $mapping,
-        UnitOfWork $unitOfWork = null,
-        Serializer $serializer = null,
+        ?UnitOfWork $unitOfWork = null,
+        ?Serializer $serializer = null,
     ) {
         $this->restClient = $restClient;
         $this->mapping = $mapping;

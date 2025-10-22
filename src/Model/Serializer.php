@@ -14,6 +14,7 @@ use Mapado\RestClientSdk\Helper\ArrayHelper;
 use Mapado\RestClientSdk\Mapping;
 use Mapado\RestClientSdk\Mapping\ClassMetadata;
 use Mapado\RestClientSdk\SdkClient;
+use Mapado\RestClientSdk\Types;
 use Mapado\RestClientSdk\UnitOfWork;
 use Symfony\Component\PropertyAccess\Exception\InvalidArgumentException;
 use Symfony\Component\PropertyAccess\PropertyAccess;
@@ -154,7 +155,7 @@ class Serializer
                 }
 
                 if (isset($value)) {
-                    if ('datetime' === $attribute->getType()) {
+                    if (Types::DATETIME === $attribute->getType()) {
                         if (!is_string($value)) {
                             throw new \RuntimeException(
                                 "The value for $attributeName to cast to datetime value should be a string",

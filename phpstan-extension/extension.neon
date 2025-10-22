@@ -1,5 +1,5 @@
 includes:
-  - 'aliases.neon'
+  - '../aliases.neon'
 
 parameters:
     rest_client_sdk:

@@ -1,5 +1,13 @@
 # Changelog
 
+## 2.1.1
+
+- fix an error with phpstan-extension where phpstan was looking for an `aliases.neon` file
+
+## 2.1.0
+
+- allow null values in cache
+
 ## 2.0.0
 
 ### Changed
@@ -15,7 +23,9 @@ Go see the [migration guide](MIGRATION-2.0.md) to see how to migrate from v0 to 
 (wrongly pushed version, removed from packagist)
 
 ## 0.36.1
+
 - Collection.php compatibility with PHP 8.1
+
 ### Changed
 
 - [Breaking] Added compatibility for PHP 8.1
@@ -24,7 +34,7 @@ Go see the [migration guide](MIGRATION-2.0.md) to see how to migrate from v0 to 
 
 ### Changed
 
-Replace abandonned misd/phone-number-bundle 
+Replace abandonned misd/phone-number-bundle
 
 ## 0.34.0
 

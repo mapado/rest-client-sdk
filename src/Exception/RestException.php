@@ -36,7 +36,7 @@ class RestException extends \RuntimeException
         string $path,
         array $params = [],
         int $code = 0,
-        \Exception $previous = null,
+        ?\Exception $previous = null,
     ) {
         parent::__construct($message, $code, $previous);
         $this->path = $path;
