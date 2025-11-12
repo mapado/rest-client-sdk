@@ -1185,7 +1185,7 @@ class SerializerTest extends TestCase
         return $item;
     }
 
-    private function createNewInstance(Mapping $mapping = null): void
+    private function createNewInstance(?Mapping $mapping = null): void
     {
         $mapping = $mapping ?: $this->getMapping();
         $this->unitOfWork = new UnitOfWork($mapping);
