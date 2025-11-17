@@ -792,8 +792,8 @@ class EntityRepositoryTest extends TestCase
      * }
      */
     private function getRepository(
-        RestMapping $mapping = null,
-        string $modelName = null,
+        ?RestMapping $mapping = null,
+        ?string $modelName = null,
         bool $mockHydrator = false,
         bool $mockUnitOfWork = false
     ): array {
