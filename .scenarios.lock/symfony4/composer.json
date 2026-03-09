@@ -36,7 +36,7 @@
     },
     "scripts": {
         "test": [
-            "vendor/bin/phpstan analyze src/",
+            "vendor/bin/phpstan analyze",
             "vendor/bin/phpunit"
         ],
         "post-install-cmd": [
