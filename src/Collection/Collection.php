@@ -94,7 +94,7 @@ class Collection implements \IteratorAggregate, \Countable, \ArrayAccess
     }
 
     /**
-     * @param mixed|null $offset
+     * @param array-key|null $offset
      *
      * @phpstan-param E $value
      */
@@ -108,7 +108,7 @@ class Collection implements \IteratorAggregate, \Countable, \ArrayAccess
     }
 
     /**
-     * @param mixed|null $offset
+     * @param array-key|null $offset
      */
     public function offsetExists($offset): bool
     {
@@ -116,7 +116,7 @@ class Collection implements \IteratorAggregate, \Countable, \ArrayAccess
     }
 
     /**
-     * @param mixed|null $offset
+     * @param array-key|null $offset
      */
     public function offsetUnset($offset): void
     {
@@ -124,7 +124,7 @@ class Collection implements \IteratorAggregate, \Countable, \ArrayAccess
     }
 
     /**
-     * @param mixed|null $offset
+     * @param array-key|null $offset
      *
      * @return mixed|null
      *

@@ -6,24 +6,22 @@ namespace Mapado\RestClientSdk\PHPStan\Type;
 
 use PhpParser\Node\Expr\MethodCall;
 use PHPStan\Analyser\Scope;
-use PHPStan\Broker\Broker;
-use PHPStan\Reflection\BrokerAwareExtension;
 use PHPStan\Reflection\MethodReflection;
 use PHPStan\Reflection\ParametersAcceptorSelector;
+use PHPStan\Reflection\ReflectionProvider;
+use PHPStan\Type\DynamicMethodReturnTypeExtension;
 use PHPStan\Type\MixedType;
 use PHPStan\Type\ObjectType;
 use PHPStan\Type\Type;
 use PHPStan\Type\TypeCombinator;
-use PHPStan\Type\TypeWithClassName;
 
-class ObjectRepositoryDynamicReturnTypeExtension implements \PHPStan\Type\DynamicMethodReturnTypeExtension, BrokerAwareExtension
+class ObjectRepositoryDynamicReturnTypeExtension implements DynamicMethodReturnTypeExtension
 {
-    /** @var Broker */
-    private $broker;
+    private ReflectionProvider $reflectionProvider;
 
-    public function setBroker(Broker $broker): void
+    public function __construct(ReflectionProvider $reflectionProvider)
     {
-        $this->broker = $broker;
+        $this->reflectionProvider = $reflectionProvider;
     }
 
     public function getClass(): string
@@ -50,13 +48,15 @@ class ObjectRepositoryDynamicReturnTypeExtension implements \PHPStan\Type\Dynami
         Scope $scope
     ): Type {
         $calledOnType = $scope->getType($methodCall->var);
-        if (!$calledOnType instanceof TypeWithClassName) {
+        $classNames = $calledOnType->getObjectClassNames();
+        if (count($classNames) === 0) {
             return new MixedType();
         }
 
+        $className = $classNames[0];
         $methodName = $methodReflection->getName();
-        if ($this->broker->hasClass($calledOnType->getClassName())) {
-            $repositoryClassReflection = $this->broker->getClass($calledOnType->getClassName());
+        if ($this->reflectionProvider->hasClass($className)) {
+            $repositoryClassReflection = $this->reflectionProvider->getClass($className);
             if (
                 (
                     (
@@ -71,7 +71,7 @@ class ObjectRepositoryDynamicReturnTypeExtension implements \PHPStan\Type\Dynami
             ) {
                 return ParametersAcceptorSelector::selectFromArgs(
                     $scope,
-                    $methodCall->args,
+                    $methodCall->getArgs(),
                     $repositoryClassReflection->getNativeMethod($methodName)->getVariants()
                 )->getReturnType();
             }
