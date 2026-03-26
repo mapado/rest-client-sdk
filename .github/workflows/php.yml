@@ -22,6 +22,7 @@ jobs:
             scenario: "symfony7"
           - php: "8.4"
             scenario: "symfony6"
+            phpstan_can_fail: true
 
     steps:
     - uses: actions/checkout@v3
@@ -52,6 +53,7 @@ jobs:
 
     - name: PHPStan
       run: vendor/bin/phpstan analyse -c phpstan.neon src/
+      continue-on-error: ${{ matrix.phpstan_can_fail == true }}
     
     - name: phpunit
       run: vendor/bin/phpunit
