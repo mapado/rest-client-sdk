@@ -1,11 +1,14 @@
 includes:
+  - phar://phpstan.phar/conf/bleedingEdge.neon
   - 'phpstan-baseline.neon'
   - 'aliases.neon'
 
 parameters:
-    level: max
-    ignoreErrors: []
+  level: max
+  ignoreErrors: []
+  treatPhpDocTypesAsCertain: false
 
-    paths:
-        - src
-        # - Tests/Units
+  paths:
+    - src
+    - phpstan-extension
+    # - Tests/Units

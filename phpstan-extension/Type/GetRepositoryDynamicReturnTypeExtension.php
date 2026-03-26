@@ -8,29 +8,29 @@ use PhpParser\Node\Expr\MethodCall;
 use PHPStan\Analyser\Scope;
 use PHPStan\Reflection\MethodReflection;
 use PHPStan\Reflection\ParametersAcceptorSelector;
-use PHPStan\Type\Constant\ConstantStringType;
 use PHPStan\Type\DynamicMethodReturnTypeExtension;
 use PHPStan\Type\MixedType;
 use PHPStan\Type\Type;
 
-class GetRepositoryDynamicReturnTypeExtension implements DynamicMethodReturnTypeExtension
+class GetRepositoryDynamicReturnTypeExtension implements
+    DynamicMethodReturnTypeExtension
 {
-    /** @var string */
-    private $sdkClientClass;
+    private string $sdkClientClass;
 
-    /** @var ObjectMetadataResolver */
-    private $metadataResolver;
+    private ObjectMetadataResolver $metadataResolver;
 
     public function __construct(
         string $sdkClientClass,
-        ObjectMetadataResolver $metadataResolver
+        ObjectMetadataResolver $metadataResolver,
     ) {
+        /** @var class-string $sdkClientClass */
         $this->sdkClientClass = $sdkClientClass;
         $this->metadataResolver = $metadataResolver;
     }
 
     public function getClass(): string
     {
+        /** @var class-string */
         return $this->sdkClientClass;
     }
 
@@ -42,20 +42,28 @@ class GetRepositoryDynamicReturnTypeExtension implements DynamicMethodReturnType
     public function getTypeFromMethodCall(
         MethodReflection $methodReflection,
         MethodCall $methodCall,
-        Scope $scope
+        Scope $scope,
     ): Type {
-        if (0 === count($methodCall->args)) {
-            return ParametersAcceptorSelector::selectSingle(
-                $methodReflection->getVariants()
+        $args = $methodCall->getArgs();
+        if (0 === count($args)) {
+            return ParametersAcceptorSelector::selectFromArgs(
+                $scope,
+                $args,
+                $methodReflection->getVariants(),
             )->getReturnType();
         }
-        $argType = $scope->getType($methodCall->args[0]->value);
-        if (!$argType instanceof ConstantStringType) {
+        $argType = $scope->getType($args[0]->value);
+        $constantStrings = $argType->getConstantStrings();
+        if (count($constantStrings) === 0) {
             return new MixedType();
         }
-        $objectName = $argType->getValue();
-        $className = $this->metadataResolver->resolveClassnameForKey($objectName);
-        $repositoryClass = $this->metadataResolver->getRepositoryClass($className);
+        $objectName = $constantStrings[0]->getValue();
+        $className = $this->metadataResolver->resolveClassnameForKey(
+            $objectName,
+        );
+        $repositoryClass = $this->metadataResolver->getRepositoryClass(
+            $className,
+        );
 
         return new ObjectRepositoryType($className, $repositoryClass);
     }

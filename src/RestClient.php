@@ -111,7 +111,7 @@ class RestClient
             return $this->executeRequest('GET', $requestUrl, $parameters);
         } catch (ClientException $e) {
             $response = $e->getResponse();
-            if (null !== $response && 404 === $response->getStatusCode()) {
+            if (404 === $response->getStatusCode()) {
                 return null;
             }
             throw new RestClientException(
@@ -243,17 +243,7 @@ class RestClient
             $defaultParameters['headers'] = ['Referer' => $request->getUri()];
         }
 
-        /** @var array<mixed>|null $out */
         $out = array_replace_recursive($defaultParameters, $parameters);
-
-        if (null === $out) {
-            throw new \RuntimeException(
-                sprintf(
-                    'Error while calling array_replace_recursive in %s. This should not happen.',
-                    __METHOD__,
-                ),
-            );
-        }
 
         return $out;
     }
