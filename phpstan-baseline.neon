@@ -1,76 +1,229 @@
 parameters:
 	ignoreErrors:
 		-
-			message: "#^Parameter \\#1 \\$callback of function array_map expects \\(callable\\(mixed\\)\\: mixed\\)\\|null, Closure\\(array\\|null\\)\\: \\(object\\|null\\) given\\.$#"
+			rawMessage: 'Parameter #1 $id of method Mapado\RestClientSdk\UnitOfWork::clear() expects string, mixed given.'
+			identifier: argument.type
+			count: 1
+			path: src/EntityRepository.php
+
+		-
+			rawMessage: 'Parameter #1 $id of method Mapado\RestClientSdk\UnitOfWork::getDirtyEntity() expects string, mixed given.'
+			identifier: argument.type
+			count: 1
+			path: src/EntityRepository.php
+
+		-
+			rawMessage: 'Parameter #1 $id of method Mapado\RestClientSdk\UnitOfWork::registerClean() expects string, mixed given.'
+			identifier: argument.type
+			count: 3
+			path: src/EntityRepository.php
+
+		-
+			rawMessage: 'Parameter #1 $key of method Mapado\RestClientSdk\EntityRepository<E of object,ExtraParams>::removeFromCache() expects string, mixed given.'
+			identifier: argument.type
+			count: 2
+			path: src/EntityRepository.php
+
+		-
+			rawMessage: 'Parameter #1 $key of method Mapado\RestClientSdk\EntityRepository<E of object,ExtraParams>::saveToCache() expects string, mixed given.'
+			identifier: argument.type
+			count: 3
+			path: src/EntityRepository.php
+
+		-
+			rawMessage: 'Parameter #1 $path of method Mapado\RestClientSdk\EntityRepository<E of object,ExtraParams>::addQueryParameter() expects string, mixed given.'
+			identifier: argument.type
+			count: 1
+			path: src/EntityRepository.php
+
+		-
+			rawMessage: 'Parameter #1 $path of method Mapado\RestClientSdk\RestClient::delete() expects string, mixed given.'
+			identifier: argument.type
+			count: 1
+			path: src/EntityRepository.php
+
+		-
+			rawMessage: 'Parameter #1 $array of function array_diff_assoc expects an array of values castable to string, array<T> given.'
+			identifier: argument.type
+			count: 1
+			path: src/Helper/ArrayHelper.php
+
+		-
+			rawMessage: 'Parameter #2 $arrays of function array_diff_assoc expects an array of values castable to string, array<T> given.'
+			identifier: argument.type
+			count: 1
+			path: src/Helper/ArrayHelper.php
+
+		-
+			rawMessage: 'Parameter #1 $callback of function array_map expects (callable(mixed): mixed)|null, Closure(array|null): (object|null) given.'
+			identifier: argument.type
 			count: 1
 			path: src/Model/ModelHydrator.php
 
 		-
-			message: "#^Call to function is_object\\(\\) with object will always evaluate to true\\.$#"
+			rawMessage: 'Call to function is_object() with object will always evaluate to true.'
+			identifier: function.alreadyNarrowedType
 			count: 1
 			path: src/Model/Serializer.php
 
 		-
-			message: "#^Method Mapado\\\\RestClientSdk\\\\UnitOfWork\\:\\:addIdentifiers\\(\\) has parameter \\$dirtyFields with no value type specified in iterable type array\\.$#"
+			rawMessage: Cannot cast mixed to string.
+			identifier: cast.string
+			count: 1
+			path: src/Model/Serializer.php
+
+		-
+			rawMessage: 'Method Mapado\RestClientSdk\Model\Serializer::recursiveSerialize() should return array<mixed>|string but returns mixed.'
+			identifier: return.type
+			count: 1
+			path: src/Model/Serializer.php
+
+		-
+			rawMessage: 'Argument of an invalid type mixed supplied for foreach, only iterables are supported.'
+			identifier: foreach.nonIterable
 			count: 1
 			path: src/UnitOfWork.php
 
 		-
-			message: "#^Method Mapado\\\\RestClientSdk\\\\UnitOfWork\\:\\:addIdentifiers\\(\\) has parameter \\$newSerializedModel with no value type specified in iterable type array\\.$#"
+			rawMessage: Cannot access offset mixed on mixed.
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 2
+			path: src/UnitOfWork.php
+
+		-
+			rawMessage: Cannot access offset non-falsy-string on mixed.
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 2
+			path: src/UnitOfWork.php
+
+		-
+			rawMessage: 'Method Mapado\RestClientSdk\UnitOfWork::addIdentifiers() has parameter $dirtyFields with no value type specified in iterable type array.'
+			identifier: missingType.iterableValue
 			count: 1
 			path: src/UnitOfWork.php
 
 		-
-			message: "#^Method Mapado\\\\RestClientSdk\\\\UnitOfWork\\:\\:addIdentifiers\\(\\) return type has no value type specified in iterable type array\\.$#"
+			rawMessage: 'Method Mapado\RestClientSdk\UnitOfWork::addIdentifiers() has parameter $newSerializedModel with no value type specified in iterable type array.'
+			identifier: missingType.iterableValue
 			count: 1
 			path: src/UnitOfWork.php
 
 		-
-			message: "#^Method Mapado\\\\RestClientSdk\\\\UnitOfWork\\:\\:findOldRelation\\(\\) has parameter \\$oldValue with no value type specified in iterable type array\\.$#"
+			rawMessage: 'Method Mapado\RestClientSdk\UnitOfWork::addIdentifiers() return type has no value type specified in iterable type array.'
+			identifier: missingType.iterableValue
 			count: 1
 			path: src/UnitOfWork.php
 
 		-
-			message: "#^Method Mapado\\\\RestClientSdk\\\\UnitOfWork\\:\\:findOldRelation\\(\\) has parameter \\$relationValue with no value type specified in iterable type array\\.$#"
+			rawMessage: 'Method Mapado\RestClientSdk\UnitOfWork::findOldRelation() has parameter $oldValue with no value type specified in iterable type array.'
+			identifier: missingType.iterableValue
 			count: 1
 			path: src/UnitOfWork.php
 
 		-
-			message: "#^Method Mapado\\\\RestClientSdk\\\\UnitOfWork\\:\\:findOldRelation\\(\\) return type has no value type specified in iterable type array\\.$#"
+			rawMessage: 'Method Mapado\RestClientSdk\UnitOfWork::findOldRelation() has parameter $relationValue with no value type specified in iterable type array.'
+			identifier: missingType.iterableValue
 			count: 1
 			path: src/UnitOfWork.php
 
 		-
-			message: "#^Method Mapado\\\\RestClientSdk\\\\UnitOfWork\\:\\:getDirtyData\\(\\) has parameter \\$newSerializedModel with no value type specified in iterable type array\\.$#"
+			rawMessage: 'Method Mapado\RestClientSdk\UnitOfWork::findOldRelation() return type has no value type specified in iterable type array.'
+			identifier: missingType.iterableValue
 			count: 1
 			path: src/UnitOfWork.php
 
 		-
-			message: "#^Method Mapado\\\\RestClientSdk\\\\UnitOfWork\\:\\:getDirtyData\\(\\) has parameter \\$oldSerializedModel with no value type specified in iterable type array\\.$#"
+			rawMessage: 'Method Mapado\RestClientSdk\UnitOfWork::findOldRelation() should return array|string but returns mixed.'
+			identifier: return.type
 			count: 1
 			path: src/UnitOfWork.php
 
 		-
-			message: "#^Method Mapado\\\\RestClientSdk\\\\UnitOfWork\\:\\:getDirtyData\\(\\) return type has no value type specified in iterable type array\\.$#"
+			rawMessage: 'Method Mapado\RestClientSdk\UnitOfWork::getDirtyData() has parameter $newSerializedModel with no value type specified in iterable type array.'
+			identifier: missingType.iterableValue
 			count: 1
 			path: src/UnitOfWork.php
 
 		-
-			message: "#^Method Mapado\\\\RestClientSdk\\\\UnitOfWork\\:\\:getDirtyFields\\(\\) has parameter \\$newSerializedModel with no value type specified in iterable type array\\.$#"
+			rawMessage: 'Method Mapado\RestClientSdk\UnitOfWork::getDirtyData() has parameter $oldSerializedModel with no value type specified in iterable type array.'
+			identifier: missingType.iterableValue
 			count: 1
 			path: src/UnitOfWork.php
 
 		-
-			message: "#^Method Mapado\\\\RestClientSdk\\\\UnitOfWork\\:\\:getDirtyFields\\(\\) has parameter \\$oldSerializedModel with no value type specified in iterable type array\\.$#"
+			rawMessage: 'Method Mapado\RestClientSdk\UnitOfWork::getDirtyData() return type has no value type specified in iterable type array.'
+			identifier: missingType.iterableValue
 			count: 1
 			path: src/UnitOfWork.php
 
 		-
-			message: "#^Method Mapado\\\\RestClientSdk\\\\UnitOfWork\\:\\:getDirtyFields\\(\\) return type has no value type specified in iterable type array\\.$#"
+			rawMessage: 'Method Mapado\RestClientSdk\UnitOfWork::getDirtyFields() has parameter $newSerializedModel with no value type specified in iterable type array.'
+			identifier: missingType.iterableValue
 			count: 1
 			path: src/UnitOfWork.php
 
 		-
-			message: "#^Method Mapado\\\\RestClientSdk\\\\UnitOfWork\\:\\:getEntityId\\(\\) has parameter \\$stringOrEntity with no value type specified in iterable type array\\.$#"
+			rawMessage: 'Method Mapado\RestClientSdk\UnitOfWork::getDirtyFields() has parameter $oldSerializedModel with no value type specified in iterable type array.'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/UnitOfWork.php
+
+		-
+			rawMessage: 'Method Mapado\RestClientSdk\UnitOfWork::getDirtyFields() return type has no value type specified in iterable type array.'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/UnitOfWork.php
+
+		-
+			rawMessage: 'Method Mapado\RestClientSdk\UnitOfWork::getEntityId() has parameter $stringOrEntity with no value type specified in iterable type array.'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/UnitOfWork.php
+
+		-
+			rawMessage: 'Parameter #1 $newSerializedModel of method Mapado\RestClientSdk\UnitOfWork::addIdentifiers() expects array, mixed given.'
+			identifier: argument.type
+			count: 1
+			path: src/UnitOfWork.php
+
+		-
+			rawMessage: 'Parameter #1 $newSerializedModel of method Mapado\RestClientSdk\UnitOfWork::getDirtyFields() expects array, mixed given.'
+			identifier: argument.type
+			count: 2
+			path: src/UnitOfWork.php
+
+		-
+			rawMessage: 'Parameter #1 $relationValue of method Mapado\RestClientSdk\UnitOfWork::findOldRelation() expects array|string, mixed given.'
+			identifier: argument.type
+			count: 1
+			path: src/UnitOfWork.php
+
+		-
+			rawMessage: 'Parameter #1 $stringOrEntity of static method Mapado\RestClientSdk\UnitOfWork::getEntityId() expects array|string, mixed given.'
+			identifier: argument.type
+			count: 3
+			path: src/UnitOfWork.php
+
+		-
+			rawMessage: 'Parameter #1 $value of function count expects array|Countable, mixed given.'
+			identifier: argument.type
+			count: 2
+			path: src/UnitOfWork.php
+
+		-
+			rawMessage: 'Parameter #2 $array2 of static method Mapado\RestClientSdk\Helper\ArrayHelper<mixed>::arraySame() expects array<mixed>, mixed given.'
+			identifier: argument.type
+			count: 1
+			path: src/UnitOfWork.php
+
+		-
+			rawMessage: 'Parameter #2 $oldSerializedModel of method Mapado\RestClientSdk\UnitOfWork::getDirtyFields() expects array, mixed given.'
+			identifier: argument.type
+			count: 1
+			path: src/UnitOfWork.php
+
+		-
+			rawMessage: 'Parameter #2 $oldValue of method Mapado\RestClientSdk\UnitOfWork::findOldRelation() expects array, mixed given.'
+			identifier: argument.type
 			count: 1
 			path: src/UnitOfWork.php
