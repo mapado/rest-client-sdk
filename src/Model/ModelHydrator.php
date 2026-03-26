@@ -41,7 +41,7 @@ class ModelHydrator
     }
 
     /**
-     * @param array<string, mixed>|null $data
+     * @param array<array-key, mixed>|null $data
      * @param class-string $modelName
      */
     public function hydrate(?array $data, string $modelName): ?object
@@ -144,8 +144,8 @@ class ModelHydrator
     private function guessCollectionClassname(array $data): string
     {
         switch (true) {
-            case !empty($data['@type'])
-            && 'hydra:PagedCollection' === $data['@type']:
+            case !empty($data['@type']) &&
+                'hydra:PagedCollection' === $data['@type']:
                 return HydraPaginatedCollection::class;
 
             case array_key_exists('_embedded', $data):

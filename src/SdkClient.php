@@ -196,15 +196,12 @@ class SdkClient
 
         $proxyModelName = preg_replace('/^\\\\*/', '', $modelName);
 
-        /**
-         * @var \Closure(RealObjectType&GhostObjectInterface<RealObjectType>, string, array<string, mixed>, ?Closure, array<string, mixed>) $initializer
-         */
         $initializer = function (
-            GhostObjectInterface $proxy,
-            string $method,
-            array $parameters,
-            \Closure|null &$initializer,
-            array $properties,
+            ?GhostObjectInterface $proxy = null,
+            string $method = '',
+            array $parameters = [],
+            \Closure|null &$initializer = null,
+            array $properties = [],
         ) use ($sdk, $classMetadata, $id, $proxyModelName) {
             $isAllowedMethod =
                 'jsonSerialize' === $method

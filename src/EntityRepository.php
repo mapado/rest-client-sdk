@@ -129,6 +129,9 @@ class EntityRepository
             $entityList = ArrayHelper::arrayGet($data, $collectionKey);
             if (!empty($entityList) && is_array($entityList)) {
                 $data = current($entityList);
+
+                $this->assertItemIsArrayOrNull($data, $methodName);
+
                 $hydratedData = $hydrator->hydrate($data, $this->entityName);
 
                 $identifier = $hydratedData->{$this->getClassMetadata()->getIdGetter()}();
@@ -517,11 +520,33 @@ class EntityRepository
     }
 
     /**
+     * @param mixed $data
+     *
+     * @phpstan-assert array<array-key, mixed>|null $data
+     */
+    private function assertItemIsArrayOrNull($data, string $methodName): void
+    {
+        if (null === $data) {
+            return;
+        }
+
+        if (is_array($data)) {
+            return;
+        }
+
+        $type = get_debug_type($data);
+
+        throw new UnexpectedTypeException(
+            "Item from collection returned by method {$methodName} should be either an array or null. {$type} given.",
+        );
+    }
+
+    /**
      * @template I
      *
      * @param array<I>|ResponseInterface|null $data
      *
-     *  @phpstan-assert array|null $data
+     *  @phpstan-assert array<mixed>|null $data
      *
      * @return array<I>|null
      */

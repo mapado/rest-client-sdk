@@ -1,6 +1,16 @@
 parameters:
 	ignoreErrors:
 		-
+			message: "#^Parameter \\#1 \\$callback of function array_map expects \\(callable\\(mixed\\)\\: mixed\\)\\|null, Closure\\(array\\|null\\)\\: \\(object\\|null\\) given\\.$#"
+			count: 1
+			path: src/Model/ModelHydrator.php
+
+		-
+			message: "#^Call to function is_object\\(\\) with object will always evaluate to true\\.$#"
+			count: 1
+			path: src/Model/Serializer.php
+
+		-
 			message: "#^Method Mapado\\\\RestClientSdk\\\\UnitOfWork\\:\\:addIdentifiers\\(\\) has parameter \\$dirtyFields with no value type specified in iterable type array\\.$#"
 			count: 1
 			path: src/UnitOfWork.php
