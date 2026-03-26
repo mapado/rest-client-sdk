@@ -1,5 +1,11 @@
 # Changelog
 
+## Unreleased
+
+- [BREAKING] Drop support for PHP < 8.4
+- [BREAKING] Drop support for Symfony < 6.0
+- Allow Symfony 7 and 8
+
 ## 2.1.1
 
 - fix an error with phpstan-extension where phpstan was looking for an `aliases.neon` file
