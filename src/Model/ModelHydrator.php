@@ -124,7 +124,7 @@ class ModelHydrator
     /**
      * convert array to entity
      *
-     * @param array<string, mixed>|null $data
+     * @param array<mixed>|null $data
      * @param class-string $modelName
      */
     private function deserialize(?array $data, string $modelName): ?object
@@ -139,7 +139,7 @@ class ModelHydrator
     /**
      * guess collection classname according to response data
      *
-     * @param array<string, mixed> $data
+     * @param array<mixed> $data
      */
     private function guessCollectionClassname(array $data): string
     {

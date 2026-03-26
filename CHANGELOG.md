@@ -5,6 +5,7 @@
 - [BREAKING] Drop support for PHP < 8.4
 - [BREAKING] Drop support for Symfony < 6.0
 - Allow Symfony 7 and 8
+- [BREAKING] phpstan-extension: Drop support PHPStan < 2.0
 
 ## 2.1.1
 

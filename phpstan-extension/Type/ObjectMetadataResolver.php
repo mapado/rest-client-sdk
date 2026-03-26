@@ -52,6 +52,8 @@ final class ObjectMetadataResolver
 
     private function getMetadataForKeyOrClassname(string $value): ClassMetadata
     {
+        assert($this->registry !== null);
+
         foreach ($this->registry->getSdkClientList() as $sdkClient) {
             $mapping = $sdkClient->getMapping();
 
@@ -78,6 +80,9 @@ final class ObjectMetadataResolver
             throw new \PHPStan\ShouldNotHappenException('Object manager could not be loaded');
         }
 
-        return require $registryFile;
+        /** @var SdkClientRegistry|null */
+        $registry = require $registryFile;
+
+        return $registry;
     }
 }

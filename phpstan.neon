@@ -10,4 +10,5 @@ parameters:
 
   paths:
     - src
+    - phpstan-extension
     # - Tests/Units
