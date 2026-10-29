@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Mapado\RestClientSdk\Exception;
 
+use GuzzleHttp\Exception\BadResponseException;
 use GuzzleHttp\Exception\RequestException;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
@@ -42,8 +43,10 @@ class RestException extends \RuntimeException
         $this->path = $path;
         $this->params = $params;
         if ($previous instanceof RequestException) {
-            $this->response = $previous->getResponse();
             $this->request = $previous->getRequest();
+        }
+        if ($previous instanceof BadResponseException) {
+            $this->response = $previous->getResponse();
         }
     }
 

@@ -5,7 +5,14 @@ includes:
 
 parameters:
   level: max
-  ignoreErrors: []
+  ignoreErrors:
+    # Guzzle 8 types its request options as an array shape,
+    # the SDK passes caller-supplied options through as array<mixed>
+    -
+      message: '#^Parameter \#3 \$options of method GuzzleHttp\\ClientInterface::request\(\) expects array\{#'
+      identifier: argument.type
+      path: src/RestClient.php
+      reportUnmatched: false
   treatPhpDocTypesAsCertain: false
 
   paths:

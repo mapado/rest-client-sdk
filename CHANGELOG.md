@@ -1,6 +1,11 @@
 # Changelog
 
-## Unreleased
+## 4.0.0
+
+- [BREAKING] Drop support for Guzzle < 7.5
+- Allow Guzzle 8
+
+## 3.0.0
 
 - [BREAKING] Drop support for PHP < 8.4
 - [BREAKING] Drop support for Symfony < 6.0

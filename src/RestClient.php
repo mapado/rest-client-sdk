@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace Mapado\RestClientSdk;
 
 use GuzzleHttp\ClientInterface;
+use GuzzleHttp\Exception\BadResponseException;
 use GuzzleHttp\Exception\ClientException;
-use GuzzleHttp\Exception\RequestException;
 use GuzzleHttp\Exception\TransferException;
 use Mapado\RestClientSdk\Exception\RestClientException;
 use Mapado\RestClientSdk\Exception\RestException;
@@ -292,7 +292,9 @@ class RestClient
                 $parameters,
                 $response,
             );
-        } catch (RequestException $e) {
+        } catch (BadResponseException $e) {
+            // Guzzle 8 only exposes the response on ResponseException (absent in Guzzle 7),
+            // BadResponseException is the common subclass carrying one in both versions
             $this->logRequest(
                 $startTime,
                 $method,
@@ -329,9 +331,9 @@ class RestClient
             $decodedJson = json_decode((string) $response->getBody(), true);
 
             return $decodedJson;
-        } else {
-            return $response;
         }
+
+        return $response;
     }
 
     /**
