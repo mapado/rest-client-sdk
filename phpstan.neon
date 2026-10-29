@@ -13,6 +13,12 @@ parameters:
       identifier: argument.type
       path: src/RestClient.php
       reportUnmatched: false
+    # Guzzle 7 still has RequestException::getResponse(), Guzzle 8 does not
+    -
+      message: '#^Call to function method_exists\(\) with GuzzleHttp\\Exception\\RequestException and .getResponse. will always evaluate to true\.$#'
+      identifier: function.alreadyNarrowedType
+      path: src/Exception/RestException.php
+      reportUnmatched: false
   treatPhpDocTypesAsCertain: false
 
   paths:

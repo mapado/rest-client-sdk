@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Mapado\RestClientSdk\Exception;
 
-use GuzzleHttp\Exception\BadResponseException;
 use GuzzleHttp\Exception\RequestException;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
@@ -44,10 +43,23 @@ class RestException extends \RuntimeException
         $this->params = $params;
         if ($previous instanceof RequestException) {
             $this->request = $previous->getRequest();
+            $this->response = self::responseOf($previous);
         }
-        if ($previous instanceof BadResponseException) {
-            $this->response = $previous->getResponse();
+    }
+
+    /**
+     * Guzzle 7 keeps the response on RequestException,
+     * Guzzle 8 moves it to ResponseException (absent in Guzzle 7)
+     */
+    public static function responseOf(\Throwable $e): ?ResponseInterface
+    {
+        if (!$e instanceof RequestException) {
+            return null;
         }
+
+        $response = method_exists($e, 'getResponse') ? $e->getResponse() : null;
+
+        return $response instanceof ResponseInterface ? $response : null;
     }
 
     public function getPath(): string
