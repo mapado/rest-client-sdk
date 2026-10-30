@@ -200,8 +200,8 @@ class SdkClient
             ?GhostObjectInterface $proxy = null,
             string $method = '',
             array $parameters = [],
-            \Closure|null &$initializer = null,
-            array $properties = [],
+            ?\Closure &$initializer = null,
+            array &$properties = [],
         ) use ($sdk, $classMetadata, $id, $proxyModelName) {
             $isAllowedMethod =
                 'jsonSerialize' === $method

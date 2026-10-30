@@ -14,7 +14,7 @@
     },
     "require": {
         "php": "^8.4",
-        "guzzlehttp/guzzle": "^6.2.2 || ^7.5.0",
+        "guzzlehttp/guzzle": "^7.5.0 || ^8.0",
         "friendsofphp/proxy-manager-lts": "^1.0",
         "symfony/http-foundation": "^6.0 || ^7.0 || ^8.0",
         "symfony/property-access": "^6.0 || ^7.0 || ^8.0",

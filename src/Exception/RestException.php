@@ -42,9 +42,24 @@ class RestException extends \RuntimeException
         $this->path = $path;
         $this->params = $params;
         if ($previous instanceof RequestException) {
-            $this->response = $previous->getResponse();
             $this->request = $previous->getRequest();
+            $this->response = self::responseOf($previous);
         }
+    }
+
+    /**
+     * Guzzle 7 keeps the response on RequestException,
+     * Guzzle 8 moves it to ResponseException (absent in Guzzle 7)
+     */
+    public static function responseOf(\Throwable $e): ?ResponseInterface
+    {
+        if (!$e instanceof RequestException) {
+            return null;
+        }
+
+        $response = method_exists($e, 'getResponse') ? $e->getResponse() : null;
+
+        return $response instanceof ResponseInterface ? $response : null;
     }
 
     public function getPath(): string

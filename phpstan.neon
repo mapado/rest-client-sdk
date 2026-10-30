@@ -5,7 +5,20 @@ includes:
 
 parameters:
   level: max
-  ignoreErrors: []
+  ignoreErrors:
+    # Guzzle 8 types its request options as an array shape,
+    # the SDK passes caller-supplied options through as array<mixed>
+    -
+      message: '#^Parameter \#3 \$options of method GuzzleHttp\\ClientInterface::request\(\) expects array\{#'
+      identifier: argument.type
+      path: src/RestClient.php
+      reportUnmatched: false
+    # Guzzle 7 still has RequestException::getResponse(), Guzzle 8 does not
+    -
+      message: '#^Call to function method_exists\(\) with GuzzleHttp\\Exception\\RequestException and .getResponse. will always evaluate to true\.$#'
+      identifier: function.alreadyNarrowedType
+      path: src/Exception/RestException.php
+      reportUnmatched: false
   treatPhpDocTypesAsCertain: false
 
   paths:

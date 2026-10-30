@@ -18,7 +18,7 @@ use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 
 /**
- * @covers RestClient
+ * @covers \RestClient
  */
 class RestClientTest extends TestCase
 {
@@ -43,8 +43,7 @@ class RestClientTest extends TestCase
         $this->assertSame($debugType, get_debug_type($response));
         $this->assertSame(
             $path,
-            array_pop($historyContainer)
-                ['request']->getUri()
+            array_pop($historyContainer)['request']->getUri()
                 ->getPath()
         );
     }
@@ -312,6 +311,31 @@ class RestClientTest extends TestCase
         } catch (RestException $e) {
         }
         $this->assertCount(3, $testedInstance->getRequestHistory());
+    }
+
+    public function testRedirectLoopKeepsResponse(): void
+    {
+        $mock = new MockHandler([
+            new Response(302, ['Location' => 'http://example.com/a']),
+            new Response(302, ['Location' => 'http://example.com/b']),
+        ]);
+        $http = new HttpClient([
+            'handler' => HandlerStack::create($mock),
+            'allow_redirects' => ['max' => 1],
+        ]);
+        $testedInstance = new RestClient($http, 'http://example.com');
+        $testedInstance->setLogHistory(true);
+
+        try {
+            $testedInstance->get('/');
+            $this->fail('a RestException was expected');
+        } catch (RestException $e) {
+            $this->assertSame(302, $e->getResponse()?->getStatusCode());
+        }
+        $this->assertSame(
+            302,
+            $testedInstance->getRequestHistory()[0]['response']?->getStatusCode()
+        );
     }
 
     #[DataProvider('httpHeadersDataProvider')]

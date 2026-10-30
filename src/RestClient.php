@@ -298,7 +298,7 @@ class RestClient
                 $method,
                 $url,
                 $parameters,
-                $e->getResponse(),
+                RestException::responseOf($e),
             );
             throw $e;
         } catch (TransferException $e) {
@@ -329,9 +329,9 @@ class RestClient
             $decodedJson = json_decode((string) $response->getBody(), true);
 
             return $decodedJson;
-        } else {
-            return $response;
         }
+
+        return $response;
     }
 
     /**
